@@ -1,0 +1,37 @@
+html {
+  font-size: 12px;
+}
+
+.popup-container {
+  min-width: 300px;
+}
+
+.options-container .popup-buttons-container {
+  max-width: 100%;
+}
+
+/* .popup-buttons-container {
+  display: flex;
+  justify-content: space-around;
+}
+*/
+
+.buttons-container {
+  gap: 15px;
+  max-width: 280px;
+  overflow-x: auto;
+} 
+
+.options-container .popup-buttons-container .buttons-container {
+  max-width: 100%;
+}
+
+.buttons-container .button {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+/* Utility Classes */
+.border-radius-10 {
+  border-radius: 10px;
+}
