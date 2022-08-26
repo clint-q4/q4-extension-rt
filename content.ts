@@ -4,14 +4,6 @@ export const config: PlasmoContentScript = {
   matches: ["<all_urls>"]
 }
 
-// window.addEventListener("load", () => {
-//   console.log("content script loaded")
-
-//   document.body.style.background = "pink"
-// })
-
-// Check if the current page is a q4site
-
 export const checkSite = (async () => {
   let [currentTab] = await chrome.tabs.query({ active: true, currentWindow: true });
   console.log(currentTab);
@@ -95,5 +87,3 @@ export const loadPreviewEditPage = () => {
     alert("This is not a Q4 Website Preview.");
   }
 }
-
-// module.exports = { checkSite, loginEditButtons, loginQ4Site, loadPreviewEditPage };

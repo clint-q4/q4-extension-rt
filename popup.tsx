@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { useStorage } from "@plasmohq/storage";
-import {checkSite} from "./content";
+import {checkSite, loginEditButtons} from "./content";
 import 'bulma/css/bulma.min.css';
 import './Style.css';
 
@@ -8,6 +8,7 @@ function IndexPopup() {
   const [data, setData] = useState("")
   useEffect(() => {
     checkSite();
+    loginEditButtons();
   })
   return (
     <div className="popup-container py-3 px-5">
