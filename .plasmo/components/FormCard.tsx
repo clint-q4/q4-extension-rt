@@ -20,12 +20,11 @@ function FormCard() {
                   <div className="field">
                       <label className="label">URL</label>
                       <div className="control has-icons-right">
-                          <input className="input is-success" type="text" placeholder="Text input" value="bulma" />
+                          <input className="input is-success" type="text" placeholder="Text input" value="" />
                           <span className="icon is-small is-right">
                               <i className="fas fa-check"></i>
                           </span>
                       </div>
-                      <p className="help is-success">This username is available</p>
                   </div>
 
                   <div className="field">

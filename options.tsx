@@ -2,13 +2,29 @@ import { useState, useEffect } from "react"
 import FormCard from "~.plasmo/components/FormCard"
 import {modalFunctions} from "~.plasmo/utils/modal";
 import 'bulma/css/bulma.min.css';
+import axios from 'axios';
+import PocketBase from 'pocketbase';
 
+// const client = new PocketBase('http://127.0.0.1:8090');
+// async function getList() {
+//   const records = await client.records.getFullList('websites', 200 /* batch size */, {
+//     sort: '-created',
+//   });
+//   console.log(records);
+//   return records;
+// }
+// getList();
 
 function IndexPopup() {
-  const [data, setData] = useState("")
+  const [data, setData] = useState({});
   useEffect(() => {
     modalFunctions();
-  })
+    axios.get('http://127.0.0.1:8090/api/collections/websites/records')
+    .then(response => setData(response.data));
+  }, [])
+  useEffect(() => {
+    console.log(data);
+  }, [data])
 
   return (
     <div className="options-container p-6">
