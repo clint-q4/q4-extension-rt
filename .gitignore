@@ -33,10 +33,11 @@ build/
 dist/
 
 # plasmo - https://www.plasmo.com
-.plasmo
+.plasmo/cache
+.plasmo/gen-assets
 
 # bpp - http://bpp.browser.market/
 keys.json
 
-# typescript
+# typescripts
 .tsbuildinfo
