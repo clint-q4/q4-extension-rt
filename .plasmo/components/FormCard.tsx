@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-function FormCard() {
+function FormCard(props) {
   return (
     <div className="modal" id="add-options-modal">
       <div className="modal-background"></div>
@@ -31,8 +31,10 @@ function FormCard() {
                       <label className="label">Category</label>
                       <div className="control is-flex">
                           <div className="select" id="category-select-container">
-                              <select>
-                                  <option>Select dropdown</option>
+                              <select title="category">
+                                  {props.categoriesData.map(item => (
+                                    <option key={item.id}>{item.name}</option>
+                                  ))}
                               </select>
                           </div>
                           <div className="ml-3">

@@ -1,4 +1,8 @@
-import type { PlasmoContentScript } from "plasmo"
+import type { PlasmoContentScript } from "plasmo";
+import $ from 'jquery';
+// const { JSDOM } = require( "jsdom" );
+// const { window } = new JSDOM( "" );
+// const $ = require( "jquery" )( window );
 
 export const config: PlasmoContentScript = {
   matches: ["<all_urls>"]
@@ -86,4 +90,11 @@ export const loadPreviewEditPage = () => {
   } else {
     alert("This is not a Q4 Website Preview.");
   }
+}
+
+export const linkToggle = () => {
+  $('button.link-list-toggle').on('click', function (e) {
+    e.preventDefault();
+    $(this).next('.links-container ').slideToggle();
+  })
 }
