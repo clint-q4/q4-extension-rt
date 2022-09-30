@@ -92,9 +92,9 @@ export const loadPreviewEditPage = () => {
   }
 }
 
-export const linkToggle = () => {
-  $('button.link-list-toggle').on('click', function (e) {
+export const linkToggle = (parentClass) => {
+  $(`${parentClass} button.link-list-toggle`).on('click', function (e) {
     e.preventDefault();
-    $(this).next('.links-container ').slideToggle();
+    $(this).next('.links-container').slideToggle();
   })
 }

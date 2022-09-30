@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import FormCard from "~.plasmo/components/FormCard"
 import RenderLinks from "~.plasmo/components/RenderLinks";
 import {modalFunctions} from "~.plasmo/utils/modal";
-import 'bulma/css/bulma.min.css';
+import './css/styles.css';
 import axios from 'axios';
 import PocketBase from 'pocketbase';
 
@@ -51,9 +51,9 @@ function IndexPopup() {
   useEffect(() => {
     if(categoryData.length && linksData.length) {
       const groupedData = linksData.reduce((groups, item) => {
-        const group = (groups[categoryData.find(c => c.id === item.categories).name] || []);
+        const group = (groups[categoryData.find(c => c.id === item.category).name] || []);
         group.push(item);
-        groups[categoryData.find(c => c.id === item.categories).name] = group;
+        groups[categoryData.find(c => c.id === item.category).name] = group;
         return groups;
       }, {});
       setfilterdData(groupedData);

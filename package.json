@@ -7,7 +7,10 @@
   "packageManager": "npm@8.5.5",
   "scripts": {
     "dev": "plasmo dev",
-    "build": "plasmo build"
+    "build": "plasmo build",
+    "css-build": "node-sass --omit-source-map-url sass/_all.scss css/styles.css",
+    "css-watch": "npm run css-build -- --watch",
+    "start": "npm run css-watch"
   },
   "dependencies": {
     "@plasmohq/storage": "^0.8.1",
@@ -28,8 +31,10 @@
     "@types/react-dom": "18.0.6",
     "assert": "^2.0.0",
     "browserify-zlib": "^0.2.0",
+    "bulma": "^0.9.4",
     "crypto-browserify": "^3.12.0",
     "https-browserify": "^1.0.0",
+    "node-sass": "^7.0.3",
     "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",
     "prettier": "2.7.1",
