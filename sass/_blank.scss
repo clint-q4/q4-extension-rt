@@ -13,10 +13,13 @@ html {
 
 .popup-container {
   min-width: 400px;
+  min-height: 500px;
   background-color: $light-color;
   .popup-title-container {
     padding: 15px;
     border-bottom: 1px solid grey;
+    display: flex;
+    justify-content: space-between;
   }
 }
 
@@ -92,4 +95,22 @@ html {
 
 .error-container {
   flex: 1;
+}
+
+.popup-search-container {
+  padding: 1rem;
+  margin-bottom: 0;
+  &.field:not(:last-child) {
+    margin-bottom: 0;
+  }
+}
+
+#modal-login-form {
+  padding: 20px;
+  .modal-content {
+    margin: 10px;
+    padding: 20px;
+    background-color: $light-color;
+    border-radius: 5px;
+  }
 }

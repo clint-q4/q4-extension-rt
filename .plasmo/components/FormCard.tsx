@@ -74,6 +74,15 @@ function FormCard(props) {
     }
   }
 
+  async function categoryHandleSubmit(e) {
+    e.preventDefault();
+    const input = document.getElementById('category-input');
+    if(input) {
+      
+    }
+
+  }
+
   return (
     <form className="modal" id="add-options-modal" onSubmit={handleSubmit}>
       <div className="modal-background"></div>
@@ -157,7 +166,7 @@ function FormCard(props) {
                           id="category-submit-btn">
                           Add Category
                         </button>
-                        <button className="button">Cancel</button>
+                        <button className="button cancel">Cancel</button>
                       </footer>
                     </div>
                   </div>

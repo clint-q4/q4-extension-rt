@@ -6,6 +6,7 @@ import {checkSite, loginEditButtons} from "./content";
 import axios from 'axios';
 import './css/styles.css';
 import {linkToggle} from "./content";
+import LoginForm from "~.plasmo/components/LoginForm";
 // import './Style.css';
 
 const apiDomain = 'http://127.0.0.1:8090';
@@ -60,6 +61,17 @@ function IndexPopup() {
       <div className="popup-container">
         <div className="popup-title-container">
           <h2 className="is-size-4 has-text-weight-bold has-text-centered">Site: <span id="q4-site-verification"></span></h2>
+          <LoginForm></LoginForm>
+        </div>
+        <div className="field is-grouped popup-search-container">
+          <p className="control is-expanded">
+            <input className="input" type="text" placeholder="Seach away..." />
+          </p>
+          <p className="control">
+            <a className="button is-info">
+              Search
+            </a>
+          </p>
         </div>
         <div className="popup-buttons-container cms-links">
           <div className="popup-buttons-container-sublist" data-title="q4-cms-quick-links">
