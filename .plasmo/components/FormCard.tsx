@@ -2,6 +2,7 @@ import { useState } from "react"
 import PocketBase from 'pocketbase';
 
 const client = new PocketBase('http://127.0.0.1:8090');
+console.log('FormCard', client)
 
 function FormCard(props) {
   // form validation
@@ -76,11 +77,14 @@ function FormCard(props) {
 
   async function categoryHandleSubmit(e) {
     e.preventDefault();
-    const input = document.getElementById('category-input');
+    const input = (document.getElementById('category-input') as HTMLInputElement).value;
     if(input) {
-      
+      const data = {
+        name: input
+      }
+      const record = await client.records.create('category', data);
+      console.log(record);
     }
-
   }
 
   return (
@@ -163,7 +167,8 @@ function FormCard(props) {
                       <footer className="modal-card-foot">
                         <button
                           className="button is-success"
-                          id="category-submit-btn">
+                          id="category-submit-btn"
+                          onClick={categoryHandleSubmit}>
                           Add Category
                         </button>
                         <button className="button cancel">Cancel</button>

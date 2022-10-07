@@ -7,13 +7,37 @@ import axios from 'axios';
 import './css/styles.css';
 import {linkToggle} from "./content";
 import LoginForm from "~.plasmo/components/LoginForm";
+import getSuspender from "~.plasmo/utils/getSuspender";
+import fetchData from "~.plasmo/utils/fetchData";
+import './node_modules/@fortawesome/fontawesome-free/css/all.min.css';
+import apiLinks from "~.plasmo/utils/apiLinks";
+import apiCalls from "~.plasmo/utils/apiCalls";
 // import './Style.css';
 
-const apiDomain = 'http://127.0.0.1:8090';
+    // Fetch categoryData
+// const apiCategoryData = async function(url) {
+//   const categoryData = await axios.get(apiDomain + url)
+//     .then(response => {
+//       const strData = JSON.stringify(response.data.items);
+//       if(strData) {
+//         localStorage.setItem('categoriesData', strData);
+//       }
+//       // setCatgeoryData(response.data.items);
+//       return strData;
+//     });
+//     return categoryData;
+// }
+
+const apiCategoryData = fetchData('/api/collections/category/records');
+const apiLinksData = fetchData('/api/collections/websites/records');
+
+// const apiCategoryData = fetchData(apiLinks.categoriesLink);
+// const apiLinksData = fetchData(apiLinks.categoriesLink);
+
 
 function IndexPopup() {
-  const [categoryData, setCatgeoryData] = useState<{[key: string]: any}>([]);
-  const [linksData, setLinksData] = useState<{[key: string]: any}>([]);
+  const [categoryData, setCategoryData] = useState(apiCategoryData.read());
+  const [linksData, setLinksData] = useState(apiLinksData.read());
   const [filterdData, setfilterdData] = useState<{[key: string]: any}>({});
   useEffect(() => {
     // Run modal helper funtions
@@ -21,26 +45,14 @@ function IndexPopup() {
     checkSite();
     loginEditButtons();
     linkToggle('.cms-links');
-    // Fetch categoryData
-    axios.get(apiDomain + '/api/collections/category/records')
-    .then(response => {
-      const strData = JSON.stringify(response.data.items);
-      if(strData) {
-        localStorage.setItem('categoriesData', strData);
-      }
-      setCatgeoryData(response.data.items);
-    });
-    // Fetch LinksData
-    axios.get(apiDomain + '/api/collections/websites/records')
-    .then(response => {
-      const strData = JSON.stringify(response.data.items);
-      if(strData) {
-        localStorage.setItem('linksData', strData);
-      }
-      console.log(response.data, 'data');
-      setLinksData(response.data.items);
-    });
+    // linkToggle('.quick-links');
 
+    (async function fetchData() {
+      const apiCategoryData = await apiCalls('category');
+      const apiLinksData = await apiCalls('websites');
+      setCategoryData(apiCategoryData);
+      setLinksData(apiLinksData);
+    })();
   }, [])
 
   useEffect(() => {
@@ -52,10 +64,12 @@ function IndexPopup() {
         return groups;
       }, {});
       setfilterdData(groupedData);
+      // linkToggle('.quick-links');
     }
     // const localCategories = JSON.parse(localStorage.getItem('categoriesData'));
     // const localLinks = JSON.parse(localStorage.getItem('linksData'));
   }, [categoryData, linksData])
+
   return (
     <div className="root-container">
       <div className="popup-container">

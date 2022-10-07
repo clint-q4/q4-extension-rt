@@ -22,7 +22,7 @@ export const checkSite = (async () => {
       if(r.result) {
         document.querySelector('#q4-site-verification').textContent = 'Q4 Site';
       } else {
-        document.querySelector('#q4-site-verification').textContent = 'Sorry! Not a Q4 Site';
+        document.querySelector('#q4-site-verification').textContent = 'Not a Q4 Site';
         document.querySelector('.popup-buttons-container').style.display = 'none';
       }
     }
@@ -95,6 +95,36 @@ export const loadPreviewEditPage = () => {
 export const linkToggle = (parentClass) => {
   $(`${parentClass} button.link-list-toggle`).on('click', function (e) {
     e.preventDefault();
+    console.log(e.target, 'clicked');
     $(this).next('.links-container').slideToggle();
   })
+}
+
+
+export default function slideToggle(e) {
+  e.preventDefault();
+  const el = e.target;
+  const id = el.dataset.toggle ? el.dataset.toggle : el.closest('button').dataset.toggle;
+  const t = document.querySelector(`button[data-toggle="${id}"]`);
+  var container = document.getElementById(id);
+  const statE = !container.classList.contains('active');
+  const statT = !t.classList.contains('active');
+  if (statE && statT) {
+    container.classList.toggle('active');
+    t.classList.toggle('active');
+    container.style.height = 'auto';
+    const height = container.clientHeight + 'px';
+    container.style.height = '0px';
+    setTimeout(function () {
+      container.style.height = height;
+    }, 0);
+  } else {
+    container.style.height = '0px';
+    t.classList.remove('active');
+    container.addEventListener('transitionend', function () {
+      container.classList.remove('active');
+    }, {
+      once: true
+    });
+  }
 }

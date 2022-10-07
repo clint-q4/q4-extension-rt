@@ -3,6 +3,7 @@ import PocketBase from 'pocketbase';
 import Auth from '../utils/auth';
 
 const client = new PocketBase('http://127.0.0.1:8090');
+console.log('loginForm', client);
 
 function LoginForm() {
   // form validation
@@ -42,15 +43,20 @@ function LoginForm() {
     if(email.length && password.length) {
       document.querySelector<HTMLElement>('.error-text').style.color = 'green';
       setErrorMessage('Sending...');  
-      console.log('form data', loginForm);
       // document.getElementById('add-options-modal')[0].reset();
       const adminAuthData = await client.users.authViaEmail(email, password);
-      console.log(adminAuthData);
-      Auth.login(adminAuthData.token);
 
-      if(adminAuthData) {
+      if(adminAuthData.token) {
+        const $el = document.querySelector('#modal-login-form');
+        Auth.login(adminAuthData.token);
         console.log(adminAuthData);
         setLoginForm(LoginFormData);
+        setErrorMessage('You have successfully logged in!');
+        setTimeout(() => {
+          if($el.classList.contains('is-active')) {
+            $el.classList.remove('is-active');
+          }
+        }, 500)
       }
 
     } else {
@@ -62,19 +68,14 @@ function LoginForm() {
     <>
       <div className="user-button-container">
       {Auth.loggedIn() ? (
-          <>
-            <button onClick={Auth.logout} type="button" className="js-modal-trigger" data-target="modal-login-form">
+            <button onClick={Auth.logout} type="button" className="logout-button">
               <i className="fa-solid fa-user-bounty-hunter">Logout</i>
             </button>
-          </>
         ) : (
-            <button onClick={Auth.logout} type="button" className="logout">
+            <button type="button" className="js-modal-trigger" data-target="modal-login-form">
               <i className="fa-solid fa-user-bounty-hunter">Login</i>
             </button>
         )}
-        <button type="button" className="js-modal-trigger" data-target="modal-login-form">
-          <i className="fa-solid fa-user-bounty-hunter">Login</i>
-        </button>
       </div>
       <div className="user-details-container">
         <div>
@@ -104,7 +105,7 @@ function LoginForm() {
                 </span>
               </p>
             </div>
-            <div className="error-container">
+            <div className="error-container mb-3">
               <p className="error-text">{errorMessage}</p>
             </div>
             <div className="field is-grouped">

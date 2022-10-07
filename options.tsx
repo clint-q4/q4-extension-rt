@@ -2,8 +2,11 @@ import { useState, useEffect } from "react"
 import FormCard from "~.plasmo/components/FormCard"
 import RenderLinks from "~.plasmo/components/RenderLinks";
 import {modalFunctions} from "~.plasmo/utils/modal";
+import apiLinks from "~.plasmo/utils/apiLinks";
+import fetchData from "~.plasmo/utils/fetchData";
 import './css/styles.css';
 import axios from 'axios';
+import getSuspender from "~.plasmo/utils/getSuspender";
 import PocketBase from 'pocketbase';
 
 
@@ -19,32 +22,16 @@ import PocketBase from 'pocketbase';
 
 const apiDomain = 'http://127.0.0.1:8090';
 
-function IndexPopup() {
-  const [categoryData, setCatgeoryData] = useState<{[key: string]: any}>([]);
-  const [linksData, setLinksData] = useState<{[key: string]: any}>([]);
+const apiCategoryData = fetchData(apiLinks.categoriesLink);
+const apiLinksData = fetchData(apiLinks.categoriesLink);
+
+function IndexOptions() {
+  const [categoryData, setCatgeoryData] = useState<{[key: string]: any}>(apiCategoryData.read());
+  const [linksData, setLinksData] = useState<{[key: string]: any}>(apiLinksData.read());
   const [filterdData, setfilterdData] = useState<{[key: string]: any}>({});
   useEffect(() => {
     // Run modal helper funtions
     modalFunctions();
-    // Fetch categoryData
-    axios.get(apiDomain + '/api/collections/category/records')
-    .then(response => {
-      const strData = JSON.stringify(response.data.items);
-      if(strData) {
-        localStorage.setItem('categoriesData', strData);
-      }
-      setCatgeoryData(response.data.items);
-    });
-    // Fetch LinksData
-    axios.get(apiDomain + '/api/collections/websites/records')
-    .then(response => {
-      const strData = JSON.stringify(response.data.items);
-      if(strData) {
-        localStorage.setItem('linksData', strData);
-      }
-      console.log(response.data, 'data');
-      setLinksData(response.data.items);
-    });
 
   }, [])
 
@@ -74,9 +61,12 @@ function IndexPopup() {
       </div>
     </section>
     <RenderLinks filterdData={filterdData}></RenderLinks>
-    <FormCard categoriesData={categoryData}></FormCard>
+    <FormCard 
+      categoriesData={categoryData}
+      setCatgeoryData={setCatgeoryData}
+      ></FormCard>
   </div>
   )
 }
 
-export default IndexPopup;
+export default IndexOptions;
