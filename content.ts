@@ -1,8 +1,4 @@
 import type { PlasmoContentScript } from "plasmo";
-import $ from 'jquery';
-// const { JSDOM } = require( "jsdom" );
-// const { window } = new JSDOM( "" );
-// const $ = require( "jquery" )( window );
 
 export const config: PlasmoContentScript = {
   matches: ["<all_urls>"]
@@ -23,7 +19,7 @@ export const checkSite = (async () => {
         document.querySelector('#q4-site-verification').textContent = 'Q4 Site';
       } else {
         document.querySelector('#q4-site-verification').textContent = 'Not a Q4 Site';
-        document.querySelector('.popup-buttons-container').style.display = 'none';
+        document.querySelector<HTMLElement>('.popup-buttons-container').style.display = 'none';
       }
     }
   });
@@ -92,16 +88,7 @@ export const loadPreviewEditPage = () => {
   }
 }
 
-export const linkToggle = (parentClass) => {
-  $(`${parentClass} button.link-list-toggle`).on('click', function (e) {
-    e.preventDefault();
-    console.log(e.target, 'clicked');
-    $(this).next('.links-container').slideToggle();
-  })
-}
-
-
-export default function slideToggle(e) {
+export const slideToggle = (e) => {
   e.preventDefault();
   const el = e.target;
   const id = el.dataset.toggle ? el.dataset.toggle : el.closest('button').dataset.toggle;
@@ -110,8 +97,8 @@ export default function slideToggle(e) {
   const statE = !container.classList.contains('active');
   const statT = !t.classList.contains('active');
   if (statE && statT) {
-    container.classList.toggle('active');
-    t.classList.toggle('active');
+    container.classList.add('active');
+    t.classList.add('active');
     container.style.height = 'auto';
     const height = container.clientHeight + 'px';
     container.style.height = '0px';
@@ -126,5 +113,24 @@ export default function slideToggle(e) {
     }, {
       once: true
     });
+  }
+}
+
+export const groupLinks = (categoryData, linksData, setfilterdData) => {
+  if(categoryData.length && linksData.length) {
+    const groupedData = linksData.reduce((groups, item) => {
+      const group = (groups[categoryData.find(c => c.id === item.category).name] || []);
+      group.push(item);
+      groups[categoryData.find(c => c.id === item.category).name] = group;
+      return groups;
+    }, {});
+    localStorage.setItem('groupedData', JSON.stringify(groupedData));
+    const groupedLocalData = JSON.parse(localStorage.getItem('groupedData'));
+    setfilterdData(groupedLocalData);
+  } else {
+    const groupedLocalData = JSON.parse(localStorage.getItem('groupedData'));
+    if(groupedLocalData) {
+      setfilterdData(groupedLocalData);
+    }
   }
 }

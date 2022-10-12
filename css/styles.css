@@ -8139,30 +8139,6 @@ html {
     display: flex;
     justify-content: space-between; }
 
-.link-list-toggle {
-  width: 100%;
-  background: transparent;
-  border: none;
-  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
-  font-size: 2rem;
-  border-radius: 0;
-  cursor: pointer;
-  text-align: left;
-  font-weight: bold;
-  padding: 5px 10px;
-  color: #222;
-  display: flex;
-  justify-content: space-between; }
-  .link-list-toggle span i:before {
-    color: #222;
-    opacity: 0.7;
-    box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 2px, rgba(0, 0, 0, 0.07) 0px 2px 4px, rgba(0, 0, 0, 0.07) 0px 4px 8px, rgba(0, 0, 0, 0.07) 0px 8px 16px, rgba(0, 0, 0, 0.07) 0px 16px 32px, rgba(0, 0, 0, 0.07) 0px 32px 64px;
-    border-radius: 50%;
-    display: inline-block;
-    transition: all 0.35s ease-in-out; }
-  .link-list-toggle.active span i:before {
-    transform: rotate(180deg); }
-
 .links-container {
   transition: height 0.35s ease-in-out;
   overflow: hidden; }
@@ -8216,6 +8192,30 @@ html {
   display: flex;
   gap: 10px;
   flex-wrap: wrap; }
+
+.popup-buttons-container .link-list-toggle {
+  width: 100%;
+  background: transparent;
+  border: none;
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+  font-size: 1.5rem;
+  border-radius: 0;
+  cursor: pointer;
+  text-align: left;
+  font-weight: bold;
+  padding: 5px 10px;
+  color: #222;
+  display: flex;
+  justify-content: space-between; }
+  .popup-buttons-container .link-list-toggle span i:before {
+    color: #222;
+    opacity: 0.7;
+    box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 2px, rgba(0, 0, 0, 0.07) 0px 2px 4px, rgba(0, 0, 0, 0.07) 0px 4px 8px, rgba(0, 0, 0, 0.07) 0px 8px 16px, rgba(0, 0, 0, 0.07) 0px 16px 32px, rgba(0, 0, 0, 0.07) 0px 32px 64px;
+    border-radius: 50%;
+    display: inline-block;
+    transition: all 0.35s ease-in-out; }
+  .popup-buttons-container .link-list-toggle.active span i:before {
+    transform: rotate(180deg); }
 
 .options-container .popup-buttons-container {
   max-width: 400px; }

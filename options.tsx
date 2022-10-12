@@ -3,11 +3,14 @@ import FormCard from "~.plasmo/components/FormCard"
 import RenderLinks from "~.plasmo/components/RenderLinks";
 import {modalFunctions} from "~.plasmo/utils/modal";
 import apiLinks from "~.plasmo/utils/apiLinks";
+import {getLists} from "~.plasmo/utils/apiCalls";
 import fetchData from "~.plasmo/utils/fetchData";
 import './css/styles.css';
 import axios from 'axios';
 import getSuspender from "~.plasmo/utils/getSuspender";
 import PocketBase from 'pocketbase';
+import LoginForm from "~.plasmo/components/LoginForm";
+import Auth from '~.plasmo/utils/auth';
 
 
 // const client = new PocketBase('http://127.0.0.1:8090');
@@ -22,16 +25,22 @@ import PocketBase from 'pocketbase';
 
 const apiDomain = 'http://127.0.0.1:8090';
 
-const apiCategoryData = fetchData(apiLinks.categoriesLink);
-const apiLinksData = fetchData(apiLinks.categoriesLink);
+// const apiCategoryData = fetchData(apiLinks.categoriesLink);
+// const apiLinksData = fetchData(apiLinks.categoriesLink);
 
 function IndexOptions() {
-  const [categoryData, setCatgeoryData] = useState<{[key: string]: any}>(apiCategoryData.read());
-  const [linksData, setLinksData] = useState<{[key: string]: any}>(apiLinksData.read());
+  const [categoryData, setCategoryData] = useState<{[key: string]: any}>([]);
+  const [linksData, setLinksData] = useState<{[key: string]: any}>([]);
   const [filterdData, setfilterdData] = useState<{[key: string]: any}>({});
   useEffect(() => {
     // Run modal helper funtions
     modalFunctions();
+    (async function fetchData() {
+      const apiCategoryData = await getLists('category');
+      const apiLinksData = await getLists('websites');
+      setCategoryData(apiCategoryData);
+      setLinksData(apiLinksData);
+    })();
 
   }, [])
 
@@ -43,7 +52,14 @@ function IndexOptions() {
         groups[categoryData.find(c => c.id === item.category).name] = group;
         return groups;
       }, {});
-      setfilterdData(groupedData);
+      localStorage.setItem('groupedData', JSON.stringify(groupedData));
+      const groupedLocalData = JSON.parse(localStorage.getItem('groupedData'));
+      setfilterdData(groupedLocalData);
+    } else {
+      const groupedLocalData = JSON.parse(localStorage.getItem('groupedData'));
+      if(groupedLocalData) {
+        setfilterdData(groupedLocalData);
+      }
     }
     // const localCategories = JSON.parse(localStorage.getItem('categoriesData'));
     // const localLinks = JSON.parse(localStorage.getItem('linksData'));
@@ -53,17 +69,28 @@ function IndexOptions() {
   return (
     <div className="options-container p-6">
     <section className="header-section is-flex is-justify-content-space-between p-4 has-background-success-light border-radius-10">
-      <div>
+      <div className="is-flex-grow-1">
         <h2 className="title is-size-1">Options</h2>
       </div>
-      <div>
-        <button className="button is-size-4 has-text-weight-bold is-primary js-modal-trigger" id="add-options-button" data-target="add-options-modal">+</button>
-      </div>
+      {Auth.loggedIn() ? (
+          <div className="is-flex is-align-items-center">
+            <button className="button has-text-weight-bold is-primary js-modal-trigger mr-5" id="add-options-button" data-target="add-options-modal">
+              Add Links
+            </button>
+          </div>
+        ) : (
+          <div className="is-flex is-align-items-center mr-5">
+            <p>Please log in to add links → </p>
+          </div>
+        )}
+      <LoginForm></LoginForm>
     </section>
-    <RenderLinks filterdData={filterdData}></RenderLinks>
+    <div className="my-5">
+      <RenderLinks filterdData={filterdData}></RenderLinks>
+    </div>
     <FormCard 
-      categoriesData={categoryData}
-      setCatgeoryData={setCatgeoryData}
+      categoryData={categoryData}
+      setCategoryData={setCategoryData}
       ></FormCard>
   </div>
   )

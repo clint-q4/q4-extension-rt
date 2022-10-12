@@ -1,9 +1,7 @@
 import { useState, useEffect } from "react";
 import PocketBase from 'pocketbase';
 import Auth from '../utils/auth';
-
-const client = new PocketBase('http://127.0.0.1:8090');
-console.log('loginForm', client);
+import { loginAuth } from '../utils/apiCalls';
 
 function LoginForm() {
   // form validation
@@ -44,8 +42,8 @@ function LoginForm() {
       document.querySelector<HTMLElement>('.error-text').style.color = 'green';
       setErrorMessage('Sending...');  
       // document.getElementById('add-options-modal')[0].reset();
-      const adminAuthData = await client.users.authViaEmail(email, password);
-
+      // const adminAuthData = await client.users.authViaEmail(email, password);
+      const adminAuthData = await loginAuth(email, password);
       if(adminAuthData.token) {
         const $el = document.querySelector('#modal-login-form');
         Auth.login(adminAuthData.token);
@@ -66,14 +64,16 @@ function LoginForm() {
   }
   return (
     <>
-      <div className="user-button-container">
+      <div className="user-button-container is-flex is-align-items-center">
       {Auth.loggedIn() ? (
-            <button onClick={Auth.logout} type="button" className="logout-button">
-              <i className="fa-solid fa-user-bounty-hunter">Logout</i>
+            <button onClick={Auth.logout} className="button has-text-weight-bold is-primary logout-button" type="button">
+              <i className="fa-solid fa-user-bounty-hunter"></i>
+              Logout
             </button>
         ) : (
-            <button type="button" className="js-modal-trigger" data-target="modal-login-form">
-              <i className="fa-solid fa-user-bounty-hunter">Login</i>
+            <button type="button" className="button has-text-weight-bold is-primary js-modal-trigger" data-target="modal-login-form">
+              <i className="fa-solid fa-user-bounty-hunter"></i>
+              Login
             </button>
         )}
       </div>
@@ -113,7 +113,7 @@ function LoginForm() {
                 <button type="submit" className="button is-success">Login</button>
               </div>
               <div className="control">
-                <button className="button is-link is-light modal-close cancel">Cancel</button>
+                <button className="button is-link is-danger modal-close cancel">Cancel</button>
               </div>
             </div>
           </div>

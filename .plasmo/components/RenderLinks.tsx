@@ -1,6 +1,5 @@
-import {linkToggle} from "../../content";
 import {useEffect} from "react";
-import slideToggle from "../../content";
+import { slideToggle } from "../../content";
 
 function RenderLinks({filterdData}) {
 

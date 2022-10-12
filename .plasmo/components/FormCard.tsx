@@ -1,8 +1,6 @@
-import { useState } from "react"
-import PocketBase from 'pocketbase';
-
-const client = new PocketBase('http://127.0.0.1:8090');
-console.log('FormCard', client)
+import { useState, useEffect } from "react"
+import Auth from '../utils/auth';
+import {client, createLinks, createCategory, getLists} from "../utils/apiCalls";
 
 function FormCard(props) {
   // form validation
@@ -21,7 +19,18 @@ function FormCard(props) {
     useState(formCategoryData)
   const { name, url, category } = formLinkDetails
   const { mainCategory } = formCategoryDetails
+  // const [categoryData, setCategoryData] = useState(props.categoryData);
   const [errorMessage, setErrorMessage] = useState("")
+
+  useEffect(() => {
+    if(!props.categoryData.length) {
+      const token = Auth.getToken(); 
+      if(!token) {
+        setErrorMessage('Please login to generate catgeories');
+      }
+    }
+    console.log(props.categoryData, 'test')
+  }, [props.categoryData])
 
   function validateUrl(string) {
     let url
@@ -62,7 +71,7 @@ function FormCard(props) {
     setErrorMessage('Sending...');  
     console.log('form data', formLinkDetails);
     // document.getElementById('add-options-modal')[0].reset();
-    const record = await client.records.create('websites', formLinkDetails);
+    const record = await createLinks(formLinkDetails);
 
     if(record) {
       console.log(record);
@@ -79,11 +88,17 @@ function FormCard(props) {
     e.preventDefault();
     const input = (document.getElementById('category-input') as HTMLInputElement).value;
     if(input) {
+      console.log(input);
       const data = {
         name: input
       }
-      const record = await client.records.create('category', data);
-      console.log(record);
+      const record = await createCategory(data);
+      if(record) {
+        const result = await getLists('category');
+        if(result) {
+          props.setCategoryData(result);
+        }
+      }
     }
   }
 
@@ -133,16 +148,21 @@ function FormCard(props) {
                 <div className="select" id="category-select-container">
                   <select title="category" name="category" onChange={handleChange} value={category}>
                     <option value="default">Select a category</option>
-                    {props.categoriesData.map((item) => (
+                    {props.categoryData.map((item) => (
                       <option key={item.id} value={item.id}>{item.name}</option>
                     ))}
                   </select>
                 </div>
                 <div className="ml-3">
                   <button
-                    className="button is-link js-modal-trigger"
+                    className="button is-link js-modal-trigger mr-2"
                     data-target="add-category-modal">
                     +
+                  </button>
+                  <button
+                    className="button is-danger js-modal-trigger"
+                    data-target="remove-category-modal">
+                    x
                   </button>
                   <div className="modal" id="add-category-modal">
                     <div className="modal-background"></div>
@@ -173,6 +193,25 @@ function FormCard(props) {
                         </button>
                         <button className="button cancel">Cancel</button>
                       </footer>
+                    </div>
+                  </div>
+                  <div className="modal" id="remove-category-modal">
+                    <div className="modal-background"></div>
+                    <div className="modal-card">
+                      <header className="modal-card-head">
+                        <p className="modal-card-title">Remove Category</p>
+                        <button className="delete" aria-label="close"></button>
+                      </header>
+                      <section className="modal-card-body">
+                        <div className="field">
+                          <label className="label">Category Name</label>
+                          <div className="control">
+                          {props.categoryData.map((item) => (
+                              <span key={item.id} data-value={item.id}>{item.name}</span>
+                            ))}
+                          </div>
+                        </div>
+                      </section>
                     </div>
                   </div>
                 </div>
