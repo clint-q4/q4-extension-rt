@@ -65,6 +65,38 @@ function IndexOptions() {
     // const localLinks = JSON.parse(localStorage.getItem('linksData'));
   }, [categoryData, linksData])
 
+  function initDeleteOrModify(e) {
+    e.preventDefault();
+    console.log(e)
+    const _t = e.target;
+    const id = _t.getAttribute('id') || '';
+    const container = document.querySelector('.popup-buttons-container') as HTMLElement;
+    console.log(container);
+    if(id === 'update-links') {
+
+    }
+    switch (id) {
+      case 'update-links':
+        if(container.classList.contains('update-links-init'))  {
+          container.classList.remove('update-links-init');
+          _t.textContent = 'Update';
+        } else {
+          container.classList.add('update-links-init')
+          _t.textContent = 'Updating...';
+        }
+        break;
+      
+      case 'delete-links':
+        if(container.classList.contains('delete-links-init'))  {
+          container.classList.remove('delete-links-init');
+          _t.textContent = 'Delete';
+        } else {
+          container.classList.add('delete-links-init')
+          _t.textContent = 'Deleting...';
+        }
+        break;
+    }
+  }
 
   return (
     <div className="options-container p-6">
@@ -74,8 +106,14 @@ function IndexOptions() {
       </div>
       {Auth.loggedIn() ? (
           <div className="is-flex is-align-items-center">
-            <button className="button has-text-weight-bold is-primary js-modal-trigger mr-5" id="add-options-button" data-target="add-options-modal">
+            <button className="button has-text-weight-bold is-primary js-modal-trigger mr-3" id="add-options-button" data-target="add-options-modal">
               Add Links
+            </button>
+            <button onClick={initDeleteOrModify} id="update-links" title="update links" className="button has-text-weight-bold is-success mr-3">
+              Update
+            </button>
+            <button onClick={initDeleteOrModify} id="delete-links" title="delete links" className="button has-text-weight-bold is-danger mr-5">
+              Delete
             </button>
           </div>
         ) : (

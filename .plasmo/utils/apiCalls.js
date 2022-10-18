@@ -29,15 +29,14 @@ const loginAuth = async function (email, password) {
 
 const createLinks = async function (formData) {
   const token = Auth.getToken();
-  if(!token) return [];
+  if(!token) return {};
   const newAuthData = await client.users.refresh();
   if(newAuthData) {
     console.log(newAuthData);
     formData.profile = newAuthData.user.profile.id;
   }
-  console.log(formData, 'tt');
+
   const record = await client.records.create('websites', formData);
-  console.log(record, 'ttt')
   if(!record) {
     return 'Something went wrong!';
   }
@@ -46,7 +45,7 @@ const createLinks = async function (formData) {
 
 const createCategory = async function(formData) {
   const token = Auth.getToken();
-  if(!token) return [];
+  if(!token) return {};
   const newAuthData = await client.users.refresh();
   if(newAuthData) {
     console.log(newAuthData);
@@ -60,4 +59,63 @@ const createCategory = async function(formData) {
   return record;
 }
  
-export {client, getLists, loginAuth, createLinks, createCategory}
+const updateCategory = async function(formData, categoryID) {
+  const token = Auth.getToken();
+  if(!token) return {};
+  const newAuthData = await client.users.refresh();
+  if(newAuthData) {
+    console.log(newAuthData);
+    formData.profile = newAuthData.user.profile.id;
+  }
+  const record = await client.records.update('category', categoryID , formData);
+  console.log(record);
+  if(!record) {
+    return 'Something went wrong!';
+  }
+  return record;
+}
+
+const deleteCategory = async function(categoryID) {
+  const token = Auth.getToken();
+  if(!token) return {};
+  const newAuthData = await client.users.refresh();
+  if(newAuthData) {
+    const response = await client.records.delete('category', categoryID);
+    if(response === null) {
+      const respose = {
+        message: 'Catgeory has been deleted successfully!'
+      };
+      return respose;
+    } else {
+      return response;
+    }
+  }
+}
+
+const deleteLinks = async function(linkID) {
+  const token = Auth.getToken();
+  if(!token) return {};
+  const newAuthData = await client.users.refresh();
+  if(newAuthData) {
+    const response = await client.records.delete('websites', linkID);
+    if(response === null) {
+      const respose = {
+        message: 'Link has been deleted successfully!'
+      };
+      return respose;
+    } else {
+      return response;
+    }
+  }
+}
+
+export { 
+  client, 
+  getLists, 
+  loginAuth, 
+  createLinks, 
+  createCategory, 
+  updateCategory , 
+  deleteCategory,
+  deleteLinks
+}

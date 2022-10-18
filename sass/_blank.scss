@@ -116,6 +116,34 @@ html {
     }
     
   }
+  .links {
+    display: flex;
+    gap: 2px;
+    span {
+      display: none;
+      width: 30px;
+      color: $light-color;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+    }
+  }
+  &.update-links-init {
+    .links {
+      span.update-links-container {
+        display: flex;
+        background-color: #48c78e;
+      }
+    }
+  }
+  &.delete-links-init {
+    .links {
+      span.delete-links-container {
+        display: flex;
+        background-color: #f14668;
+      }
+    }
+  }
 }
 
 .options-container {
@@ -143,5 +171,52 @@ html {
     padding: 20px;
     background-color: $light-color;
     border-radius: 5px;
+  }
+}
+
+#remove-category-modal {
+  .modal-card {
+    .control {
+      display: flex;
+      padding: 5px 0;
+      gap: 20px;
+      align-items: center;
+      .buttons-container {
+        display: flex;
+        gap: 10px;
+        button {
+          width: 35px;
+          height: 35px;
+          color: $light-color;
+          border: none;
+          transition: all 0.35s ease-in-out;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0;
+          i {
+            width: 35px;
+            height: 35px;
+            line-height: 35px;
+          }
+        }
+        #modify-category {
+          background-color: #78bc61;
+          border-radius: 50%;
+          &:hover {
+            background-color: #4F7841;
+          }
+          
+        }
+        #delete-category {
+          background-color: #f14668;
+          border-radius: 50%;
+          &:hover {
+            background-color: #9d2b41;
+          }
+        }
+      }
+    }
   }
 }

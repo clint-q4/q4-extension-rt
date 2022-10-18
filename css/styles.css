@@ -8217,6 +8217,25 @@ html {
   .popup-buttons-container .link-list-toggle.active span i:before {
     transform: rotate(180deg); }
 
+.popup-buttons-container .links {
+  display: flex;
+  gap: 2px; }
+  .popup-buttons-container .links span {
+    display: none;
+    width: 30px;
+    color: #FFFFFF;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px; }
+
+.popup-buttons-container.update-links-init .links span.update-links-container {
+  display: flex;
+  background-color: #48c78e; }
+
+.popup-buttons-container.delete-links-init .links span.delete-links-container {
+  display: flex;
+  background-color: #f14668; }
+
 .options-container .popup-buttons-container {
   max-width: 400px; }
 
@@ -8236,3 +8255,37 @@ html {
     padding: 20px;
     background-color: #FFFFFF;
     border-radius: 5px; }
+
+#remove-category-modal .modal-card .control {
+  display: flex;
+  padding: 5px 0;
+  gap: 20px;
+  align-items: center; }
+  #remove-category-modal .modal-card .control .buttons-container {
+    display: flex;
+    gap: 10px; }
+    #remove-category-modal .modal-card .control .buttons-container button {
+      width: 35px;
+      height: 35px;
+      color: #FFFFFF;
+      border: none;
+      transition: all 0.35s ease-in-out;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0; }
+      #remove-category-modal .modal-card .control .buttons-container button i {
+        width: 35px;
+        height: 35px;
+        line-height: 35px; }
+    #remove-category-modal .modal-card .control .buttons-container #modify-category {
+      background-color: #78bc61;
+      border-radius: 50%; }
+      #remove-category-modal .modal-card .control .buttons-container #modify-category:hover {
+        background-color: #4F7841; }
+    #remove-category-modal .modal-card .control .buttons-container #delete-category {
+      background-color: #f14668;
+      border-radius: 50%; }
+      #remove-category-modal .modal-card .control .buttons-container #delete-category:hover {
+        background-color: #9d2b41; }
