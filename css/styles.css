@@ -8226,7 +8226,8 @@ html {
     color: #FFFFFF;
     align-items: center;
     justify-content: center;
-    border-radius: 4px; }
+    border-radius: 4px;
+    cursor: pointer; }
 
 .popup-buttons-container.update-links-init .links span.update-links-container {
   display: flex;
@@ -8237,7 +8238,7 @@ html {
   background-color: #f14668; }
 
 .options-container .popup-buttons-container {
-  max-width: 400px; }
+  max-width: calc(50% - 25px); }
 
 .error-container {
   flex: 1; }

@@ -126,6 +126,7 @@ html {
       align-items: center;
       justify-content: center;
       border-radius: 4px;
+      cursor: pointer;
     }
   }
   &.update-links-init {
@@ -148,7 +149,7 @@ html {
 
 .options-container {
   .popup-buttons-container {
-    max-width: 400px;
+    max-width: calc(50% - 25px);
   }
 }
 

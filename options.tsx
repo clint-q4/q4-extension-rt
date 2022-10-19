@@ -12,16 +12,13 @@ import PocketBase from 'pocketbase';
 import LoginForm from "~.plasmo/components/LoginForm";
 import Auth from '~.plasmo/utils/auth';
 
-
-// const client = new PocketBase('http://127.0.0.1:8090');
-// async function getList() {
-//   const records = await client.records.getFullList('websites', 200 /* batch size */, {
-//     sort: '-created',
-//   });
-//   console.log(records);
-//   return records;
-// }
 // getList();
+// form validation
+const formLinkData = {
+  name: "",
+  url: "",
+  category: ""
+}
 
 const apiDomain = 'http://127.0.0.1:8090';
 
@@ -32,6 +29,9 @@ function IndexOptions() {
   const [categoryData, setCategoryData] = useState<{[key: string]: any}>([]);
   const [linksData, setLinksData] = useState<{[key: string]: any}>([]);
   const [filterdData, setfilterdData] = useState<{[key: string]: any}>({});
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [formLinkDetails, setFormLinkDetails] = useState(formLinkData)
+  const [linkID, setLinkID] = useState<string>('');
   useEffect(() => {
     // Run modal helper funtions
     modalFunctions();
@@ -71,22 +71,42 @@ function IndexOptions() {
     const _t = e.target;
     const id = _t.getAttribute('id') || '';
     const container = document.querySelector('.popup-buttons-container') as HTMLElement;
-    console.log(container);
-    if(id === 'update-links') {
-
-    }
+    const toggleLinks = (document.querySelectorAll('.link-list-toggle') as NodeListOf<Element>);
     switch (id) {
       case 'update-links':
-        if(container.classList.contains('update-links-init'))  {
-          container.classList.remove('update-links-init');
-          _t.textContent = 'Update';
-        } else {
-          container.classList.add('update-links-init')
-          _t.textContent = 'Updating...';
-        }
-        break;
+        for(let link of toggleLinks) {
+          console.log(link);
+          const id  = (link as HTMLInputElement).dataset.toggle;
+          console.log(id);
+          const linkTarget = document.getElementById(id);
+          if(link.classList.contains('active') && 
+            linkTarget.classList.contains('active') && 
+            !container.classList.contains('update-links-init')) {
+            container.classList.add('update-links-init')
+              _t.textContent = 'Updating...';
+            }
+           else {
+            (link as HTMLInputElement).click();
+            if(container.classList.contains('update-links-init'))  {
+              container.classList.remove('update-links-init');
+              _t.textContent = 'Update';
+            } else {
+              container.classList.add('update-links-init');
+              _t.textContent = 'Updating...';
+            }
+          }
+      }
+      break;
       
       case 'delete-links':
+        for(let link of toggleLinks) {
+          if(link.classList.contains('active')) {
+            link.classList.remove('active');
+            (link as HTMLInputElement).click();
+          } else {
+            (link as HTMLInputElement).click();
+          }
+        }
         if(container.classList.contains('delete-links-init'))  {
           container.classList.remove('delete-links-init');
           _t.textContent = 'Delete';
@@ -124,12 +144,24 @@ function IndexOptions() {
       <LoginForm></LoginForm>
     </section>
     <div className="my-5">
-      <RenderLinks filterdData={filterdData}></RenderLinks>
+      <RenderLinks 
+          filterdData={filterdData}
+          setErrorMessage={setErrorMessage}
+          formLinkDetails={formLinkDetails}
+          setFormLinkDetails={setFormLinkDetails}
+          setLinkID={setLinkID}
+          ></RenderLinks>
     </div>
     <FormCard 
       categoryData={categoryData}
       setCategoryData={setCategoryData}
+      formLinkDetails={formLinkDetails}
+      setFormLinkDetails={setFormLinkDetails}
+      linkID={linkID}
       ></FormCard>
+    <div className="error-message-container">
+      <p>{errorMessage}</p>
+    </div>
   </div>
   )
 }

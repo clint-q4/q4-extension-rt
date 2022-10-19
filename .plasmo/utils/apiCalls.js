@@ -109,6 +109,36 @@ const deleteLinks = async function(linkID) {
   }
 }
 
+const updateLinks = async function(linkID, formData) {
+  const token = Auth.getToken();
+  if(!token) return {};
+  const newAuthData = await client.users.refresh();
+  if(newAuthData) {
+    console.log(newAuthData);
+    formData.profile = newAuthData.user.profile.id;
+  }
+  const record = await client.records.update('websites', linkID , formData);
+  console.log(record);
+  if(!record) {
+    return 'Something went wrong!';
+  }
+  return record;
+}
+
+const getSingleRecord = async function (collection, id, relations) {
+  const token = Auth.getToken();
+  if(!token) return {};
+  const newAuthData = await client.users.refresh();
+  if(newAuthData) {
+    const record = await client.records.getOne(collection, id, relations);
+    console.log(record);
+    if(!record) {
+      return 'Something went wrong!';
+    }
+    return record;
+  }
+}
+
 export { 
   client, 
   getLists, 
@@ -117,5 +147,7 @@ export {
   createCategory, 
   updateCategory , 
   deleteCategory,
-  deleteLinks
+  deleteLinks,
+  updateLinks,
+  getSingleRecord
 }

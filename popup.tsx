@@ -26,6 +26,8 @@ function IndexPopup() {
   const [categoryData, setCategoryData] = useState<{[key: string]: any}>([]);
   const [linksData, setLinksData] = useState<{[key: string]: any}>([]);
   const [filterdData, setfilterdData] = useState<{[key: string]: any}>({});
+  const [errorMessage, setErrorMessage] = useState<string>('');
+
   useEffect(() => {
     // Run modal helper funtions
     modalFunctions();
@@ -53,7 +55,13 @@ function IndexPopup() {
         </div>
         <Search></Search>
         <CMSLinks></CMSLinks>
-        <RenderLinks filterdData={filterdData}></RenderLinks>
+        <RenderLinks 
+          filterdData={filterdData}
+          setErrorMessage={setErrorMessage}
+          ></RenderLinks>
+        <div className="error-message-container">
+          <p>{errorMessage}</p>
+        </div>
       </div>
     </div>
   )

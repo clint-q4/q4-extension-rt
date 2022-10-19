@@ -1,24 +1,17 @@
 import { useState, useEffect } from "react"
 import Auth from '../utils/auth';
-import {client, createLinks, createCategory, updateCategory, deleteCategory, getLists} from "../utils/apiCalls";
+import {client, createLinks, createCategory, updateCategory, deleteCategory, getLists, updateLinks} from "../utils/apiCalls";
 import { error } from "console";
 
 function FormCard(props) {
-  // form validation
-  const formLinkData = {
-    name: "",
-    url: "",
-    category: ""
-  }
   // form validation
   const formCategoryData = {
     mainCategory: ""
   }
 
-  const [formLinkDetails, setFormLinkDetails] = useState(formLinkData)
   const [formCategoryDetails, setformCategoryDetails] =
     useState(formCategoryData)
-  const { name, url, category } = formLinkDetails
+  const { name, url, category } = props.formLinkDetails
   const { mainCategory } = formCategoryDetails
   // const [categoryData, setCategoryData] = useState(props.categoryData);
   const [errorMessage, setErrorMessage] = useState("")
@@ -59,43 +52,88 @@ function FormCard(props) {
     }
 
     if (!errorMessage) {
-      setFormLinkDetails({
-        ...formLinkDetails,
+      props.setFormLinkDetails({
+        ...props.formLinkDetails,
         [e.target.name]: e.target.value
       })
     }
-    console.log(formLinkDetails, errorMessage);
+    console.log(props.formLinkDetails, errorMessage);
   }
 
   async function handleSubmit(e) {
     e.preventDefault();
     const errorStatus = (document.querySelector('#add-options-modal .error-text') as HTMLInputElement);
-    if(name.length && url.length && category.length) {
-      setErrorMessage('Sending...');  
-      console.log('form data', formLinkDetails);
-      // document.getElementById('add-options-modal')[0].reset();
-      if(!validateUrl(url)) {
-        console.log(errorStatus);
-        errorStatus.style.color = 'red';
-        setErrorMessage('Please enter a valid URL!');
-        return;
-      }
-      const record = await createLinks(formLinkDetails);
-
-      if(record) {
-        console.log(record);
-        const temp = `${record.name} has been addded to the list!`;
-        errorStatus.style.color = 'green';
-        setErrorMessage(temp);
-        setFormLinkDetails(formLinkData);
+    const option = (document.querySelector('#add-options-modal') as HTMLInputElement).dataset.option;
+    if(option === 'create') {
+      if(name.length && url.length && category.length) {
+        setErrorMessage('Sending...');  
+        console.log('form data', props.formLinkDetails);
+        // document.getElementById('add-options-modal')[0].reset();
+        if(!validateUrl(url)) {
+          console.log(errorStatus);
+          errorStatus.style.color = 'red';
+          setErrorMessage('Please enter a valid URL!');
+          return;
+        }
+        const record = await createLinks(props.formLinkDetails);
+  
+        if(record) {
+          console.log(record);
+          const temp = `${record.name} has been addded to the list!`;
+          errorStatus.style.color = 'green';
+          setErrorMessage(temp);
+          props.setFormLinkDetails(props.formLinkData);
+          setTimeout(function() {
+            window.location.reload();
+          }, 500)
+        } else {
+          setErrorMessage('Sorry! Something went wrong!');
+          document.querySelector<HTMLElement>('.error-text').style.color = 'red';
+        }
+  
       } else {
-        setErrorMessage('Sorry! Something went wrong!');
-        document.querySelector<HTMLElement>('.error-text').style.color = 'red';
+        errorStatus.style.color = 'red';
+        setErrorMessage('One or more fields are empty. Please try again!');
       }
+    } else if (option === 'update') {
+      if(name.length && url.length && category.length) {
+        setErrorMessage('Sending...');  
+        console.log('form data', props.formLinkDetails);
+        // document.getElementById('add-options-modal')[0].reset();
+        if(!validateUrl(url)) {
+          console.log(errorStatus);
+          errorStatus.style.color = 'red';
+          setErrorMessage('Please enter a valid URL!');
+          return;
+        }
+        console.log(props.linkID, props.formLinkDetails);
+        const record = await updateLinks(props.linkID, props.formLinkDetails);
 
-    } else {
-      errorStatus.style.color = 'red';
-      setErrorMessage('One or more fields are empty. Please try again!');
+        console.log(record);
+  
+        if(record) {
+          console.log(record);
+          const clear = {
+            name: "",
+            url: "",
+            category: "",
+          }
+          const temp = `${record.name} has been updated!`;
+          errorStatus.style.color = 'green';
+          setErrorMessage(temp);
+          props.setFormLinkDetails(clear);
+          setTimeout(function() {
+            window.location.reload();
+          }, 500)
+        } else {
+          setErrorMessage('Sorry! Something went wrong!');
+          document.querySelector<HTMLElement>('.error-text').style.color = 'red';
+        }
+  
+      } else {
+        errorStatus.style.color = 'red';
+        setErrorMessage('One or more fields are empty. Please try again!');
+      }
     }
   }
 
@@ -215,7 +253,7 @@ function FormCard(props) {
   }
   
   return (
-    <form className="modal" id="add-options-modal" onSubmit={handleSubmit}>
+    <form className="modal" id="add-options-modal" data-option="create" onSubmit={handleSubmit}>
       <div className="modal-background"></div>
       <div className="modal-card">
         <header className="modal-card-head">
@@ -356,6 +394,9 @@ function FormCard(props) {
             <div className="control">
               <button type="submit" className="button is-link">Submit</button>
             </div>
+            <div className="control" style={{display: 'none'}}>
+              <button type="submit" className="button is-link">Modify</button>
+            </div>
             <div className="control">
               <button className="button is-link is-light cancel">Cancel</button>
             </div>
@@ -366,4 +407,4 @@ function FormCard(props) {
   )
 }
 
-export default FormCard
+export default FormCard;

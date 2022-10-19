@@ -1,14 +1,38 @@
 import {useEffect, useState} from "react";
 import { slideToggle } from "../../content";
-import {deleteLinks} from '../utils/apiCalls'
+import {deleteLinks, getSingleRecord} from '../utils/apiCalls'
 
-function RenderLinks({filterdData}) {
-  const [errorMessage, setErrorMessage] = useState('');
-
+function RenderLinks(props) {
   
   async function triggerUpdateLinks(e) {
     e.preventDefault();
     console.log(e);
+    let _t = e.target;
+    const match = _t.matches('.update-links-container');
+    match ? _t : _t = _t.parentNode;
+    const catEl = _t.previousSibling;
+    const changeEv = new Event('change');
+    console.log(catEl);
+    if(catEl.matches('a.button')) {
+      const linkID = catEl.dataset.id;
+      props.setLinkID(linkID);
+      const linkData = await getSingleRecord('websites', linkID)
+      if(linkData) {
+        const formModal = document.getElementById('add-options-modal');
+        const formModalTitle = document.querySelector('#add-options-modal .modal-card-title');
+        const formModalButton = document.querySelector('#add-options-modal button[type="submit"]');
+        formModal.dataset.option = 'update';
+        formModalTitle.textContent = 'Update Link';
+        formModalButton.textContent = 'Update';
+
+        document.getElementById('add-options-button').click();
+        props.setFormLinkDetails({
+          name: linkData.name,
+          url: linkData.url,
+          category: linkData.category
+        })
+      }
+    }
   }
 
   async function triggerDeleteLinks(e) {
@@ -25,15 +49,13 @@ function RenderLinks({filterdData}) {
       const response = await deleteLinks(linkID)
       if(response) {
         console.log(response);
-        // categoryStatus.style.color = 'green';
-        setErrorMessage('Link has been deleted successfully!');
-        // getLists('category').then((list) => {
-        //   console.log(list);
-        //   props.setCategoryData(list);
-        // });
+        props.setErrorMessage('Link has been deleted successfully!');
+        setTimeout(function () {
+          window.location.reload();
+        }, 500)
       } else {
         const temp = 'Sorry! Something went wrong';
-        setErrorMessage(temp);
+        props.setErrorMessage(temp);
         // categoryStatus.style.color = 'red';
       }
     }
@@ -43,7 +65,7 @@ function RenderLinks({filterdData}) {
 
   return (
     <div className="popup-buttons-container quick-links">
-      {Object.keys(filterdData).map((key, index) => (
+      {Object.keys(props.filterdData).map((key, index) => (
         <div key={index} className="popup-buttons-container-sublist" data-title="quick-links">
           <button onClick={slideToggle} data-toggle={`toggle-id-${index}`} className="link-list-toggle">
             {key}
@@ -51,7 +73,7 @@ function RenderLinks({filterdData}) {
           </button>
           <div className="links-container" id={`toggle-id-${index}`}>
             <div className="p-4 links-container-inner">
-              {filterdData[key].map((item, ind) => (
+              {props.filterdData[key].map((item, ind) => (
                 <div key={ind} className="links is-3">
                   <a className="button is-link" target="_blank" data-id={item.id} href={item.url}>{item.name}</a>
                   <span onClick={triggerUpdateLinks} className="update-links-container">
