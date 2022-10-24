@@ -14,6 +14,7 @@ import {checkSite, loginEditButtons, groupLinks} from "./content";
 // Components
 import CMSLinks from "~.plasmo/components/CMSLinks";
 import RenderLinks from "~.plasmo/components/RenderLinks";
+import RenderSnippets from "~.plasmo/components/RenderSnippets";
 import LoginForm from "~.plasmo/components/LoginForm";
 import Search from "~.plasmo/components/Search";
 
@@ -25,7 +26,9 @@ import Search from "~.plasmo/components/Search";
 function IndexPopup() {
   const [categoryData, setCategoryData] = useState<{[key: string]: any}>([]);
   const [linksData, setLinksData] = useState<{[key: string]: any}>([]);
+  const [snippetData, setSnippetData] = useState<{[key: string]: any}>([]);
   const [filterdData, setfilterdData] = useState<{[key: string]: any}>({});
+  const [filterdSnippetData, setfilterdSnippetData] = useState<{[key: string]: any}>({});
   const [errorMessage, setErrorMessage] = useState<string>('');
 
   useEffect(() => {
@@ -37,13 +40,17 @@ function IndexPopup() {
     (async function fetchData() {
       const apiCategoryData = await getLists('category');
       const apiLinksData = await getLists('websites');
+      const snippetData = await getLists('snippets');
       setCategoryData(apiCategoryData);
       setLinksData(apiLinksData);
+      setSnippetData(snippetData);
     })();
   }, [])
 
   useEffect(() => {
     groupLinks(categoryData, linksData, setfilterdData);
+    groupLinks(categoryData, snippetData, setfilterdSnippetData);
+    console.log(filterdSnippetData);
   }, [categoryData, linksData])
 
   return (
@@ -55,10 +62,20 @@ function IndexPopup() {
         </div>
         <Search></Search>
         <CMSLinks></CMSLinks>
-        <RenderLinks 
-          filterdData={filterdData}
+        <div className="content-container">
+          <h3>Links</h3>
+          <RenderLinks 
+            filterdData={filterdData}
+            setErrorMessage={setErrorMessage}
+            ></RenderLinks>
+        </div>
+        <div className="content-container">
+          <h3>Snippets</h3>
+        <RenderSnippets
+          filterdData={filterdSnippetData}
           setErrorMessage={setErrorMessage}
-          ></RenderLinks>
+          ></RenderSnippets>
+        </div>
         <div className="error-message-container">
           <p>{errorMessage}</p>
         </div>

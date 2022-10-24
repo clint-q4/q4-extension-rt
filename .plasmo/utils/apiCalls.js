@@ -43,6 +43,22 @@ const createLinks = async function (formData) {
   return record;
 }
 
+const createSnippets = async function (formData) {
+  const token = Auth.getToken();
+  if(!token) return {};
+  const newAuthData = await client.users.refresh();
+  if(newAuthData) {
+    console.log(newAuthData);
+    formData.profile = newAuthData.user.profile.id;
+  }
+
+  const record = await client.records.create('snippets', formData);
+  if(!record) {
+    return 'Something went wrong!';
+  }
+  return record;
+}
+
 const createCategory = async function(formData) {
   const token = Auth.getToken();
   if(!token) return {};
@@ -149,5 +165,6 @@ export {
   deleteCategory,
   deleteLinks,
   updateLinks,
-  getSingleRecord
+  getSingleRecord,
+  createSnippets
 }

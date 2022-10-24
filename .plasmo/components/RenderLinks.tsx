@@ -11,7 +11,6 @@ function RenderLinks(props) {
     const match = _t.matches('.update-links-container');
     match ? _t : _t = _t.parentNode;
     const catEl = _t.previousSibling;
-    const changeEv = new Event('change');
     console.log(catEl);
     if(catEl.matches('a.button')) {
       const linkID = catEl.dataset.id;
@@ -19,13 +18,15 @@ function RenderLinks(props) {
       const linkData = await getSingleRecord('websites', linkID)
       if(linkData) {
         const formModal = document.getElementById('add-options-modal');
+        formModal.classList.add('is-active');
+        formModal.click();
         const formModalTitle = document.querySelector('#add-options-modal .modal-card-title');
         const formModalButton = document.querySelector('#add-options-modal button[type="submit"]');
         formModal.dataset.option = 'update';
         formModalTitle.textContent = 'Update Link';
         formModalButton.textContent = 'Update';
 
-        document.getElementById('add-options-button').click();
+        // document.getElementById('add-options-button').click();
         props.setFormLinkDetails({
           name: linkData.name,
           url: linkData.url,

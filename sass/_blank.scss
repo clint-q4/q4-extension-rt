@@ -11,7 +11,8 @@ html {
   max-height: 500px;
 }
 
-.popup-container {
+.popup-container,
+.options-container {
   min-width: 400px;
   min-height: 500px;
   background-color: $light-color;
@@ -20,6 +21,16 @@ html {
     border-bottom: 1px solid grey;
     display: flex;
     justify-content: space-between;
+  }
+  .content-container {
+    h3 {
+      padding: 10px;
+      font-size: 1.6rem;
+      font-weight: 900;
+    }
+  }
+  .options-content {
+    display: flex;
   }
 }
 
@@ -147,9 +158,43 @@ html {
   }
 }
 
+.options-container,
+.popup-buttons-container {
+  &.quick-snippets {
+    .links-container-inner {
+      flex-direction: column;
+      height: auto;
+    }
+    .snippets {
+      width: 100%;
+      flex-direction: column;
+      color: $body-color;
+      span {
+        color: $body-color;
+      }
+      .snippet-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        display: flex;
+        gap: 10px;
+        padding: 10px 0;
+        .copy-icon {
+          cursor: pointer;
+        }
+      }
+    }
+  }
+}
+
 .options-container {
+  .content-container {
+    width: calc(50% - 25px);
+  }
   .popup-buttons-container {
-    max-width: calc(50% - 25px);
+    max-width: 100%;
+  }
+  .options-content {
+    gap: 50px;
   }
 }
 
@@ -220,4 +265,26 @@ html {
       }
     }
   }
+}
+
+#code-snip-editor {
+  border: 2px solid #eff0eb !important;
+  &:focus {
+    border-color: #0f5ca3 !important;
+  }
+}
+
+.number {
+  align-items: unset;
+  background-color: unset;
+  border-radius: unset;
+  display: unset;
+  font-size: unset;
+  height: unset;
+  justify-content: unset;
+  margin-right: unset;
+  min-width: unset;
+  padding: unset;
+  text-align: unset;
+  vertical-align: unset;
 }

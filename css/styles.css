@@ -8129,15 +8129,25 @@ html {
   overflow-y: auto;
   max-height: 500px; }
 
-.popup-container {
+.popup-container,
+.options-container {
   min-width: 400px;
   min-height: 500px;
   background-color: #FFFFFF; }
-  .popup-container .popup-title-container {
+  .popup-container .popup-title-container,
+  .options-container .popup-title-container {
     padding: 15px;
     border-bottom: 1px solid grey;
     display: flex;
     justify-content: space-between; }
+  .popup-container .content-container h3,
+  .options-container .content-container h3 {
+    padding: 10px;
+    font-size: 1.6rem;
+    font-weight: 900; }
+  .popup-container .options-content,
+  .options-container .options-content {
+    display: flex; }
 
 .links-container {
   transition: height 0.35s ease-in-out;
@@ -8237,8 +8247,38 @@ html {
   display: flex;
   background-color: #f14668; }
 
+.options-container.quick-snippets .links-container-inner,
+.popup-buttons-container.quick-snippets .links-container-inner {
+  flex-direction: column;
+  height: auto; }
+
+.options-container.quick-snippets .snippets,
+.popup-buttons-container.quick-snippets .snippets {
+  width: 100%;
+  flex-direction: column;
+  color: #222; }
+  .options-container.quick-snippets .snippets span,
+  .popup-buttons-container.quick-snippets .snippets span {
+    color: #222; }
+  .options-container.quick-snippets .snippets .snippet-title,
+  .popup-buttons-container.quick-snippets .snippets .snippet-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    display: flex;
+    gap: 10px;
+    padding: 10px 0; }
+    .options-container.quick-snippets .snippets .snippet-title .copy-icon,
+    .popup-buttons-container.quick-snippets .snippets .snippet-title .copy-icon {
+      cursor: pointer; }
+
+.options-container .content-container {
+  width: calc(50% - 25px); }
+
 .options-container .popup-buttons-container {
-  max-width: calc(50% - 25px); }
+  max-width: 100%; }
+
+.options-container .options-content {
+  gap: 50px; }
 
 .error-container {
   flex: 1; }
@@ -8290,3 +8330,22 @@ html {
       border-radius: 50%; }
       #remove-category-modal .modal-card .control .buttons-container #delete-category:hover {
         background-color: #9d2b41; }
+
+#code-snip-editor {
+  border: 2px solid #eff0eb !important; }
+  #code-snip-editor:focus {
+    border-color: #0f5ca3 !important; }
+
+.number {
+  align-items: unset;
+  background-color: unset;
+  border-radius: unset;
+  display: unset;
+  font-size: unset;
+  height: unset;
+  justify-content: unset;
+  margin-right: unset;
+  min-width: unset;
+  padding: unset;
+  text-align: unset;
+  vertical-align: unset; }

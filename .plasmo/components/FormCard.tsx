@@ -25,7 +25,6 @@ function FormCard(props) {
         setErrorMessage('Please login to generate catgeories');
       }
     }
-    console.log(props.categoryData, 'test')
   }, [props.categoryData])
 
   function validateUrl(string) {
@@ -57,7 +56,6 @@ function FormCard(props) {
         [e.target.name]: e.target.value
       })
     }
-    console.log(props.formLinkDetails, errorMessage);
   }
 
   async function handleSubmit(e) {
@@ -67,10 +65,8 @@ function FormCard(props) {
     if(option === 'create') {
       if(name.length && url.length && category.length) {
         setErrorMessage('Sending...');  
-        console.log('form data', props.formLinkDetails);
         // document.getElementById('add-options-modal')[0].reset();
         if(!validateUrl(url)) {
-          console.log(errorStatus);
           errorStatus.style.color = 'red';
           setErrorMessage('Please enter a valid URL!');
           return;
@@ -78,7 +74,6 @@ function FormCard(props) {
         const record = await createLinks(props.formLinkDetails);
   
         if(record) {
-          console.log(record);
           const temp = `${record.name} has been addded to the list!`;
           errorStatus.style.color = 'green';
           setErrorMessage(temp);
@@ -97,22 +92,17 @@ function FormCard(props) {
       }
     } else if (option === 'update') {
       if(name.length && url.length && category.length) {
-        setErrorMessage('Sending...');  
-        console.log('form data', props.formLinkDetails);
+        setErrorMessage('Sending...');
         // document.getElementById('add-options-modal')[0].reset();
         if(!validateUrl(url)) {
-          console.log(errorStatus);
           errorStatus.style.color = 'red';
           setErrorMessage('Please enter a valid URL!');
           return;
         }
-        console.log(props.linkID, props.formLinkDetails);
         const record = await updateLinks(props.linkID, props.formLinkDetails);
 
-        console.log(record);
   
         if(record) {
-          console.log(record);
           const clear = {
             name: "",
             url: "",
@@ -141,13 +131,11 @@ function FormCard(props) {
     e.preventDefault();
     const input = (document.getElementById('category-input') as HTMLInputElement).value;
     if(input) {
-      console.log(input);
       const data = {
         name: input
       }
       const record = await createCategory(data);
       if(record) {
-        console.log(record, 'catData');
         const categoryStatus = (document.querySelector('.modal-card-foot .add-category-status') as HTMLInputElement);
         const temp = `${record.name} has been added to the category list!`;
         categoryStatus.style.color = 'green';
@@ -164,11 +152,8 @@ function FormCard(props) {
 
   async function triggerCategoryUpdate(e) {
     e.preventDefault();
-    console.log(e);
-    console.log(e.target);
     const _t = e.target;
     const match = _t.matches('.fa-floppy-disk');
-    console.log(_t);
     if(match) {
       const categoryInput = _t.closest('.buttonsContainer').previousSibling;
       const categoryID = _t.closest('.control').dataset.value;
@@ -176,7 +161,6 @@ function FormCard(props) {
       _t.style.display = 'none';
       _t.previousSibling.style.display = 'inline-block';
       if(updatedCategory && categoryID) {
-        console.log(updatedCategory, categoryID);
         const data = {
           name: updatedCategory
         }
@@ -203,11 +187,8 @@ function FormCard(props) {
   
   function modifyCategory(e) {
     e.preventDefault();
-    console.log(e);
-    console.log(this, 'this');
     const _t = e.target;
     const match = _t.matches('.fa-pen-to-square');
-    console.log(_t);
     if(match) {
       const focusEvent = new Event('focus');
       const categoryElement = _t.closest('.buttonsContainer').previousSibling;
@@ -215,7 +196,6 @@ function FormCard(props) {
       _t.style.display = 'none';
       _t.nextSibling.style.display = 'inline-block';
       if(categoryName) {
-        console.log(categoryElement);
         const textInput = document.createElement('textarea');
         textInput.classList.add('form-control');
         textInput.value = categoryName;
@@ -239,7 +219,6 @@ function FormCard(props) {
             categoryStatus.style.color = 'green';
             setCategoryMessage('Category has been deleted successfully!');
             getLists('category').then((list) => {
-              console.log(list);
               props.setCategoryData(list);
             });
           } else {
@@ -253,7 +232,7 @@ function FormCard(props) {
   }
   
   return (
-    <form className="modal" id="add-options-modal" data-option="create" onSubmit={handleSubmit}>
+    <form className="modal" id="add-options-modal" data-type="link" data-option="create" onSubmit={handleSubmit}>
       <div className="modal-background"></div>
       <div className="modal-card">
         <header className="modal-card-head">
@@ -280,7 +259,7 @@ function FormCard(props) {
               <div className="control has-icons-right">
                 <input
                   name="url"
-                  className="input is-success"
+                  className="input"
                   type="text"
                   placeholder="Text input"
                   onChange={handleChange}
@@ -394,11 +373,8 @@ function FormCard(props) {
             <div className="control">
               <button type="submit" className="button is-link">Submit</button>
             </div>
-            <div className="control" style={{display: 'none'}}>
-              <button type="submit" className="button is-link">Modify</button>
-            </div>
             <div className="control">
-              <button className="button is-link is-light cancel">Cancel</button>
+              <button type="button" className="button is-link is-light cancel">Cancel</button>
             </div>
           </div>
         </footer>
