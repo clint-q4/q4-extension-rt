@@ -88,6 +88,7 @@ export const loadPreviewEditPage = () => {
   }
 }
 
+// Not using this...
 export const slideToggle = (e) => {
   e.preventDefault();
   const el = e.target;
@@ -116,7 +117,19 @@ export const slideToggle = (e) => {
   }
 }
 
-export const groupLinks = (categoryData, linksData, setfilterdData) => {
+export const linkToggle = (e) => {
+  let _t = e.target;
+  let match = _t.matches('.link-list-toggle');
+  match ? _t : _t = _t.closest('.link-list-toggle');
+  console.log(_t);
+  if(_t.matches('.link-list-toggle')) {
+    const id = _t.dataset.toggle;
+    _t.classList.toggle('active');
+    (document.getElementById(`${id}`) as HTMLInputElement).slideToggle(300);
+  }
+}
+
+export const groupLinks = (categoryData, linksData, setfilterdData, name) => {
   if(categoryData.length && linksData.length) {
     const groupedData = linksData.reduce((groups, item) => {
       const group = (groups[categoryData.find(c => c.id === item.category).name] || []);
@@ -124,11 +137,12 @@ export const groupLinks = (categoryData, linksData, setfilterdData) => {
       groups[categoryData.find(c => c.id === item.category).name] = group;
       return groups;
     }, {});
-    localStorage.setItem('groupedData', JSON.stringify(groupedData));
-    const groupedLocalData = JSON.parse(localStorage.getItem('groupedData'));
+    localStorage.setItem(name, JSON.stringify(groupedData));
+    const groupedLocalData = JSON.parse(localStorage.getItem(name));
+    console.log(groupedLocalData, 'group');
     setfilterdData(groupedLocalData);
   } else {
-    const groupedLocalData = JSON.parse(localStorage.getItem('groupedData'));
+    const groupedLocalData = JSON.parse(localStorage.getItem(name));
     if(groupedLocalData) {
       setfilterdData(groupedLocalData);
     }

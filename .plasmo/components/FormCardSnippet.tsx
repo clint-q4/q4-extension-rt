@@ -12,7 +12,7 @@ function FormCardSnippet(props) {
 
   const [formCategoryDetails, setformCategoryDetails] =
     useState(formCategoryData)
-  const { name, snippet, notes, url, category } = props.formSnippetDetails
+  const { name, snippet, url, category } = props.formSnippetDetails
   const { mainCategory } = formCategoryDetails
   // const [categoryData, setCategoryData] = useState(props.categoryData);
   const [errorMessage, setErrorMessage] = useState("")
@@ -42,7 +42,9 @@ function FormCardSnippet(props) {
   function handleChange(e) {
     const req = ['name', 'snippet', 'category']
     if(req.includes(e.target.name)) {
+      console.log('req inc');
       if (!e.target.value.length) {
+        console.log('firing no lengtn');
         setErrorMessage(
           `${
             e.target.name.charAt(0).toUpperCase() + e.target.name.slice(1)
@@ -53,6 +55,8 @@ function FormCardSnippet(props) {
         setErrorMessage("")
       }
     }
+    console.log('props', props.formSnippetDetails);
+    setErrorMessage("");
     if (!errorMessage) {
       props.setFormSnippetDetails({
         ...props.formSnippetDetails,
@@ -65,26 +69,24 @@ function FormCardSnippet(props) {
     e.preventDefault();
     const errorStatus = (document.querySelector('#add-snippet-modal .error-text') as HTMLInputElement);
     const option = (document.querySelector('#add-snippet-modal') as HTMLInputElement).dataset.option;
+    const clear = {
+      name: "",
+      snippet: "",
+      url: "",
+      category: "",
+    }
     if(option === 'create') {
       if(name.length && snippet.length && category.length) {
         console.log(props.formSnippetDetails);
         setErrorMessage('Sending...');  
-        // document.getElementById('add-options-modal')[0].reset();
-        // if(!validateUrl(url)) {
-        //   errorStatus.style.color = 'red';
-        //   setErrorMessage('Please enter a valid URL!');
-        //   return;
-        // }
+        if(url.length && !validateUrl(url)) {
+          errorStatus.style.color = 'red';
+          setErrorMessage('Please enter a valid URL!');
+          return;
+        }
         const record = await createSnippets(props.formSnippetDetails);
   
         if(record) {
-          const clear = {
-            name: "",
-            snippet: "",
-            notes: "",
-            url: "",
-            category: "",
-          }
           const temp = `${record.name} has been addded to the list!`;
           errorStatus.style.color = 'green';
           setErrorMessage(temp);
@@ -114,13 +116,6 @@ function FormCardSnippet(props) {
 
   
         if(record) {
-          const clear = {
-            name: "",
-            snippet: "",
-            notes: "",
-            url: "",
-            category: "",
-          }
           const temp = `${record.name} has been updated!`;
           errorStatus.style.color = 'green';
           setErrorMessage(temp);
@@ -142,17 +137,26 @@ function FormCardSnippet(props) {
 
   async function categoryHandleSubmit(e) {
     e.preventDefault();
-    const input = (document.getElementById('category-input') as HTMLInputElement).value;
+    console.log('clikced');
+    const input = (document.getElementById('category-snip-input') as HTMLInputElement).value;
+    const toggleState = (document.querySelector('.switch-checkbox.snippet') as HTMLInputElement).checked;
+    const linked = toggleState ? 'both' : 'snippet';
+
     if(input) {
       const data = {
-        name: input
+        name: input,
+        linked: linked
       }
       const record = await createCategory(data);
+      console.log(record)
       if(record) {
-        const categoryStatus = (document.querySelector('.modal-card-foot .add-category-status') as HTMLInputElement);
+        const categoryStatus = (document.querySelector('#add-snippet-modal .modal-card-foot .add-category-status') as HTMLInputElement);
         const temp = `${record.name} has been added to the category list!`;
         categoryStatus.style.color = 'green';
         setAddCategoryMessage(temp);
+        setTimeout(function() {
+          document.querySelector('#add-snip-category-modal').classList.remove('is-active');
+        }, 500)
         const result = await getLists('category');
         if(result) {
           props.setCategoryData(result);
@@ -182,7 +186,7 @@ function FormCardSnippet(props) {
         textInput.classList.add('categoryName');
         textInput.textContent = updatedCategory;
         categoryInput.replaceWith(textInput);
-        const categoryStatus = (document.querySelector('.modal-card-foot .category-status') as HTMLInputElement);
+        const categoryStatus = (document.querySelector('#add-snippet-modal .modal-card-foot .add-category-status') as HTMLInputElement);
         response.then((res) => {
           if(res.name) {
             const temp = `Catgeory has been updated to ${res.name}`;
@@ -224,7 +228,7 @@ function FormCardSnippet(props) {
     const match = _t.matches('.fa-trash-can');
     if(match) {
       const categoryID = _t.closest('.control').dataset.value;
-      const categoryStatus = (document.querySelector('.modal-card-foot .category-status') as HTMLInputElement);
+      const categoryStatus = (document.querySelector('#add-snippet-modal .modal-card-foot .category-status') as HTMLInputElement);
       if(categoryID) {
         const response = deleteCategory(categoryID);
         response.then((res) => {
@@ -239,7 +243,12 @@ function FormCardSnippet(props) {
             setCategoryMessage(temp);
             categoryStatus.style.color = 'red';
           }
-        })
+        }).catch((err) => {
+          console.log(err);
+          categoryStatus.style.color = 'red';
+          const temp = 'Make sure that the category does not have any links!';
+          setCategoryMessage(temp);
+        });
       }
     }
   }
@@ -290,24 +299,7 @@ function FormCardSnippet(props) {
             </div>
 
             <div className="field">
-              <label className="label">Notes</label>
-              <div className="control has-icons-right">
-                <input
-                  name="notes"
-                  className="input"
-                  type="text"
-                  placeholder="Text input"
-                  onChange={handleChange}
-                  value={notes}
-                />
-                <span className="icon is-small is-right">
-                  <i className="fas fa-check"></i>
-                </span>
-              </div>
-            </div>
-
-            <div className="field">
-              <label className="label">Ref Link</label>
+              <label className="label">Related URL</label>
               <div className="control has-icons-right">
                 <input
                   name="url"
@@ -329,7 +321,7 @@ function FormCardSnippet(props) {
                 <div className="select" id="category-select-container">
                   <select title="category" name="category" onChange={handleChange} value={category}>
                     <option value="default">Select a category</option>
-                    {props.categoryData.map((item) => (
+                    {props.categoryData.filter((cat) => cat.linked === 'snippet' || cat.linked === 'both').map((item) => (
                       <option key={item.id} value={item.id}>{item.name}</option>
                     ))}
                   </select>
@@ -337,15 +329,15 @@ function FormCardSnippet(props) {
                 <div className="ml-3">
                   <button
                     className="button is-link js-modal-trigger mr-2"
-                    data-target="add-category-modal">
+                    data-target="add-snip-category-modal">
                     +
                   </button>
                   <button
                     className="button is-danger js-modal-trigger"
-                    data-target="remove-category-modal">
+                    data-target="remove-snip-category-modal">
                     x
                   </button>
-                  <div className="modal" id="add-category-modal">
+                  <div className="modal" id="add-snip-category-modal">
                     <div className="modal-background"></div>
                     <div className="modal-card">
                       <header className="modal-card-head">
@@ -357,11 +349,20 @@ function FormCardSnippet(props) {
                           <label className="label">Category Name</label>
                           <div className="control">
                             <input
-                              id="category-input"
+                              id="category-snip-input"
                               className="input"
                               type="text"
                               placeholder="Text input"
                             />
+                          </div>
+                        </div>
+                        <div className="field">
+                          <label className="label">Linked to both?</label>
+                          <div className="control">
+                            <label className="switch">
+                              <input title="switch" className="switch-checkbox snippet" type="checkbox" />
+                              <span className="slider round"></span>
+                            </label>
                           </div>
                         </div>
                       </section>
@@ -381,7 +382,7 @@ function FormCardSnippet(props) {
                       </footer>
                     </div>
                   </div>
-                  <div className="modal" id="remove-category-modal">
+                  <div className="modal" id="remove-snip-category-modal">
                     <div className="modal-background"></div>
                     <div className="modal-card">
                       <header className="modal-card-head">
@@ -391,7 +392,7 @@ function FormCardSnippet(props) {
                       <section className="modal-card-body">
                         <div className="field">
                           <h3 className="label">Categories</h3>
-                          {props.categoryData.map((item) => (
+                          {props.categoryData.filter((cat) => cat.linked === 'snippet' || cat.linked === 'both').map((item) => (
                               <div className="control" key={item.id} data-value={item.id}>
                                 <span className="categoryName">{item.name}</span>
                                 <div className="buttons-container">

@@ -1,9 +1,13 @@
+import { link } from "fs";
 import {useEffect, useState} from "react";
-import { slideToggle } from "../../content";
+import '../utils/slideToggle';
+import { linkToggle } from "../../content";
 import {deleteLinks, getSingleRecord} from '../utils/apiCalls';
-import CodeEditor from "./CodeEditor";
+import MainEditor from "./CodeEditor";
+// import CodeMirrorEditor from "./CodeMirrorEditor";
 
 function RenderSnippets(props) {
+  const isNotEmpty = Object.keys(props.filterdData).length;
   
   async function triggerUpdateLinks(e) {
     e.preventDefault();
@@ -77,38 +81,73 @@ function RenderSnippets(props) {
     document.execCommand('copy');
   }
 
+  function snipToggle(e) {
+    let _t = e.target;
+    let match = _t.matches('.snip-toggle-icon');
+    match ? _t : _t = _t.parentNode;
+    if(_t.matches('.snip-toggle-icon')) {
+      const id = _t.dataset.id;
+      _t.classList.toggle('active');
+      (document.querySelector(`.snippet-container[data-id="${id}"]`) as HTMLInputElement).slideToggle(300);
+    }
+  }
 
   return (
+    isNotEmpty ? 
+    <>
+    <h3 className="content-title">
+      <span>
+      Snippets
+      </span>
+      <span className="toggle-all-container">
+          <button id="toggle-all-snippets" title="toggle">
+            Toggle all
+            <i className="fa-solid fa-arrow-down-wide-short"></i>
+          </button>
+        </span>
+    </h3>
     <div className="popup-buttons-container quick-snippets">
       {Object.keys(props.filterdData).map((key, index) => (
         <div key={index} className="popup-buttons-container-sublist" data-title="quick-links">
-          <button onClick={slideToggle} data-toggle={`toggle-id-snip-${index}`} className="link-list-toggle">
+          <button onClick={linkToggle} data-toggle={`toggle-id-snip-${index}`} className="link-list-toggle">
             {key}
-            <span><i className="fa-solid fa-circle-chevron-down"></i></span>
+            <span><i className="fa-regular fa-circle-down"></i></span>
           </button>
-          <div className="links-container" id={`toggle-id-snip-${index}`}>
+          <div className="links-container" id={`toggle-id-snip-${index}`} style={{display: 'none'}}>
             <div className="p-4 links-container-inner">
               {props.filterdData[key].map((item, ind) => (
                 <div key={ind} className="snippets is-3">
-                  <div className="snippet-title">
-                    <p data-id={item.id}>{item.name}</p>
-                    <span className="copy-icon" data-id={item.id} onClick={copySnippet}>
-                     <i className="fa-solid fa-copy"></i>
-                    </span>
+                  <div className="snippet-title-buttons">
+                    <div className="snippet-title">
+                      <p data-id={item.id}>{item.name}</p>
+                    </div>
+                    <div className="snippet-buttons">
+                      <span className="copy-icon" data-id={item.id} onClick={copySnippet}>
+                      <i className="fa-solid fa-copy"></i>
+                      </span>
+                      {item.url ? 
+                        <a title="link" className="link-icon" href={item.url} target="_blank">
+                          <i className="fa-solid fa-up-right-from-square"></i>
+                        </a> :
+                        ''}
+                      <span className="snip-toggle-icon" data-id={item.id} onClick={snipToggle}>
+                        <i className="fa-solid fa-angles-down"></i>
+                      </span>
+                      <span onClick={triggerUpdateLinks} className="update-links-container">
+                      <i className="fa-solid fa-pen-to-square"></i>
+                      </span>
+                      <span onClick={triggerDeleteLinks} className="delete-links-container">
+                        <i className="fa-regular fa-trash-can"></i>
+                      </span>
+                    </div>
                   </div>
-                  <div className="snippet-container" data-id={item.id}>
-                  <CodeEditor
+                  <div className="snippet-container" data-id={item.id} style={{display: 'none'}}>
+                  <MainEditor
                     // formSnippetDetails={item}
                     // setFormSnippetDetails={props.setFormSnippetDetails}
                     snippet={item.snippet}
-                    ></CodeEditor>
+                    ></MainEditor>
                   </div>
-                  {/* <span onClick={triggerUpdateLinks} className="update-links-container">
-                    <i className="fa-solid fa-pen-to-square"></i>
-                  </span>
-                  <span onClick={triggerDeleteLinks} className="delete-links-container">
-                    <i className="fa-regular fa-trash-can"></i>
-                  </span> */}
                 </div>
               ))}
             </div>
@@ -116,6 +155,7 @@ function RenderSnippets(props) {
         </div>
       ))}
     </div>
+    </> : ''
   )
 }
 

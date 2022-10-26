@@ -1,40 +1,37 @@
 import { useState, useEffect } from "react"
-import Editor from 'react-simple-code-editor';
-import { highlight, languages } from 'prismjs/components/prism-core';
-import 'prismjs/components/prism-clike';
-import 'prismjs/components/prism-javascript';
-// import 'prismjs/themes/prism.css'; //Example style, you can use another
+import CodeEditor from '@uiw/react-textarea-code-editor';
 
-function CodeEditor(props) {
+function MainEditor(props) {
   const [code, setCode] = useState(props.snippet);
 
   useEffect(() => {
-    // if(props.formSnippetDetails && props.formSnippetDetails) {
-    //   props.setFormSnippetDetails({
-    //     ...props.formSnippetDetails,
-    //     snippet: code
-    //   })
-    //     console.log(props.formSnippetDetails);
-    // }
+    if(props.formSnippetDetails && props.formSnippetDetails) {
+      props.setFormSnippetDetails({
+        ...props.formSnippetDetails,
+        snippet: code
+      })
+        console.log(props.formSnippetDetails);
+    }
   }, [code]);
 
   return (
-    <Editor
+    <CodeEditor
+      autoFocus
       value={code}
-      onValueChange={code => setCode(code)}
-      // onValueChange={code => setCode(code)}
-      highlight={code => highlight(code, languages.js)}
-      textareaId={"code-snip-editor"}
+      // onChange={code => setCode(code)}
+      onChange={(evn) => setCode(evn.target.value)}
       padding={10}
+      language="js"
       placeholder={"Please enter code snippet here..."}
       style={{
         fontFamily: '"Inter", "Fira Mono", monospace',
-        fontSize: '1rem',
-        minHeight: '80px'
+        fontSize: '1.4rem',
+        minHeight: '80px',
+        backgroundColor: "black",
+        borderRadius: "10px"
       }}
-      textareaClassName={"input codeInput"}
     />
   );
 }
 
-export default CodeEditor
+export default MainEditor

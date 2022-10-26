@@ -48,8 +48,8 @@ function IndexPopup() {
   }, [])
 
   useEffect(() => {
-    groupLinks(categoryData, linksData, setfilterdData);
-    groupLinks(categoryData, snippetData, setfilterdSnippetData);
+    groupLinks(categoryData, linksData, setfilterdData, 'links');
+    groupLinks(categoryData, snippetData, setfilterdSnippetData, 'snippets');
     console.log(filterdSnippetData);
   }, [categoryData, linksData])
 
@@ -57,24 +57,27 @@ function IndexPopup() {
     <div className="root-container">
       <div className="popup-container">
         <div className="popup-title-container">
-          <h2 className="is-size-4 has-text-weight-bold is-flex-grow-1">Site: <span id="q4-site-verification"></span></h2>
+          <h2 className="has-text-weight-bold is-flex-grow-1">ClipMe.<span id="q4-site-verification"></span></h2>
           <LoginForm></LoginForm>
         </div>
-        <Search></Search>
+        <Search 
+         filterdData={filterdData}
+         setfilterdData={setfilterdData}
+         filterdSnippetData={filterdSnippetData}
+         setfilterdSnippetData={setfilterdSnippetData}
+         ></Search>
         <CMSLinks></CMSLinks>
         <div className="content-container">
-          <h3>Links</h3>
           <RenderLinks 
             filterdData={filterdData}
             setErrorMessage={setErrorMessage}
             ></RenderLinks>
         </div>
         <div className="content-container">
-          <h3>Snippets</h3>
-        <RenderSnippets
-          filterdData={filterdSnippetData}
-          setErrorMessage={setErrorMessage}
-          ></RenderSnippets>
+          <RenderSnippets
+            filterdData={filterdSnippetData}
+            setErrorMessage={setErrorMessage}
+            ></RenderSnippets>
         </div>
         <div className="error-message-container">
           <p>{errorMessage}</p>

@@ -66,12 +66,12 @@ function LoginForm() {
     <>
       <div className="user-button-container is-flex is-align-items-center">
       {Auth.loggedIn() ? (
-            <button onClick={Auth.logout} className="button has-text-weight-bold is-primary logout-button" type="button">
+            <button onClick={Auth.logout} className="button logout-button" type="button">
               <i className="fa-solid fa-user-bounty-hunter"></i>
               Logout
             </button>
         ) : (
-            <button type="button" className="button has-text-weight-bold is-primary js-modal-trigger" data-target="modal-login-form">
+            <button type="button" className="button js-modal-trigger" data-target="modal-login-form">
               <i className="fa-solid fa-user-bounty-hunter"></i>
               Login
             </button>

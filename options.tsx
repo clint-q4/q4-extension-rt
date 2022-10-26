@@ -15,6 +15,9 @@ import PocketBase from 'pocketbase';
 import LoginForm from "~.plasmo/components/LoginForm";
 import Auth from '~.plasmo/utils/auth';
 
+import './.plasmo/utils/slideToggle';
+import { linkToggle } from "./content";
+
 // getList();
 // form validation
 const formLinkData = {
@@ -63,86 +66,65 @@ function IndexOptions() {
 
   function initDeleteOrModify(e) {
     e.preventDefault();
-    const _t = e.target;
+    let _t = e.target;
+    const match = _t.matches('.button');
+    _t = match ? _t : _t.parentElement;
     const id = _t.getAttribute('id') || '';
-    const container = document.querySelector('.popup-buttons-container') as HTMLElement;
-    const toggleLinks = (document.querySelectorAll('.link-list-toggle') as NodeListOf<Element>);
-    switch (id) {
-      case 'update-links':
-        if(!container.classList.contains('update-links-init')) {
-          container.classList.add('update-links-init')
-          _t.textContent = 'Updating...';
-          for(let link of toggleLinks) {
-            const id  = (link as HTMLInputElement).dataset.toggle;
-            const linkTarget = document.getElementById(id);
-            if(link.classList.contains('active') && 
-              linkTarget.classList.contains('active')) {
-                link.classList.remove('active')
-                linkTarget.classList.remove('active');
-                (link as HTMLInputElement).click();
-              } else {
-                (link as HTMLInputElement).click();
-              }
-          }
-        } else {
-          container.classList.remove('update-links-init')
-          _t.textContent = 'Update';
-          for(let link of toggleLinks) {
-            const id  = (link as HTMLInputElement).dataset.toggle;
-            const linkTarget = document.getElementById(id);
-            if(!link.classList.contains('active') && 
-            !linkTarget.classList.contains('active')) {
+    const containerAll = document.querySelectorAll('.popup-buttons-container') as NodeListOf<Element>;
+    for (let container of containerAll) {
+      const pr = container.classList.contains('quick-links') ? '.quick-links' : '.quick-snippets';
+            const toggleLinks = (document.querySelectorAll(`${pr} .link-list-toggle`) as NodeListOf<Element>);
+      switch (id) {
+        case 'update-links':
+          if(!container.classList.contains('update-links-init')) {
+            container.classList.add('update-links-init')
+            // _t.textContent = 'Updating...';
+            _t.classList.add('active');
+            for(let link of toggleLinks) {
+              const id  = (link as HTMLInputElement).dataset.toggle;
+              console.log(link.classList)
               link.classList.add('active');
-              (linkTarget as HTMLInputElement).classList.add('active');
-              linkTarget.style.height = 'auto';
-              const height = linkTarget.clientHeight + 'px';
-              linkTarget.style.height = '0px';
-              setTimeout(function () {
-                linkTarget.style.height = height;
-              }, 0);
+              const linkTarget = document.getElementById(id);
+              (linkTarget as HTMLInputElement).slideDown(300);
             }
-            (link as HTMLInputElement).click();
-          }
-        }
-      break;
-      
-      case 'delete-links':
-        if(!container.classList.contains('delete-links-init')) {
-          container.classList.add('delete-links-init')
-          _t.textContent = 'Deleting...';
-          for(let link of toggleLinks) {
-            const id  = (link as HTMLInputElement).dataset.toggle;
-            const linkTarget = document.getElementById(id);
-            if(link.classList.contains('active') && 
-              linkTarget.classList.contains('active')) {
-                link.classList.remove('active')
-                linkTarget.classList.remove('active');
-                (link as HTMLInputElement).click();
-              } else {
-                (link as HTMLInputElement).click();
-              }
-          }
-        } else {
-          container.classList.remove('delete-links-init')
-          _t.textContent = 'Delete';
-          for(let link of toggleLinks) {
-            const id  = (link as HTMLInputElement).dataset.toggle;
-            const linkTarget = document.getElementById(id);
-            if(!link.classList.contains('active') && 
-            !linkTarget.classList.contains('active')) {
-              link.classList.add('active');
-              (linkTarget as HTMLInputElement).classList.add('active');
-              linkTarget.style.height = 'auto';
-              const height = linkTarget.clientHeight + 'px';
-              linkTarget.style.height = '0px';
-              setTimeout(function () {
-                linkTarget.style.height = height;
-              }, 0);
+          } else {
+            container.classList.remove('update-links-init')
+            // _t.textContent = 'Update';
+            _t.classList.remove('active');
+            for(let link of toggleLinks) {
+              const id  = (link as HTMLInputElement).dataset.toggle;
+              const linkTarget = document.getElementById(id);
+              link.classList.remove('active');
+              (linkTarget as HTMLInputElement).slideUp(300);
             }
-            (link as HTMLInputElement).click();
           }
-        }
         break;
+        
+        case 'delete-links':
+          if(!container.classList.contains('delete-links-init')) {
+            container.classList.add('delete-links-init')
+            // _t.textContent = 'Deleting...';
+            _t.classList.add('active');
+            for(let link of toggleLinks) {
+              const id  = (link as HTMLInputElement).dataset.toggle;
+              console.log(link.classList)
+              link.classList.add('active');
+              const linkTarget = document.getElementById(id);
+              (linkTarget as HTMLInputElement).slideDown(300);
+            }
+          } else {
+            container.classList.remove('delete-links-init')
+            // _t.textContent = 'Delete';
+            _t.classList.remove('active');
+            for(let link of toggleLinks) {
+              const id  = (link as HTMLInputElement).dataset.toggle;
+              const linkTarget = document.getElementById(id);
+              link.classList.remove('active');
+              (linkTarget as HTMLInputElement).slideUp(300);
+            }
+          }
+          break;
+      }
     }
   }
 
@@ -150,21 +132,23 @@ function IndexOptions() {
     <div className="options-container p-6">
     <section className="header-section is-flex is-justify-content-space-between p-4 has-background-success-light border-radius-10">
       <div className="is-flex-grow-1">
-        <h2 className="title is-size-1">Options</h2>
+        <h2 className="title is-size-1">ClipMe.</h2>
       </div>
       {Auth.loggedIn() ? (
           <div className="is-flex is-align-items-center">
-            <button className="button has-text-weight-bold is-primary js-modal-trigger mr-3" id="add-snippet-button" data-target="add-snippet-modal">
+            <button className="button js-modal-trigger mr-3" id="add-snippet-button" data-target="add-snippet-modal">
               Add Snippets
             </button>
-            <button className="button has-text-weight-bold is-primary js-modal-trigger mr-3" id="add-options-button" data-target="add-options-modal">
+            <button className="button js-modal-trigger mr-3" id="add-options-button" data-target="add-options-modal">
               Add Links
             </button>
-            <button onClick={initDeleteOrModify} id="update-links" title="update links" className="button has-text-weight-bold is-success mr-3">
-              Update
+            <button onClick={initDeleteOrModify} id="update-links" title="update links" className="button is-success mr-3">
+              {/* Update */}
+              <i className="fa-solid fa-pen-to-square"></i>
             </button>
-            <button onClick={initDeleteOrModify} id="delete-links" title="delete links" className="button has-text-weight-bold is-danger mr-5">
-              Delete
+            <button onClick={initDeleteOrModify} id="delete-links" title="delete links" className="button is-danger mr-5">
+              {/* Delete */}
+              <i className="fa-regular fa-trash-can"></i>
             </button>
           </div>
         ) : (
@@ -176,7 +160,6 @@ function IndexOptions() {
     </section>
     <div className="my-5 options-content">
         <div className="content-container">
-        <h3>Links</h3>
         <RenderLinks 
           filterdData={filterdData}
           setErrorMessage={setErrorMessage}
@@ -186,7 +169,6 @@ function IndexOptions() {
           ></RenderLinks>
         </div>
         <div className="content-container">
-          <h3>Snippets</h3>
           <RenderSnippets
           filterdData={filterdSnippetData}
           setErrorMessage={setErrorMessage}

@@ -1,9 +1,11 @@
 import {useEffect, useState} from "react";
-import { slideToggle } from "../../content";
 import {deleteLinks, getSingleRecord} from '../utils/apiCalls'
+import '../utils/slideToggle';
+import { linkToggle } from "../../content";
 
 function RenderLinks(props) {
-  
+  const isNotEmpty = Object.keys(props.filterdData).length;
+
   async function triggerUpdateLinks(e) {
     e.preventDefault();
     console.log(e);
@@ -63,33 +65,49 @@ function RenderLinks(props) {
 
   }
 
+  console.log(props.filterdData);
+
 
   return (
-    <div className="popup-buttons-container quick-links">
-      {Object.keys(props.filterdData).map((key, index) => (
-        <div key={index} className="popup-buttons-container-sublist" data-title="quick-links">
-          <button onClick={slideToggle} data-toggle={`toggle-id-${index}`} className="link-list-toggle">
-            {key}
-            <span><i className="fa-solid fa-circle-chevron-down"></i></span>
+    isNotEmpty ? 
+    <>
+      <h3 className="content-title">
+        <span>
+        Links
+        </span>
+        <span className="toggle-all-container">
+          <button id="toggle-all-links" title="toggle">
+            Toggle all
+            <i className="fa-solid fa-arrow-down-wide-short"></i>
           </button>
-          <div className="links-container" id={`toggle-id-${index}`}>
-            <div className="p-4 links-container-inner">
-              {props.filterdData[key].map((item, ind) => (
-                <div key={ind} className="links is-3">
-                  <a className="button is-link" target="_blank" data-id={item.id} href={item.url}>{item.name}</a>
-                  <span onClick={triggerUpdateLinks} className="update-links-container">
-                    <i className="fa-solid fa-pen-to-square"></i>
-                  </span>
-                  <span onClick={triggerDeleteLinks} className="delete-links-container">
-                    <i className="fa-regular fa-trash-can"></i>
-                  </span>
-                </div>
-              ))}
+        </span>
+      </h3>
+      <div className="popup-buttons-container quick-links">
+        {Object.keys(props.filterdData).map((key, index) => (
+          <div key={index} className="popup-buttons-container-sublist" data-title="quick-links">
+            <button onClick={linkToggle} data-toggle={`toggle-id-${index}`} className="link-list-toggle">
+              {key}
+              <span><i className="fa-regular fa-circle-down"></i></span>
+            </button>
+            <div className="links-container" id={`toggle-id-${index}`} style={{display: 'none'}}>
+              <div className="links-container-inner">
+                {props.filterdData[key].map((item, ind) => (
+                  <div key={ind} className="links is-3">
+                    <a className="button is-link" target="_blank" data-id={item.id} href={item.url}>{item.name}</a>
+                    <span onClick={triggerUpdateLinks} className="update-links-container">
+                      <i className="fa-solid fa-pen-to-square"></i>
+                    </span>
+                    <span onClick={triggerDeleteLinks} className="delete-links-container">
+                      <i className="fa-regular fa-trash-can"></i>
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
+    </> : ''
   )
 }
 

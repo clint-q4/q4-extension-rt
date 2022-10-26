@@ -130,9 +130,13 @@ function FormCard(props) {
   async function categoryHandleSubmit(e) {
     e.preventDefault();
     const input = (document.getElementById('category-input') as HTMLInputElement).value;
+    const toggleState = (document.querySelector('.switch-checkbox.snippet') as HTMLInputElement).checked;
+    const linked = toggleState ? 'both' : 'link';
+
     if(input) {
       const data = {
-        name: input
+        name: input,
+        linked: linked
       }
       const record = await createCategory(data);
       if(record) {
@@ -155,7 +159,7 @@ function FormCard(props) {
     const _t = e.target;
     const match = _t.matches('.fa-floppy-disk');
     if(match) {
-      const categoryInput = _t.closest('.buttonsContainer').previousSibling;
+      const categoryInput = _t.closest('.buttons-container').previousSibling;
       const categoryID = _t.closest('.control').dataset.value;
       const updatedCategory = categoryInput.value;
       _t.style.display = 'none';
@@ -188,10 +192,11 @@ function FormCard(props) {
   function modifyCategory(e) {
     e.preventDefault();
     const _t = e.target;
+    console.log(_t)
     const match = _t.matches('.fa-pen-to-square');
     if(match) {
       const focusEvent = new Event('focus');
-      const categoryElement = _t.closest('.buttonsContainer').previousSibling;
+      const categoryElement = _t.closest('.buttons-container').previousSibling;
       const categoryName = categoryElement.textContent;
       _t.style.display = 'none';
       _t.nextSibling.style.display = 'inline-block';
@@ -214,7 +219,9 @@ function FormCard(props) {
       const categoryStatus = (document.querySelector('.modal-card-foot .category-status') as HTMLInputElement);
       if(categoryID) {
         const response = deleteCategory(categoryID);
+        console.log(response);
         response.then((res) => {
+          console.log(res);
           if(res) {
             categoryStatus.style.color = 'green';
             setCategoryMessage('Category has been deleted successfully!');
@@ -226,7 +233,12 @@ function FormCard(props) {
             setCategoryMessage(temp);
             categoryStatus.style.color = 'red';
           }
-        })
+        }).catch((err) => {
+          console.log(err);
+          categoryStatus.style.color = 'red';
+          const temp = 'Make sure that the category does not have any links!';
+          setCategoryMessage(temp);
+        });
       }
     }
   }
@@ -277,7 +289,7 @@ function FormCard(props) {
                 <div className="select" id="category-select-container">
                   <select title="category" name="category" onChange={handleChange} value={category}>
                     <option value="default">Select a category</option>
-                    {props.categoryData.map((item) => (
+                    {props.categoryData.filter((cat) => cat.linked === 'link' || cat.linked === 'both').map((item) => (
                       <option key={item.id} value={item.id}>{item.name}</option>
                     ))}
                   </select>
@@ -312,6 +324,15 @@ function FormCard(props) {
                             />
                           </div>
                         </div>
+                        <div className="field">
+                          <label className="label">Linked to both?</label>
+                          <div className="control">
+                            <label className="switch">
+                              <input title="switch" className="switch-checkbox link" type="checkbox" />
+                              <span className="slider round"></span>
+                            </label>
+                          </div>
+                        </div>
                       </section>
                       <footer className="modal-card-foot is-flex-direction-column	is-flex is-align-items-flex-start">
                         <div className="category-status-container">
@@ -319,7 +340,7 @@ function FormCard(props) {
                         </div>
                         <div className="buttons-container">
                           <button
-                            className="button is-success"
+                            className="button"
                             id="category-submit-btn"
                             onClick={categoryHandleSubmit}>
                             Add Category
@@ -339,7 +360,7 @@ function FormCard(props) {
                       <section className="modal-card-body">
                         <div className="field">
                           <h3 className="label">Categories</h3>
-                          {props.categoryData.map((item) => (
+                          {props.categoryData.filter((cat) => cat.linked === 'link' || cat.linked === 'both').map((item) => (
                               <div className="control" key={item.id} data-value={item.id}>
                                 <span className="categoryName">{item.name}</span>
                                 <div className="buttons-container">
