@@ -16,9 +16,9 @@ export const checkSite = (async () => {
     console.log(result);
     for (let r of result) {
       if(r.result) {
-        document.querySelector('#q4-site-verification').textContent = 'Q4 Site';
+        document.querySelector('#q4-site-verification').innerHTML = '<span class="q4icon">Q4</span>';
       } else {
-        document.querySelector('#q4-site-verification').textContent = 'Not a Q4 Site';
+        document.querySelector('#q4-site-verification').innerHTML = '';
         document.querySelector<HTMLElement>('.popup-buttons-container').style.display = 'none';
       }
     }
@@ -145,6 +145,39 @@ export const groupLinks = (categoryData, linksData, setfilterdData, name) => {
     const groupedLocalData = JSON.parse(localStorage.getItem(name));
     if(groupedLocalData) {
       setfilterdData(groupedLocalData);
+    }
+  }
+}
+
+export const toggleAll = (e, parentEl) => {
+  e.preventDefault();
+  let _t = e.target;
+  let match = _t.matches('.button');
+  _t = match ? _t : _t.parentElement;
+  match = _t.matches('.button');
+  if(match) {
+    const toggleID = _t.getAttribute('id');
+    const container = document.querySelector(`${parentEl}`)
+    const toggleLinks = (document.querySelectorAll(`${parentEl} .link-list-toggle`) as NodeListOf<Element>);
+    if(!container.classList.contains(toggleID)) {
+      container.classList.add(toggleID)
+      _t.classList.add('active');
+      for(let link of toggleLinks) {
+        const id  = (link as HTMLInputElement).dataset.toggle;
+        console.log(link.classList)
+        link.classList.add('active');
+        const linkTarget = document.getElementById(id);
+        (linkTarget as HTMLInputElement).slideDown(300);
+      }
+    } else {
+      container.classList.remove(toggleID)
+      _t.classList.remove('active');
+      for(let link of toggleLinks) {
+        const id  = (link as HTMLInputElement).dataset.toggle;
+        const linkTarget = document.getElementById(id);
+        link.classList.remove('active');
+        (linkTarget as HTMLInputElement).slideUp(300);
+      }
     }
   }
 }

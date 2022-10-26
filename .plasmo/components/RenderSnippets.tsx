@@ -1,7 +1,7 @@
 import { link } from "fs";
 import {useEffect, useState} from "react";
 import '../utils/slideToggle';
-import { linkToggle } from "../../content";
+import { linkToggle, toggleAll } from "../../content";
 import {deleteLinks, getSingleRecord} from '../utils/apiCalls';
 import MainEditor from "./CodeEditor";
 // import CodeMirrorEditor from "./CodeMirrorEditor";
@@ -100,7 +100,7 @@ function RenderSnippets(props) {
       Snippets
       </span>
       <span className="toggle-all-container">
-          <button id="toggle-all-snippets" title="toggle">
+          <button onClick={(e) => toggleAll(e, '.quick-snippets')} id="toggle-all-snippets" className="button" title="toggle">
             Toggle all
             <i className="fa-solid fa-arrow-down-wide-short"></i>
           </button>

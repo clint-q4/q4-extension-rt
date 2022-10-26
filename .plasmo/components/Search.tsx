@@ -51,14 +51,11 @@ export default function Search(props) {
   // console.log(props);
   return (
     <div className="field is-grouped popup-search-container">
-      <p className="control is-expanded">
+      <div className="control is-expanded">
+        <label htmlFor="popup-search" className="hidden">Seach</label>
         <input id="popup-search" className="input" type="text" placeholder="Seach away..." onKeyUp={searchAll} />
-      </p>
-      <p className="control">
-        <a className="button is-info">
-          Search
-        </a>
-      </p>
+        <span className="popup-search-icon"><i className="fa-solid fa-magnifying-glass"></i></span>
+      </div>
     </div>
   )
 }

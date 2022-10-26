@@ -1,3 +1,17 @@
+:root {
+  --background: #FFF;
+  --text-primary: #222;
+  --text-secondary: #0F5CA3;
+  --box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+}
+
+[data-theme='dark'] {
+  --background: #222;
+  --text-primary: #FFF;
+  --text-secondary: #0F5CA3;
+  --box-shadow: rgba(255, 255, 255, 0.05) 0px 6px 24px 0px, rgba(255, 255, 255, 0.08) 0px 0px 0px 1px;
+}
+
 html {
   font-size: 10px;
 }
@@ -18,19 +32,26 @@ html::-webkit-scrollbar,body::-webkit-scrollbar-thumb {
   border: 3px solid orange;  /* creates padding around scroll thumb */
 }
 
-a, p, input, label, select, textarea, button, .button  {
+.root-container {
+  transition: background-color .3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  background-color: var(--background);
+  color: var(--text-primary);
+}
+
+a, p, input, label, select, textarea, button, .input, .button {
   font-size: 1.4rem;
   line-height: 1.5;
   font-weight: 400;
 }
 
-h2 {
-  font-size: 2.5rem;
+.control.has-icons-left .icon, .control.has-icons-right .icon {
+  font-size: 1.5rem;
+  height: 3.5rem;
+  width: 3.5rem;
 }
 
-.button {
-  border: none;
-  box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+h2 {
+  font-size: 2.5rem;
 }
 
 @keyframes successBGPalette {
@@ -68,7 +89,6 @@ h2 {
 .root-container{
   text-rendering: optimizelegibility;
   -webkit-font-smoothing: antialiased;
-  transform: translate3d(0px, 0px, 0px);
   overflow-x: hidden;
   overflow-y: scroll;
   max-height: 500px;
@@ -80,13 +100,26 @@ h2 {
 .options-container {
   min-width: 400px;
   min-height: 500px;
-  background-color: $light-color;
+  background-color: transparent;
   padding-bottom: 20px;
   .popup-title-container {
     padding: 15px;
     border-bottom: 1px solid grey;
     display: flex;
     justify-content: space-between;
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      .theme-toggle-button {
+        cursor: pointer;
+        background: none;
+        border: none;
+        font-size: 2.5rem;
+        line-height: 2.5rem;
+        // display: flex;
+        // align-items: center;
+      }
+    }
   }
   .content-container {
     .content-title {
@@ -103,7 +136,6 @@ h2 {
           border-radius: 3px;
           border: none;
           background-color: $light-color;
-          box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
           font-size: 1.5rem;
           padding: 5px 10px;
           cursor: pointer;
@@ -111,6 +143,15 @@ h2 {
             font-size: 1.5rem;
             font-weight: 900;
             margin-left: 8px;
+            &:before {
+              display: inline-block;
+              transition: all 0.35s ease-in-out;
+            }
+          }
+          &.active {
+            i::before {
+              transform: rotate(180deg);
+            }
           }
         }
       }
@@ -131,6 +172,27 @@ h2 {
 //   display: none;
 // }
 
+.popup-container {
+  .popup-title-container {
+    h2 {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    #q4-site-verification {
+      font-size: 1.5rem;
+      font-weight: 500;
+      .q4icon {
+        background-color: $brand-blue;
+        border-radius: 50%;
+        color: $light-color;
+        box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+        padding: 5px;
+        margin: 0 10px;
+      }
+    }
+  }
+}
 
 .links-container a {
   width: 100%;
@@ -160,12 +222,12 @@ h2 {
       transition: transform 0.25s ease 0s, box-shadow 0.25s ease 0s;
       overflow: hidden;
       // box-shadow: rgba(0, 80, 240, 0.1) 0px 2px 4px;
-      background:$light-color;
+      background: var(--background);
       padding: 5px;
       text-decoration: none;
       height: auto;
-      color: $body-color;
-      font-weight: 500;
+      color: var(--text-primary);
+      font-weight: 600;
       font-size: 1.3rem;
       line-height: 1.5;
       margin-bottom: 0;
@@ -173,10 +235,10 @@ h2 {
       -webkit-line-clamp: 1;
       -webkit-box-orient: vertical;  
       overflow: hidden;
-      &:hover {
-        transform: translate(0px, -1px);
-        box-shadow: rgba($brand-blue, 0.05) 0px 6px 24px 0px, rgba($brand-blue, 0.08) 0px 0px 0px 1px;
-      }
+      // &:hover {
+      //   transform: translate(0px, -1px);
+      //   box-shadow: rgba($brand-blue, 0.05) 0px 6px 24px 0px, rgba($brand-blue, 0.08) 0px 0px 0px 1px;
+      // }
     }
     &-inner {
       width: 100%;
@@ -190,21 +252,21 @@ h2 {
     width: 100%;
     background: transparent;
     border: none;
-    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+    box-shadow: var(--box-shadow);
     font-size: 1.6rem;
     border-radius: 0;
     cursor: pointer;
     text-align: left;
     font-weight: 400;
     padding: 5px 10px;
-    color: $body-color;
+    color: var(--text-primary);
     display: flex;
     justify-content: space-between;
     span {
       i:before {
         color: $brand-blue;
         // opacity: 0.7;
-        box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;        border-radius: 50%;
+        box-shadow: var(--box-shadow);        border-radius: 50%;
         display: inline-block;
         transition: all 0.35s ease-in-out;
       }
@@ -270,7 +332,7 @@ h2 {
     justify-content: center;
     border-radius: 4px;
     cursor: pointer;
-    background-color: $body-color;
+    background-color: var(--text-primary);
     padding: 5px 8px;
     display: flex;
     transition: all 0.35s ease-in-out;
@@ -311,23 +373,26 @@ h2 {
       flex-direction: column;
       background-color: $light-color;
       padding: 5px;
-      box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+      box-shadow: var(--box-shadow);
       border-radius: 3px;
       .snippet-title-buttons {
         font-size: 1.4rem;
         display: flex;
         align-items: center;
         gap: 5px;
-        padding: 5px 0;
+        padding: 5px;
         .snippet-title {
           flex-grow: 1;
           // max-width: 250px;
-          font-weight: 500;
+          font-weight: 600;
           display: -webkit-box;
           -webkit-line-clamp: 2;
           -webkit-box-orient: vertical;  
           overflow: hidden;
           line-height: 1.2;
+          p {
+            font-weight: 600;
+          }
         }
         .copy-icon {
           cursor: pointer;
@@ -370,6 +435,17 @@ h2 {
     line-height: 1.6;
     font-weight: 500;
   }
+  #popup-search {
+    position: relative;
+    padding-right: 40px;
+  }
+  .popup-search-icon {
+    position: absolute;
+    top: 7px;
+    right: 15px;
+    font-size: 1.5rem;
+    opacity: 0.5;
+  } 
 }
 
 #modal-login-form {
@@ -516,3 +592,68 @@ input:checked + .slider:before {
   background: black;
   color: $light-color;
 }
+
+.hidden {
+  display: none;
+}
+
+.button {
+  border: none;
+  box-shadow: var(--box-shadow);
+  &:hover, &:focus, &:active {
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  }
+}
+
+.theme-toggle-switch-container {
+  position: relative;
+  margin: 0 10px;
+  .content {
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    text-align: center;
+    width: 70%;
+    transform: translateY(5%);
+  }
+  .circle {
+    position: relative;
+    border-radius: 100%;
+    width: 3rem;
+    height: 3rem;
+    background: linear-gradient(40deg, #FF0080,#FF8C00 70%);
+    margin: auto;
+  }
+  .crescent {
+    position: absolute;
+    border-radius: 100%;
+    right: 0;
+    width: 2rem;
+    height: 2rem;
+    background: white;
+    transform: scale(0);
+    transform-origin: top right;
+    transition: transform .6s cubic-bezier(0.645, 0.045, 0.355, 1);
+  }
+  /* -------- Switch Styles ------------*/
+  [type="checkbox"] {
+    // display: none;
+    position: absolute;
+    width: 3rem;
+    height: 3rem;
+    color: transparent;
+    border: none;
+    opacity: 0;
+    z-index: 100;
+    cursor: pointer;
+  }
+  /* Circle */
+  [type="checkbox"]:checked + .circle .crescent{
+    transform: scale(1);
+    background: #26242E;
+  }
+  [type="checkbox"]:checked + .circle{
+    background: linear-gradient(40deg, #8983F7, #A3DAFB 70%);
+  }
+}
+

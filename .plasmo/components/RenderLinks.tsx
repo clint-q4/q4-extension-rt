@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
-import {deleteLinks, getSingleRecord} from '../utils/apiCalls'
+import {deleteLinks, getSingleRecord} from '../utils/apiCalls';
 import '../utils/slideToggle';
-import { linkToggle } from "../../content";
+import { linkToggle, toggleAll } from "../../content";
 
 function RenderLinks(props) {
   const isNotEmpty = Object.keys(props.filterdData).length;
@@ -76,7 +76,7 @@ function RenderLinks(props) {
         Links
         </span>
         <span className="toggle-all-container">
-          <button id="toggle-all-links" title="toggle">
+          <button onClick={(e) => toggleAll(e, '.quick-links')} id="toggle-all-links" className="button" title="toggle">
             Toggle all
             <i className="fa-solid fa-arrow-down-wide-short"></i>
           </button>

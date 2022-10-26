@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
 import { useStorage } from "@plasmohq/storage";
+import useLocalStorage from 'use-local-storage';
 
 // CSS 
 import './css/styles.css';
@@ -17,10 +18,7 @@ import RenderLinks from "~.plasmo/components/RenderLinks";
 import RenderSnippets from "~.plasmo/components/RenderSnippets";
 import LoginForm from "~.plasmo/components/LoginForm";
 import Search from "~.plasmo/components/Search";
-
-
-// const apiCategoryData = fetchData(apiLinks.categoriesLink);
-// const apiLinksData = fetchData(apiLinks.categoriesLink);
+import ThemeToggleSwitch from "~.plasmo/components/ThemeToggleSwitch";
 
 
 function IndexPopup() {
@@ -30,12 +28,20 @@ function IndexPopup() {
   const [filterdData, setfilterdData] = useState<{[key: string]: any}>({});
   const [filterdSnippetData, setfilterdSnippetData] = useState<{[key: string]: any}>({});
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const defaultDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const [theme, setTheme] = useLocalStorage('theme', defaultDark ? 'dark' : 'light');
 
   useEffect(() => {
     // Run modal helper funtions
     modalFunctions();
     checkSite();
     loginEditButtons();
+
+    const el = (document.getElementById('theme-toggle-switch') as HTMLInputElement);
+    console.log(el);
+    if(theme === 'dark') {
+      el.checked = true;
+    }
 
     (async function fetchData() {
       const apiCategoryData = await getLists('category');
@@ -53,11 +59,22 @@ function IndexPopup() {
     console.log(filterdSnippetData);
   }, [categoryData, linksData])
 
+
   return (
-    <div className="root-container">
+    <div className="root-container" data-theme={theme}>
       <div className="popup-container">
         <div className="popup-title-container">
           <h2 className="has-text-weight-bold is-flex-grow-1">ClipMe.<span id="q4-site-verification"></span></h2>
+          <span className="theme-toggle">
+            {/* <button onClick={switchMode} title="Toggle Theme" className="theme-toggle-button">
+              <i className="fa-regular fa-circle"></i>
+              <i className="fa-solid fa-circle" style={{display: 'none'}}></i>
+            </button> */}
+            <ThemeToggleSwitch
+              theme={theme}
+              setTheme={setTheme}
+            ></ThemeToggleSwitch>
+          </span>
           <LoginForm></LoginForm>
         </div>
         <Search 
