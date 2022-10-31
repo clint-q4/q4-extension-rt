@@ -1,21 +1,22 @@
 import {useEffect, useState} from "react";
 import {deleteLinks, getSingleRecord} from '../utils/apiCalls';
 import '../utils/slideToggle';
-import { linkToggle, toggleAll } from "../../content";
+import { linkToggle, toggleAll, toggleOptions } from "../../content";
 
 function RenderLinks(props) {
   const isNotEmpty = Object.keys(props.filterdData).length;
 
-  async function triggerUpdateLinks(e) {
+  async function triggerUpdateLinks(e, dataId) {
     e.preventDefault();
     console.log(e);
-    let _t = e.target;
-    const match = _t.matches('.update-links-container');
-    match ? _t : _t = _t.parentNode;
-    const catEl = _t.previousSibling;
-    console.log(catEl);
-    if(catEl.matches('a.button')) {
-      const linkID = catEl.dataset.id;
+    const _t = e.target;
+    // let _t = e.target;
+    const match = _t.matches('[title="edit-button"]') || _t.matches('span') || _t.matches('i');
+    // match ? _t : _t = _t.parentNode;
+    // const catEl = _t.previousSibling.previousSibling;
+    // console.log(catEl);
+    if(match) {
+      const linkID = dataId;
       props.setLinkID(linkID);
       const linkData = await getSingleRecord('websites', linkID)
       if(linkData) {
@@ -38,16 +39,16 @@ function RenderLinks(props) {
     }
   }
 
-  async function triggerDeleteLinks(e) {
+  async function triggerDeleteLinks(e, dataId) {
     e.preventDefault();
     e.stopPropagation() 
     let _t = e.target;
-    const match = _t.matches('.delete-links-container');
-    match ? _t : _t = _t.parentNode;
-    const catEl = _t.previousSibling.previousSibling;
-    console.log(_t);
-    if(catEl.matches('a.button')) {
-      const linkID = catEl.dataset.id;
+    const match = _t.matches('[title="delete-button"]') || _t.matches('span') || _t.matches('i');
+    // match ? _t : _t = _t.parentNode;
+    // const catEl = _t.previousSibling.previousSibling;
+    // console.log(_t);
+    if(match) {
+      const linkID = dataId;
       console.log(linkID);
       const response = await deleteLinks(linkID)
       if(response) {
@@ -64,6 +65,8 @@ function RenderLinks(props) {
     }
 
   }
+
+  
 
   console.log(props.filterdData);
 
@@ -93,11 +96,42 @@ function RenderLinks(props) {
               <div className="links-container-inner">
                 {props.filterdData[key].map((item, ind) => (
                   <div key={ind} className="links is-3">
-                    <a className="button is-link" target="_blank" data-id={item.id} href={item.url}>{item.name}</a>
-                    <span onClick={triggerUpdateLinks} className="update-links-container">
+                    <a className="button is-link" target="_blank" data-id={item.id} href={item.url}>{item.name}
+                    <span className="options-trigger" onClick={toggleOptions}>
+                      <i className="fa-regular fa-square-minus"></i>
+                      </span>
+                    </a>
+                    <div className="button-options-container" style={{display: "none"}}>
+                      <div className="button-options update-links-container">
+                        {/* <h3 className="options-title">
+                          Option
+                        </h3> */}
+                        <button 
+                          className="button" 
+                          title="edit-button"
+                          onClick={(e) => triggerUpdateLinks(e, item.id)}
+                          >
+                          Edit
+                            <span className="icon-container update-links-container">
+                              <i className="fa-solid fa-pen-to-square"></i>
+                            </span>
+                        </button>
+                        <button 
+                          className="button" 
+                          title="delete-button"
+                          onClick={(e) => triggerDeleteLinks(e, item.id)}
+                          >
+                          Delete
+                            <span className="icon-container update-links-container">
+                              <i className="fa-solid fa-trash-can"></i>
+                            </span>
+                        </button>
+                      </div>
+                    </div>
+                    <span onClick={(e) => triggerUpdateLinks(e, item.id)} className="update-links-container">
                       <i className="fa-solid fa-pen-to-square"></i>
                     </span>
-                    <span onClick={triggerDeleteLinks} className="delete-links-container">
+                    <span onClick={(e) => triggerDeleteLinks(e, item.id)} className="delete-links-container">
                       <i className="fa-regular fa-trash-can"></i>
                     </span>
                   </div>

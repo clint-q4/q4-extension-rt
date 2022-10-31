@@ -181,3 +181,24 @@ export const toggleAll = (e, parentEl) => {
     }
   }
 }
+
+
+export const toggleOptions = (e) => {
+  e.preventDefault();
+  console.log('check', e.target);
+  let _t = e.target;
+  let match = _t.matches('.options-trigger');
+  _t = match ? _t : _t.parentElement;
+  match = _t.matches('.options-trigger');
+  if(match) {
+    const toggleCont = _t.parentElement.nextSibling;
+    if(!toggleCont.classList.contains('active')) {
+      toggleCont.classList.add('active');
+      (toggleCont as HTMLInputElement).slideDown(300);
+    } else {
+      toggleCont.classList.remove('active');
+      (toggleCont as HTMLInputElement).slideUp(300);
+    }
+    console.log(toggleCont);
+  }
+}

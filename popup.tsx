@@ -19,6 +19,23 @@ import RenderSnippets from "~.plasmo/components/RenderSnippets";
 import LoginForm from "~.plasmo/components/LoginForm";
 import Search from "~.plasmo/components/Search";
 import ThemeToggleSwitch from "~.plasmo/components/ThemeToggleSwitch";
+import FormCard from "~.plasmo/components/FormCard";
+import FormCardSnippet from "~.plasmo/components/FormCardSnippet";
+
+// form validation
+const formLinkData = {
+  name: "",
+  url: "",
+  category: ""
+}
+
+const formSnippetData = {
+  name: "",
+  snippet: "",
+  notes: "",
+  url: "",
+  category: ""
+}
 
 
 function IndexPopup() {
@@ -30,6 +47,9 @@ function IndexPopup() {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const defaultDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
   const [theme, setTheme] = useLocalStorage('theme', defaultDark ? 'dark' : 'light');
+  const [linkID, setLinkID] = useState<string>('');
+  const [formLinkDetails, setFormLinkDetails] = useState(formLinkData);
+  const [formSnippetDetails, setFormSnippetDetails] = useState(formSnippetData);
 
   useEffect(() => {
     // Run modal helper funtions
@@ -88,6 +108,9 @@ function IndexPopup() {
           <RenderLinks 
             filterdData={filterdData}
             setErrorMessage={setErrorMessage}
+            formLinkDetails={formLinkDetails}
+            setFormLinkDetails={setFormLinkDetails}
+            setLinkID={setLinkID}
             ></RenderLinks>
         </div>
         <div className="content-container">
@@ -96,6 +119,20 @@ function IndexPopup() {
             setErrorMessage={setErrorMessage}
             ></RenderSnippets>
         </div>
+        <FormCard 
+        categoryData={categoryData}
+        setCategoryData={setCategoryData}
+        formLinkDetails={formLinkDetails}
+        setFormLinkDetails={setFormLinkDetails}
+        linkID={linkID}
+        ></FormCard>
+      <FormCardSnippet
+        categoryData={categoryData}
+        setCategoryData={setCategoryData}
+        formSnippetDetails={formSnippetDetails}
+        setFormSnippetDetails={setFormSnippetDetails}
+        linkID={linkID}
+        ></FormCardSnippet>
         <div className="error-message-container">
           <p>{errorMessage}</p>
         </div>

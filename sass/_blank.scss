@@ -1,14 +1,18 @@
 :root {
   --background: #FFF;
+  --greybg: #f5f5f5;
   --text-primary: #222;
   --text-secondary: #0F5CA3;
+  --text-grey: #c2c2c2;
   --box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
 }
 
 [data-theme='dark'] {
   --background: #222;
+  --greybg: rgb(46, 46, 46);
   --text-primary: #FFF;
   --text-secondary: #0F5CA3;
+  --text-grey: #c2c2c2;
   --box-shadow: rgba(255, 255, 255, 0.05) 0px 6px 24px 0px, rgba(255, 255, 255, 0.08) 0px 0px 0px 1px;
 }
 
@@ -38,10 +42,16 @@ html::-webkit-scrollbar,body::-webkit-scrollbar-thumb {
   color: var(--text-primary);
 }
 
-a, p, input, label, select, textarea, button, .input, .button {
+a, p, input, label, select, textarea, button, .label, .input, .button, .select select {
   font-size: 1.4rem;
   line-height: 1.5;
   font-weight: 400;
+  color: var(--text-primary);
+}
+
+.input, .textarea, .select select {
+  background: var(--background);
+  color: var(--text-primary);
 }
 
 .control.has-icons-left .icon, .control.has-icons-right .icon {
@@ -135,10 +145,11 @@ h2 {
         button {
           border-radius: 3px;
           border: none;
-          background-color: $light-color;
+          background-color: var(--background);
           font-size: 1.5rem;
           padding: 5px 10px;
           cursor: pointer;
+          color: var(--text-primary);
           i {
             font-size: 1.5rem;
             font-weight: 900;
@@ -159,6 +170,9 @@ h2 {
   }
   .options-content {
     display: flex;
+  }
+  .modal-card {
+    padding: 20px;
   }
 }
 
@@ -223,13 +237,13 @@ h2 {
       overflow: hidden;
       // box-shadow: rgba(0, 80, 240, 0.1) 0px 2px 4px;
       background: var(--background);
-      padding: 5px;
+      padding: 4px 20px;
       text-decoration: none;
       height: auto;
       color: var(--text-primary);
       font-weight: 600;
       font-size: 1.3rem;
-      line-height: 1.5;
+      line-height: 2.5rem;
       margin-bottom: 0;
       display: -webkit-box;
       -webkit-line-clamp: 1;
@@ -246,6 +260,17 @@ h2 {
       gap: 10px;
       padding: 10px 5px;
       flex-wrap: wrap;
+    }
+    .icon-container {
+      display: flex;
+      color: var(--text-primary);
+      width: 15px;
+      height: 15px;
+      i {
+        &::before {
+          padding-left: 10px;
+        }
+      }
     }
   }
   .link-list-toggle {
@@ -264,7 +289,7 @@ h2 {
     justify-content: space-between;
     span {
       i:before {
-        color: $brand-blue;
+        color: var(--text-grey);
         // opacity: 0.7;
         box-shadow: var(--box-shadow);        border-radius: 50%;
         display: inline-block;
@@ -290,6 +315,9 @@ h2 {
       span.update-links-container {
         display: flex;
         background-color: #48c78e;
+      }
+      span.icon-container {
+        background-color: transparent;
       }
     }
   }
@@ -438,6 +466,10 @@ h2 {
   #popup-search {
     position: relative;
     padding-right: 40px;
+    color: var(--text-grey);
+    &::placeholder {
+      color: var(--text-grey);
+    }
   }
   .popup-search-icon {
     position: absolute;
@@ -472,7 +504,8 @@ h2 {
         button {
           width: 35px;
           height: 35px;
-          color: $light-color;
+          color: var(--text-primary);
+          background: var(--background);
           border: none;
           transition: all 0.35s ease-in-out;
           cursor: pointer;
@@ -511,6 +544,61 @@ h2 {
   &:focus {
     border-color: #0f5ca3 !important;
   }
+}
+
+.links-container {
+  .links {
+    position: relative;
+  }
+  .options-trigger {
+    width: 12px;
+    height: 12px;
+    position: absolute;
+    right: 5px;
+    cursor: pointer;
+    top: 5px;
+  }
+  .button-options-container {
+        display: flex;
+        position: absolute;
+        top: 30px;
+        right: 10px;
+        background: var(--background);
+        padding: 10px;
+        flex-direction: column;
+        box-shadow: var(--box-shadow);
+        border-radius: 5px;
+        z-index: 10;
+  }
+  .button-options {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    .button {
+      flex-direction: row;
+      padding: 5px 10px;
+      display: flex;
+      min-width: 100px;
+      justify-content: space-between;
+    }
+  }
+}
+
+.button.is-link {
+  position: relative;
+
+}
+
+.control {
+  .is-danger.modal-close.cancel{
+    position: fixed;
+    font-size: 0px;
+  
+  }
+}
+
+.button {
+  white-space: pre-wrap;
 }
 
 .number {
@@ -589,8 +677,8 @@ input:checked + .slider:before {
 }
 
 .w-tc-editor-preview pre {
-  background: black;
-  color: $light-color;
+  background: var(--background);
+  color: var(--text-primary);
 }
 
 .hidden {
@@ -599,6 +687,8 @@ input:checked + .slider:before {
 
 .button {
   border: none;
+  color: var(--text-primary);
+  background: var(--background);
   box-shadow: var(--box-shadow);
   &:hover, &:focus, &:active {
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
@@ -657,3 +747,19 @@ input:checked + .slider:before {
   }
 }
 
+.highlight {
+  background-color: yellow;
+}
+
+.modal-card-head, .modal-card-foot {
+  background: var(--greybg);
+  .modal-card-title {
+    color: var(--text-primary);
+  }
+}
+.modal-card-body {
+  background: var(--background);
+  .modal-card-title {
+    color: var(--text-primary);
+  }
+}

@@ -249,7 +249,7 @@ function FormCard(props) {
       <div className="modal-card">
         <header className="modal-card-head">
           <p className="modal-card-title">Add New Link</p>
-          <button className="delete" aria-label="close"></button>
+          <button className="button is-danger modal-close cancel" type="button" aria-label="close"></button>
         </header>
         <section className="modal-card-body">
           <section className="form">
@@ -310,7 +310,7 @@ function FormCard(props) {
                     <div className="modal-card">
                       <header className="modal-card-head">
                         <p className="modal-card-title">Add Category</p>
-                        <button className="delete" aria-label="close"></button>
+                        <button className="delete button cancel" aria-label="close"></button>
                       </header>
                       <section className="modal-card-body">
                         <div className="field">
@@ -345,7 +345,7 @@ function FormCard(props) {
                             onClick={categoryHandleSubmit}>
                             Add Category
                           </button>
-                          <button className="button cancel">Cancel</button>
+                          <button className="button">Cancel</button>
                         </div>
                       </footer>
                     </div>

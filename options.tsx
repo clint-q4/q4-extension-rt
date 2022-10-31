@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react"
-import FormCard from "~.plasmo/components/FormCard"
-import FormCardSnippet from "~.plasmo/components/FormCardSnippet"
+import FormCard from "~.plasmo/components/FormCard";
+import FormCardSnippet from "~.plasmo/components/FormCardSnippet";
 import RenderLinks from "~.plasmo/components/RenderLinks";
 import RenderSnippets from "~.plasmo/components/RenderSnippets";
 import {modalFunctions} from "~.plasmo/utils/modal";
 import apiLinks from "~.plasmo/utils/apiLinks";
 import {getLists} from "~.plasmo/utils/apiCalls";
-import {groupLinks} from "./content";
+import {groupLinks, linkToggle} from "./content";
 import fetchData from "~.plasmo/utils/fetchData";
 import './css/styles.css';
 import axios from 'axios';
@@ -14,9 +14,9 @@ import getSuspender from "~.plasmo/utils/getSuspender";
 import PocketBase from 'pocketbase';
 import LoginForm from "~.plasmo/components/LoginForm";
 import Auth from '~.plasmo/utils/auth';
+import './node_modules/@fortawesome/fontawesome-free/css/all.min.css';
 
 import './.plasmo/utils/slideToggle';
-import { linkToggle } from "./content";
 
 // getList();
 // form validation
@@ -59,14 +59,15 @@ function IndexOptions() {
   }, [])
 
   useEffect(() => {
-    groupLinks(categoryData, linksData, setfilterdData);
-    groupLinks(categoryData, snippetData, setfilterdSnippetData);
+    groupLinks(categoryData, linksData, setfilterdData, 'links');
+    groupLinks(categoryData, snippetData, setfilterdSnippetData, 'snippets');
     console.log(filterdSnippetData);
   }, [categoryData, linksData])
 
   function initDeleteOrModify(e) {
     e.preventDefault();
     let _t = e.target;
+    console.log(_t);
     const match = _t.matches('.button');
     _t = match ? _t : _t.parentElement;
     const id = _t.getAttribute('id') || '';
