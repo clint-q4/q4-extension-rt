@@ -193,10 +193,12 @@ export const toggleOptions = (e) => {
   if(match) {
     const toggleCont = _t.parentElement.nextSibling;
     if(!toggleCont.classList.contains('active')) {
+      _t.classList.toggle('active');
       toggleCont.classList.add('active');
       (toggleCont as HTMLInputElement).slideDown(300);
     } else {
       toggleCont.classList.remove('active');
+      _t.classList.toggle('active');
       (toggleCont as HTMLInputElement).slideUp(300);
     }
     console.log(toggleCont);

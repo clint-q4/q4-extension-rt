@@ -133,10 +133,10 @@ function RenderSnippets(props) {
                       <span className="snip-toggle-icon" data-id={item.id} onClick={snipToggle}>
                         <i className="fa-solid fa-angles-down"></i>
                       </span>
-                      <span onClick={triggerUpdateLinks} className="update-links-container">
+                      <span onClick={triggerUpdateLinks} className="options-buttons update-links-container">
                       <i className="fa-solid fa-pen-to-square"></i>
                       </span>
-                      <span onClick={triggerDeleteLinks} className="delete-links-container">
+                      <span onClick={triggerDeleteLinks} className="options-buttons delete-links-container">
                         <i className="fa-regular fa-trash-can"></i>
                       </span>
                     </div>

@@ -137,17 +137,17 @@ function IndexOptions() {
       </div>
       {Auth.loggedIn() ? (
           <div className="is-flex is-align-items-center">
-            <button className="button js-modal-trigger mr-3" id="add-snippet-button" data-target="add-snippet-modal">
-              Add Snippets
+            <button title="add-snippet" className="button js-modal-trigger mr-3" id="add-snippet-button" data-target="add-snippet-modal">
+              <i className="fa-solid fa-code"></i>
             </button>
-            <button className="button js-modal-trigger mr-3" id="add-options-button" data-target="add-options-modal">
-              Add Links
+            <button title="add-link" className="button js-modal-trigger mr-3" id="add-options-button" data-target="add-options-modal">
+              <i className="fa-solid fa-link"></i>
             </button>
-            <button onClick={initDeleteOrModify} id="update-links" title="update links" className="button is-success mr-3">
+            <button onClick={initDeleteOrModify} id="update-links" title="update links" className="button mr-3">
               {/* Update */}
               <i className="fa-solid fa-pen-to-square"></i>
             </button>
-            <button onClick={initDeleteOrModify} id="delete-links" title="delete links" className="button is-danger mr-5">
+            <button onClick={initDeleteOrModify} id="delete-links" title="delete links" className="button mr-5">
               {/* Delete */}
               <i className="fa-regular fa-trash-can"></i>
             </button>

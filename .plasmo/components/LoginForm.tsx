@@ -110,10 +110,10 @@ function LoginForm() {
             </div>
             <div className="field is-grouped">
               <div className="control">
-                <button type="submit" className="button is-success">Login</button>
+                <button type="submit" className="button">Login</button>
               </div>
               <div className="control">
-                <button className="button is-link is-danger modal-close cancel">Cancel</button>
+                <button className="button is-link modal-close cancel">Cancel</button>
               </div>
             </div>
           </div>

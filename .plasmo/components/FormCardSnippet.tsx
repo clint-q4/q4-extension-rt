@@ -281,7 +281,6 @@ function FormCardSnippet(props) {
               <div className="control has-icons-right">
                 {/* <textarea
                   name="snippet"
-                  className="input is-success"
                   placeholder="Text input"
                   onChange={handleChange}
                   value={snippet}
@@ -328,12 +327,14 @@ function FormCardSnippet(props) {
                 </div>
                 <div className="ml-3">
                   <button
+                    type="button"
                     className="button is-link js-modal-trigger mr-2"
                     data-target="add-snip-category-modal">
                     +
                   </button>
                   <button
-                    className="button is-danger js-modal-trigger"
+                    type="button"
+                    className="button js-modal-trigger"
                     data-target="remove-snip-category-modal">
                     x
                   </button>
@@ -342,7 +343,7 @@ function FormCardSnippet(props) {
                     <div className="modal-card">
                       <header className="modal-card-head">
                         <p className="modal-card-title">Add Category</p>
-                        <button className="delete" aria-label="close"></button>
+                        <button type="button" className="delete" aria-label="close"></button>
                       </header>
                       <section className="modal-card-body">
                         <div className="field">
@@ -372,12 +373,13 @@ function FormCardSnippet(props) {
                         </div>
                         <div className="buttons-container">
                           <button
-                            className="button is-success"
+                            type="button"
+                            className="button"
                             id="category-submit-btn"
                             onClick={categoryHandleSubmit}>
                             Add Category
                           </button>
-                          <button className="button cancel">Cancel</button>
+                          <button type="button" className="button cancel">Cancel</button>
                         </div>
                       </footer>
                     </div>
@@ -387,7 +389,7 @@ function FormCardSnippet(props) {
                     <div className="modal-card">
                       <header className="modal-card-head">
                         <p className="modal-card-title">Remove/Update Category</p>
-                        <button className="delete" aria-label="close"></button>
+                        <button type="button" className="cancel has-background-danger" aria-label="close"></button>
                       </header>
                       <section className="modal-card-body">
                         <div className="field">
@@ -427,7 +429,7 @@ function FormCardSnippet(props) {
               <button type="submit" className="button is-link">Submit</button>
             </div>
             <div className="control">
-              <button type="button" className="button is-link is-light cancel">Cancel</button>
+              <button type="button" className="button is-link cancel">Cancel</button>
             </div>
           </div>
         </footer>

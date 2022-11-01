@@ -249,7 +249,7 @@ function FormCard(props) {
       <div className="modal-card">
         <header className="modal-card-head">
           <p className="modal-card-title">Add New Link</p>
-          <button className="button is-danger modal-close cancel" type="button" aria-label="close"></button>
+          <button className="button modal-close cancel is-danger" type="button" aria-label="close"></button>
         </header>
         <section className="modal-card-body">
           <section className="form">
@@ -296,21 +296,25 @@ function FormCard(props) {
                 </div>
                 <div className="ml-3">
                   <button
+                    type="button"
+                    title="add-category"
                     className="button is-link js-modal-trigger mr-2"
                     data-target="add-category-modal">
-                    +
+                    <i className="fa-solid fa-folder-plus"></i>
                   </button>
                   <button
-                    className="button is-danger js-modal-trigger"
+                    type="button"
+                    title="delete-category"
+                    className="button js-modal-trigger"
                     data-target="remove-category-modal">
-                    x
+                    <i className="fa-solid fa-trash"></i>
                   </button>
                   <div className="modal" id="add-category-modal">
                     <div className="modal-background"></div>
                     <div className="modal-card">
                       <header className="modal-card-head">
                         <p className="modal-card-title">Add Category</p>
-                        <button className="delete button cancel" aria-label="close"></button>
+                        <button type="button" className="delete button modal-close is-danger" aria-label="close"></button>
                       </header>
                       <section className="modal-card-body">
                         <div className="field">
@@ -345,7 +349,7 @@ function FormCard(props) {
                             onClick={categoryHandleSubmit}>
                             Add Category
                           </button>
-                          <button className="button">Cancel</button>
+                          <button type="button" className="button cancel">Cancel</button>
                         </div>
                       </footer>
                     </div>
@@ -355,7 +359,7 @@ function FormCard(props) {
                     <div className="modal-card">
                       <header className="modal-card-head">
                         <p className="modal-card-title">Remove/Update Category</p>
-                        <button className="delete" aria-label="close"></button>
+                        <button type="button" className="button modal-close cancel is-danger" aria-label="close"></button>
                       </header>
                       <section className="modal-card-body">
                         <div className="field">
@@ -364,11 +368,11 @@ function FormCard(props) {
                               <div className="control" key={item.id} data-value={item.id}>
                                 <span className="categoryName">{item.name}</span>
                                 <div className="buttons-container">
-                                    <button id="modify-category" title="modify category" type="button">
+                                    <button id="modify-category" className="button" title="modify category" type="button">
                                       <i onClick={modifyCategory} className="fa-solid fa-pen-to-square"></i>
                                       <i onClick={triggerCategoryUpdate} className="fa-regular fa-floppy-disk" style={{display: 'none'}}></i>
                                     </button>
-                                    <button id="delete-category" title="delete category" type="button">
+                                    <button id="delete-category" className="button" title="delete category" type="button">
                                       <i onClick={triggerDeleteCategory} className="fa-regular fa-trash-can"></i>
                                     </button>
                                 </div>
@@ -395,7 +399,7 @@ function FormCard(props) {
               <button type="submit" className="button is-link">Submit</button>
             </div>
             <div className="control">
-              <button type="button" className="button is-link is-light cancel">Cancel</button>
+              <button type="button" className="button is-link cancel">Cancel</button>
             </div>
           </div>
         </footer>

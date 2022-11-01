@@ -98,7 +98,8 @@ function RenderLinks(props) {
                   <div key={ind} className="links is-3">
                     <a className="button is-link" target="_blank" data-id={item.id} href={item.url}>{item.name}
                     <span className="options-trigger" onClick={toggleOptions}>
-                      <i className="fa-regular fa-square-minus"></i>
+                      <i className="fa-solid fa-bars"></i>
+                      <i className="fa-solid fa-xmark"></i>
                       </span>
                     </a>
                     <div className="button-options-container" style={{display: "none"}}>
@@ -128,10 +129,10 @@ function RenderLinks(props) {
                         </button>
                       </div>
                     </div>
-                    <span onClick={(e) => triggerUpdateLinks(e, item.id)} className="update-links-container">
+                    <span onClick={(e) => triggerUpdateLinks(e, item.id)} className="options-buttons update-links-container">
                       <i className="fa-solid fa-pen-to-square"></i>
                     </span>
-                    <span onClick={(e) => triggerDeleteLinks(e, item.id)} className="delete-links-container">
+                    <span onClick={(e) => triggerDeleteLinks(e, item.id)} className="options-buttons delete-links-container">
                       <i className="fa-regular fa-trash-can"></i>
                     </span>
                   </div>
