@@ -9,8 +9,7 @@ function MainEditor(props) {
       props.setFormSnippetDetails({
         ...props.formSnippetDetails,
         snippet: code
-      })
-        console.log(props.formSnippetDetails);
+      });
     }
   }, [code]);
 

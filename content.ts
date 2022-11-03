@@ -35,6 +35,39 @@ export const checkSite = (async () => {
   }
 });
 
+export const getCurrentTabLink = (async (snip, snipDetails) => {
+  let [currentTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  if(currentTab.title) {
+    chrome.scripting.executeScript({
+      target: { tabId: currentTab.id },
+      world: "MAIN",
+      func: checkLink,
+    },
+    (result) => { 
+      if(result) {
+        for (let r of result) {
+          if(r.result) {
+            snipDetails({
+              ...snip,
+              name: currentTab.title,
+              url: r.result.url
+            })
+          } 
+        } 
+      } else {
+        return 'Sorry! Something went wrong!';
+      }
+    });
+  }
+
+  function checkLink() {
+    const o = {
+      url: document.location.href
+    };
+    return o;
+  }
+});
+
 export const loginEditButtons = () => {
   let loginButton = document.getElementById("q4-site-login-button");
   let previewEditButton = document.getElementById("q4-site-preview-button");
@@ -202,5 +235,70 @@ export const toggleOptions = (e) => {
       (toggleCont as HTMLInputElement).slideUp(300);
     }
     console.log(toggleCont);
+  }
+}
+
+export const initDeleteOrModify = (e) => {
+  e.preventDefault();
+  let _t = e.target;
+  console.log(_t);
+  const match = _t.matches('.button');
+  _t = match ? _t : _t.parentElement;
+  const id = _t.getAttribute('id') || '';
+  const containerAll = document.querySelectorAll('.popup-buttons-container') as NodeListOf<Element>;
+  for (let container of containerAll) {
+    const pr = container.classList.contains('quick-links') ? '.quick-links' : '.quick-snippets';
+          const toggleLinks = (document.querySelectorAll(`${pr} .link-list-toggle`) as NodeListOf<Element>);
+    switch (id) {
+      case 'update-links':
+        if(!container.classList.contains('update-links-init')) {
+          container.classList.add('update-links-init')
+          // _t.textContent = 'Updating...';
+          _t.classList.add('active');
+          for(let link of toggleLinks) {
+            const id  = (link as HTMLInputElement).dataset.toggle;
+            console.log(link.classList)
+            link.classList.add('active');
+            const linkTarget = document.getElementById(id);
+            (linkTarget as HTMLInputElement).slideDown(300);
+          }
+        } else {
+          container.classList.remove('update-links-init')
+          // _t.textContent = 'Update';
+          _t.classList.remove('active');
+          for(let link of toggleLinks) {
+            const id  = (link as HTMLInputElement).dataset.toggle;
+            const linkTarget = document.getElementById(id);
+            link.classList.remove('active');
+            (linkTarget as HTMLInputElement).slideUp(300);
+          }
+        }
+      break;
+      
+      case 'delete-links':
+        if(!container.classList.contains('delete-links-init')) {
+          container.classList.add('delete-links-init')
+          // _t.textContent = 'Deleting...';
+          _t.classList.add('active');
+          for(let link of toggleLinks) {
+            const id  = (link as HTMLInputElement).dataset.toggle;
+            console.log(link.classList)
+            link.classList.add('active');
+            const linkTarget = document.getElementById(id);
+            (linkTarget as HTMLInputElement).slideDown(300);
+          }
+        } else {
+          container.classList.remove('delete-links-init')
+          // _t.textContent = 'Delete';
+          _t.classList.remove('active');
+          for(let link of toggleLinks) {
+            const id  = (link as HTMLInputElement).dataset.toggle;
+            const linkTarget = document.getElementById(id);
+            link.classList.remove('active');
+            (linkTarget as HTMLInputElement).slideUp(300);
+          }
+        }
+        break;
+    }
   }
 }

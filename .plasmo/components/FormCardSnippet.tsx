@@ -12,7 +12,7 @@ function FormCardSnippet(props) {
 
   const [formCategoryDetails, setformCategoryDetails] =
     useState(formCategoryData)
-  const { name, snippet, url, category } = props.formSnippetDetails
+  const formSnippetDetails = props.formSnippetDetails
   const { mainCategory } = formCategoryDetails
   // const [categoryData, setCategoryData] = useState(props.categoryData);
   const [errorMessage, setErrorMessage] = useState("")
@@ -40,26 +40,21 @@ function FormCardSnippet(props) {
   }
 
   function handleChange(e) {
-    const req = ['name', 'snippet', 'category']
-    if(req.includes(e.target.name)) {
-      console.log('req inc');
-      if (!e.target.value.length) {
-        console.log('firing no lengtn');
-        setErrorMessage(
-          `${
-            e.target.name.charAt(0).toUpperCase() + e.target.name.slice(1)
-          } is required.`
-        )
-        document.querySelector<HTMLElement>(".error-text").style.color = "red"
-      } else {
-        setErrorMessage("")
-      }
+    if (!e.target.value.length) {
+      setErrorMessage(
+        `${
+          e.target.name.charAt(0).toUpperCase() + e.target.name.slice(1)
+        } is required.`
+      )
+      document.querySelector<HTMLElement>(".error-text").style.color = "red"
+    } else {
+      setErrorMessage("")
     }
-    console.log('props', props.formSnippetDetails);
-    setErrorMessage("");
+    console.log('fired');
+
     if (!errorMessage) {
       props.setFormSnippetDetails({
-        ...props.formSnippetDetails,
+        ...formSnippetDetails,
         [e.target.name]: e.target.value
       })
     }
@@ -75,11 +70,12 @@ function FormCardSnippet(props) {
       url: "",
       category: "",
     }
+    console.log('form', formSnippetDetails)
     if(option === 'create') {
-      if(name.length && snippet.length && category.length) {
+      if(formSnippetDetails.name.length && formSnippetDetails.snippet.length && formSnippetDetails.category.length) {
         console.log(props.formSnippetDetails);
         setErrorMessage('Sending...');  
-        if(url.length && !validateUrl(url)) {
+        if(formSnippetDetails.url.length && !validateUrl(formSnippetDetails.url)) {
           errorStatus.style.color = 'red';
           setErrorMessage('Please enter a valid URL!');
           return;
@@ -104,10 +100,10 @@ function FormCardSnippet(props) {
         setErrorMessage('One or more fields are empty. Please try again!');
       }
     } else if (option === 'update') {
-      if(name.length && url.length && category.length) {
+      if(formSnippetDetails.name.length && formSnippetDetails.url.length && formSnippetDetails.category.length) {
         setErrorMessage('Sending...');
         // document.getElementById('add-options-modal')[0].reset();
-        if(!validateUrl(url)) {
+        if(!validateUrl(formSnippetDetails.url)) {
           errorStatus.style.color = 'red';
           setErrorMessage('Please enter a valid URL!');
           return;
@@ -259,7 +255,7 @@ function FormCardSnippet(props) {
       <div className="modal-card">
         <header className="modal-card-head">
           <p className="modal-card-title">Add New Snippet</p>
-          <button className="delete" aria-label="close"></button>
+          <button className="button modal-close cancel is-danger" type="button" aria-label="close"></button>
         </header>
         <section className="modal-card-body">
           <section className="form">
@@ -272,7 +268,7 @@ function FormCardSnippet(props) {
                   type="text"
                   placeholder="Text input"
                   onChange={handleChange}
-                  value={name}
+                  value={formSnippetDetails.name}
                 />
               </div>
             </div>
@@ -286,7 +282,7 @@ function FormCardSnippet(props) {
                   value={snippet}
                 /> */}
                 <CodeEditor
-                  formSnippetDetails={props.formSnippetDetails}
+                  formSnippetDetails={formSnippetDetails}
                   setFormSnippetDetails={props.setFormSnippetDetails}
                   snippet={''}
                   ></CodeEditor>
@@ -306,7 +302,7 @@ function FormCardSnippet(props) {
                   type="text"
                   placeholder="Text input"
                   onChange={handleChange}
-                  value={url}
+                  value={formSnippetDetails.url}
                 />
                 <span className="icon is-small is-right">
                   <i className="fas fa-check"></i>
@@ -318,7 +314,7 @@ function FormCardSnippet(props) {
               <label className="label">Category</label>
               <div className="control is-flex">
                 <div className="select" id="category-select-container">
-                  <select title="category" name="category" onChange={handleChange} value={category}>
+                  <select title="category" name="category" onChange={handleChange} value={formSnippetDetails.category}>
                     <option value="default">Select a category</option>
                     {props.categoryData.filter((cat) => cat.linked === 'snippet' || cat.linked === 'both').map((item) => (
                       <option key={item.id} value={item.id}>{item.name}</option>
@@ -327,23 +323,25 @@ function FormCardSnippet(props) {
                 </div>
                 <div className="ml-3">
                   <button
+                    title="create-folder"
                     type="button"
                     className="button is-link js-modal-trigger mr-2"
                     data-target="add-snip-category-modal">
-                    +
+                    <i className="fa-solid fa-folder-plus"></i>
                   </button>
                   <button
+                    title="delete-folder"
                     type="button"
                     className="button js-modal-trigger"
                     data-target="remove-snip-category-modal">
-                    x
+                    <i className="fa-solid fa-trash"></i>
                   </button>
                   <div className="modal" id="add-snip-category-modal">
                     <div className="modal-background"></div>
                     <div className="modal-card">
                       <header className="modal-card-head">
                         <p className="modal-card-title">Add Category</p>
-                        <button type="button" className="delete" aria-label="close"></button>
+                        <button type="button" className="delete button modal-close is-danger" aria-label="close"></button>
                       </header>
                       <section className="modal-card-body">
                         <div className="field">
@@ -389,7 +387,7 @@ function FormCardSnippet(props) {
                     <div className="modal-card">
                       <header className="modal-card-head">
                         <p className="modal-card-title">Remove/Update Category</p>
-                        <button type="button" className="cancel has-background-danger" aria-label="close"></button>
+                        <button type="button" className="button modal-close cancel is-danger" aria-label="close"></button>
                       </header>
                       <section className="modal-card-body">
                         <div className="field">

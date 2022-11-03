@@ -6,7 +6,7 @@ import RenderSnippets from "~.plasmo/components/RenderSnippets";
 import {modalFunctions} from "~.plasmo/utils/modal";
 import apiLinks from "~.plasmo/utils/apiLinks";
 import {getLists} from "~.plasmo/utils/apiCalls";
-import {groupLinks, linkToggle} from "./content";
+import {groupLinks, linkToggle, initDeleteOrModify} from "./content";
 import fetchData from "~.plasmo/utils/fetchData";
 import './css/styles.css';
 import axios from 'axios';
@@ -64,70 +64,7 @@ function IndexOptions() {
     console.log(filterdSnippetData);
   }, [categoryData, linksData])
 
-  function initDeleteOrModify(e) {
-    e.preventDefault();
-    let _t = e.target;
-    console.log(_t);
-    const match = _t.matches('.button');
-    _t = match ? _t : _t.parentElement;
-    const id = _t.getAttribute('id') || '';
-    const containerAll = document.querySelectorAll('.popup-buttons-container') as NodeListOf<Element>;
-    for (let container of containerAll) {
-      const pr = container.classList.contains('quick-links') ? '.quick-links' : '.quick-snippets';
-            const toggleLinks = (document.querySelectorAll(`${pr} .link-list-toggle`) as NodeListOf<Element>);
-      switch (id) {
-        case 'update-links':
-          if(!container.classList.contains('update-links-init')) {
-            container.classList.add('update-links-init')
-            // _t.textContent = 'Updating...';
-            _t.classList.add('active');
-            for(let link of toggleLinks) {
-              const id  = (link as HTMLInputElement).dataset.toggle;
-              console.log(link.classList)
-              link.classList.add('active');
-              const linkTarget = document.getElementById(id);
-              (linkTarget as HTMLInputElement).slideDown(300);
-            }
-          } else {
-            container.classList.remove('update-links-init')
-            // _t.textContent = 'Update';
-            _t.classList.remove('active');
-            for(let link of toggleLinks) {
-              const id  = (link as HTMLInputElement).dataset.toggle;
-              const linkTarget = document.getElementById(id);
-              link.classList.remove('active');
-              (linkTarget as HTMLInputElement).slideUp(300);
-            }
-          }
-        break;
-        
-        case 'delete-links':
-          if(!container.classList.contains('delete-links-init')) {
-            container.classList.add('delete-links-init')
-            // _t.textContent = 'Deleting...';
-            _t.classList.add('active');
-            for(let link of toggleLinks) {
-              const id  = (link as HTMLInputElement).dataset.toggle;
-              console.log(link.classList)
-              link.classList.add('active');
-              const linkTarget = document.getElementById(id);
-              (linkTarget as HTMLInputElement).slideDown(300);
-            }
-          } else {
-            container.classList.remove('delete-links-init')
-            // _t.textContent = 'Delete';
-            _t.classList.remove('active');
-            for(let link of toggleLinks) {
-              const id  = (link as HTMLInputElement).dataset.toggle;
-              const linkTarget = document.getElementById(id);
-              link.classList.remove('active');
-              (linkTarget as HTMLInputElement).slideUp(300);
-            }
-          }
-          break;
-      }
-    }
-  }
+  
 
   return (
     <div className="options-container p-6">
@@ -137,10 +74,10 @@ function IndexOptions() {
       </div>
       {Auth.loggedIn() ? (
           <div className="is-flex is-align-items-center">
-            <button title="add-snippet" className="button js-modal-trigger mr-3" id="add-snippet-button" data-target="add-snippet-modal">
+            <button title="add-snippet" className="button js-modal-trigger create-new-button" id="add-snippet-button" data-target="add-snippet-modal">
               <i className="fa-solid fa-code"></i>
             </button>
-            <button title="add-link" className="button js-modal-trigger mr-3" id="add-options-button" data-target="add-options-modal">
+            <button title="add-link" className="button js-modal-trigger create-new-button" id="add-options-button" data-target="add-options-modal">
               <i className="fa-solid fa-link"></i>
             </button>
             <button onClick={initDeleteOrModify} id="update-links" title="update links" className="button mr-3">

@@ -10,7 +10,8 @@ import './node_modules/@fortawesome/fontawesome-free/css/all.min.css';
 import {getLists} from "~.plasmo/utils/apiCalls";
 import fetchData from "~.plasmo/utils/fetchData";
 import {modalFunctions} from "~.plasmo/utils/modal";
-import {checkSite, loginEditButtons, groupLinks} from "./content";
+import {checkSite, loginEditButtons, groupLinks, initDeleteOrModify, getCurrentTabLink} from "./content";
+import Auth from '~.plasmo/utils/auth';
 
 // Components
 import CMSLinks from "~.plasmo/components/CMSLinks";
@@ -79,6 +80,17 @@ function IndexPopup() {
     console.log(filterdSnippetData);
   }, [categoryData, linksData])
 
+  function formCreateAction(e) {
+    const _t = e.target;
+    const id = _t.getAttribute('id');
+    const targetId = _t.dataset.target;
+    const target = document.getElementById(targetId);
+    target.classList.add('is-active');
+    id === 'add-snippet-button' ? 
+      getCurrentTabLink(formSnippetDetails, setFormSnippetDetails) :
+      getCurrentTabLink(formLinkDetails, setFormLinkDetails)
+  }
+
 
   return (
     <div className="root-container" data-theme={theme}>
@@ -95,6 +107,32 @@ function IndexPopup() {
               setTheme={setTheme}
             ></ThemeToggleSwitch>
           </span>
+            {Auth.loggedIn() ? (
+            <div className="is-flex is-align-items-center">
+              <button 
+                title="add-snippet" 
+                className="button" 
+                id="add-snippet-button" 
+                data-target="add-snippet-modal"
+                onClick={formCreateAction}
+                >
+                <i className="fa-solid fa-code"></i>
+              </button>
+              <button 
+                title="add-link" 
+                className="button"
+                id="add-options-button" 
+                data-target="add-options-modal"
+                onClick={formCreateAction}
+                >
+                <i className="fa-solid fa-link"></i>
+              </button>
+            </div>
+          ) : (
+            <div className="is-flex is-align-items-center mr-5">
+              <p>Please log in to add links → </p>
+            </div>
+          )}
           <LoginForm></LoginForm>
         </div>
         <Search 

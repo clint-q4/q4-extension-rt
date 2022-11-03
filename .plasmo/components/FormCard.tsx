@@ -38,25 +38,45 @@ function FormCard(props) {
     return url.protocol === "http:" || url.protocol === "https:"
   }
 
+  function handleClear(e) {
+    e.preventDefault();
+    console.log(e.target);
+    const inp = e.target.previousSibling.name;
+    props.setFormLinkDetails({
+      ...props.formLinkDetails,
+      [inp]: ''
+    })
+  }
+
   function handleChange(e) {
-    if (!e.target.value.length) {
+    const clearSwitch = e.target.nextSibling;
+    if (e.target.value.length) {
+      setErrorMessage("")
+      props.setFormLinkDetails({
+        ...props.formLinkDetails,
+        [e.target.name]: e.target.value
+      })
+    } else {
+      console.log('eeee')
+      const err = document.querySelectorAll<HTMLElement>(".error-text");
+      for(let er of err) {
+        er.style.color = "red";
+      }
+      props.setFormLinkDetails({
+        ...props.formLinkDetails,
+        [e.target.name]: ''
+      })
+      clearSwitch.classList.remove('active');
+      console.log(clearSwitch.classList, 'after');
       setErrorMessage(
         `${
           e.target.name.charAt(0).toUpperCase() + e.target.name.slice(1)
         } is required.`
       )
-      document.querySelector<HTMLElement>(".error-text").style.color = "red"
-    } else {
-      setErrorMessage("")
-    }
-
-    if (!errorMessage) {
-      props.setFormLinkDetails({
-        ...props.formLinkDetails,
-        [e.target.name]: e.target.value
-      })
+      clearSwitch.classList.add('remove');
     }
   }
+
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -264,6 +284,9 @@ function FormCard(props) {
                   onChange={handleChange}
                   value={name}
                 />
+                <button className="clear-switch button"
+                  onClick={handleClear}
+                  ><i className="fa-solid fa-xmark"></i></button>
               </div>
             </div>
             <div className="field">
@@ -277,9 +300,10 @@ function FormCard(props) {
                   onChange={handleChange}
                   value={url}
                 />
-                <span className="icon is-small is-right">
-                  <i className="fas fa-check"></i>
-                </span>
+                <button 
+                className="clear-switch button"
+                onClick={handleClear}
+                ><i className="fa-solid fa-xmark"></i></button>
               </div>
             </div>
 
