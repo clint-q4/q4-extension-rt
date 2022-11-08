@@ -1,7 +1,8 @@
 import {useEffect, useState} from "react";
 import {deleteLinks, getSingleRecord} from '../utils/apiCalls';
 import '../utils/slideToggle';
-import { linkToggle, toggleAll, toggleOptions } from "../../content";
+import { linkToggle, toggleAll, toggleOptions, closeAllOptions } from "../../content";
+import Auth from '~.plasmo/utils/auth';
 
 function RenderLinks(props) {
   const isNotEmpty = Object.keys(props.filterdData).length;
@@ -10,11 +11,7 @@ function RenderLinks(props) {
     e.preventDefault();
     console.log(e);
     const _t = e.target;
-    // let _t = e.target;
-    const match = _t.matches('[title="edit-button"]') || _t.matches('span') || _t.matches('i');
-    // match ? _t : _t = _t.parentNode;
-    // const catEl = _t.previousSibling.previousSibling;
-    // console.log(catEl);
+    const match = _t.matches('[title="Edit"]') || _t.matches('span') || _t.matches('i');
     if(match) {
       const linkID = dataId;
       props.setLinkID(linkID);
@@ -50,7 +47,7 @@ function RenderLinks(props) {
     if(match) {
       const linkID = dataId;
       console.log(linkID);
-      const response = await deleteLinks(linkID)
+      const response = await deleteLinks('websites',linkID)
       if(response) {
         console.log(response);
         props.setErrorMessage('Link has been deleted successfully!');
@@ -66,17 +63,12 @@ function RenderLinks(props) {
 
   }
 
-  
-
-  console.log(props.filterdData);
-
-
   return (
     isNotEmpty ? 
     <>
       <h3 className="content-title">
         <span>
-        Links
+        Bookmarks
         </span>
         <span className="toggle-all-container">
           <button onClick={(e) => toggleAll(e, '.quick-links')} id="toggle-all-links" className="button" title="toggle">
@@ -97,38 +89,49 @@ function RenderLinks(props) {
                 {props.filterdData[key].map((item, ind) => (
                   <div key={ind} className="links is-3">
                     <a className="button is-link" target="_blank" data-id={item.id} href={item.url}>{item.name}
-                    <span className="options-trigger" onClick={toggleOptions}>
+                    {
+                      Auth.loggedIn() ? 
+                      <button title="options-trigger" className="options-trigger" onClick={toggleOptions}>
                       <i className="fa-solid fa-bars"></i>
                       <i className="fa-solid fa-xmark"></i>
-                      </span>
+                      </button> : ''
+                    }
                     </a>
-                    <div className="button-options-container" style={{display: "none"}}>
-                      <div className="button-options update-links-container">
-                        {/* <h3 className="options-title">
-                          Option
-                        </h3> */}
-                        <button 
-                          className="button" 
-                          title="edit-button"
-                          onClick={(e) => triggerUpdateLinks(e, item.id)}
-                          >
-                          Edit
-                            <span className="icon-container update-links-container">
-                              <i className="fa-solid fa-pen-to-square"></i>
-                            </span>
-                        </button>
-                        <button 
-                          className="button" 
-                          title="delete-button"
-                          onClick={(e) => triggerDeleteLinks(e, item.id)}
-                          >
-                          Delete
-                            <span className="icon-container update-links-container">
-                              <i className="fa-solid fa-trash-can"></i>
-                            </span>
-                        </button>
-                      </div>
-                    </div>
+                    {
+                      Auth.loggedIn() ? 
+                      <div className="button-options-container" style={{display: "none"}}>
+                        <div className="button-options update-links-container">
+                          <button 
+                            className="button" 
+                            title="Visibility"
+                            // onClick={(e) => triggerDeleteLinks(e, item.id)}
+                            >
+                              <span className="icon-container update-links-container">
+                                <i className="fa-solid fa-users" style={{display: 'none'}}></i>
+                                <i className="fa-solid fa-user-shield"></i>
+                              </span>
+                          </button>
+                          <button 
+                            className="button" 
+                            title="Edit"
+                            onClick={(e) => triggerUpdateLinks(e, item.id)}
+                            >
+                              <span className="icon-container update-links-container">
+                                <i className="fa-solid fa-pen-to-square"></i>
+                              </span>
+                          </button>
+                          <button 
+                            className="button" 
+                            title="Delete"
+                            onClick={(e) => triggerDeleteLinks(e, item.id)}
+                            >
+                              <span className="icon-container update-links-container">
+                                <i className="fa-solid fa-trash-can"></i>
+                              </span>
+                          </button>
+                        </div>
+                      </div> : ''
+                    }
                     <span onClick={(e) => triggerUpdateLinks(e, item.id)} className="options-buttons update-links-container">
                       <i className="fa-solid fa-pen-to-square"></i>
                     </span>

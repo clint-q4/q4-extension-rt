@@ -8144,27 +8144,33 @@ a.has-text-danger-dark:hover, a.has-text-danger-dark:focus {
 html {
   font-size: 10px; }
 
-html::-webkit-scrollbar, body::-webkit-scrollbar {
-  width: 12px;
-  /* width of the entire scrollbar */ }
-
-html::-webkit-scrollbar, body::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.05);
-  box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
-  border: 1px solid rgba(0, 0, 0, 0.08); }
-
-html::-webkit-scrollbar, body::-webkit-scrollbar-thumb {
-  background-color: light;
-  /* color of the scroll thumb */
-  border-radius: 20px;
-  /* roundness of the scroll thumb */
-  border: 3px solid orange;
-  /* creates padding around scroll thumb */ }
+html {
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow: hidden;
+  text-size-adjust: 100%; }
 
 .root-container {
   transition: background-color 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
   background-color: var(--background);
-  color: var(--text-primary); }
+  color: var(--text-primary);
+  max-width: 450px;
+  max-height: 600px;
+  overflow-x: hidden;
+  overflow-y: scroll; }
+
+.root-container::-webkit-scrollbar {
+  width: 10px;
+  /* width of the entire scrollbar */ }
+
+.root-container::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.08); }
+
+.root-container::-webkit-scrollbar-thumb {
+  background-color: var(--icon--color);
+  border-radius: 5px; }
 
 a, p, input, label, select, textarea, button, .label, .input, .button, .select select {
   font-size: 1.4rem;
@@ -8190,20 +8196,10 @@ button > * {
 h2 {
   font-size: 2.5rem; }
 
-.root-container {
-  text-rendering: optimizelegibility;
-  -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
-  overflow-y: scroll;
-  max-height: 500px;
-  scrollbar-width: thin;
-  /* "auto" or "thin" */
-  scrollbar-color: blue orange; }
-
 .popup-container,
 .options-container {
-  min-width: 400px;
-  min-height: 500px;
+  min-width: 440px;
+  min-height: 600px;
   background-color: transparent;
   padding-bottom: 20px; }
   .popup-container .popup-title-container,
@@ -8238,7 +8234,7 @@ h2 {
       border-radius: 3px;
       border: none;
       background-color: var(--background);
-      font-size: 1.5rem;
+      font-size: 1.2rem;
       padding: 5px 10px;
       cursor: pointer;
       color: var(--text-primary); }
@@ -8294,6 +8290,12 @@ h2 {
   color: white;
   display: block; }
 
+#add-snippet-button,
+#add-options-button {
+  width: 3rem;
+  height: 3rem;
+  margin: 0 5px; }
+
 .popup-buttons-container .buttons-container .links,
 .popup-buttons-container .buttons-container .buttons,
 .popup-buttons-container .links-container .links,
@@ -8322,7 +8324,7 @@ h2 {
   height: auto;
   color: var(--text-primary);
   font-weight: 600;
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   line-height: 2.5rem;
   margin-bottom: 0;
   display: -webkit-box;
@@ -8342,18 +8344,15 @@ h2 {
 .popup-buttons-container .links-container .icon-container {
   display: flex;
   color: var(--text-primary);
-  width: 15px;
-  height: 15px; }
-  .popup-buttons-container .buttons-container .icon-container i::before,
-  .popup-buttons-container .links-container .icon-container i::before {
-    padding-left: 10px; }
+  width: 100%;
+  height: 100%; }
 
 .popup-buttons-container .link-list-toggle {
   width: 100%;
   background: transparent;
   border: none;
   box-shadow: var(--box-shadow);
-  font-size: 1.6rem;
+  font-size: 1.4rem;
   border-radius: 0;
   cursor: pointer;
   text-align: left;
@@ -8466,6 +8465,7 @@ h2 {
       line-height: 1.2; }
       .options-container.quick-snippets .snippets .snippet-title-buttons .snippet-title p,
       .popup-buttons-container.quick-snippets .snippets .snippet-title-buttons .snippet-title p {
+        font-size: 1.2rem;
         font-weight: 600; }
     .options-container.quick-snippets .snippets .snippet-title-buttons .copy-icon,
     .popup-buttons-container.quick-snippets .snippets .snippet-title-buttons .copy-icon {
@@ -8475,6 +8475,15 @@ h2 {
     display: flex;
     gap: 5px;
     justify-content: flex-end; }
+  .options-container.quick-snippets .snippets .snippet-container,
+  .popup-buttons-container.quick-snippets .snippets .snippet-container {
+    position: relative; }
+    .options-container.quick-snippets .snippets .snippet-container .options-trigger,
+    .popup-buttons-container.quick-snippets .snippets .snippet-container .options-trigger {
+      z-index: 1; }
+    .options-container.quick-snippets .snippets .snippet-container i::before,
+    .popup-buttons-container.quick-snippets .snippets .snippet-container i::before {
+      color: #FFFFFF; }
 
 .options-container .content-container {
   width: calc(50% - 25px); }
@@ -8487,6 +8496,10 @@ h2 {
 
 .error-container {
   width: 100%; }
+  .error-container p {
+    margin: 0;
+    margin-block-start: 0;
+    margin-block-end: 0; }
 
 .popup-search-container {
   padding: 1rem;
@@ -8515,7 +8528,8 @@ h2 {
   #modal-login-form .modal-content {
     margin: 10px;
     padding: 20px;
-    background-color: #FFFFFF;
+    background-color: var(--background);
+    color: var(--text-primary);
     border-radius: 5px; }
 
 #remove-category-modal .modal-card .control,
@@ -8565,19 +8579,27 @@ h2 {
   position: relative; }
 
 .links-container .options-trigger {
-  display: flex;
-  width: 12px;
-  height: 12px;
-  position: absolute;
-  right: 5px;
+  width: 15px;
+  height: 15px;
   cursor: pointer;
-  top: 11px; }
+  background-color: var(--background);
+  border: none;
+  justify-content: center;
+  padding: 3px;
+  display: flex;
+  position: absolute;
+  top: 10px;
+  right: 5px;
+  align-items: center; }
   .links-container .options-trigger .fa-xmark {
     display: none; }
   .links-container .options-trigger.active .fa-xmark {
     display: flex; }
   .links-container .options-trigger.active .fa-bars {
     display: none; }
+
+.links-container .snippet-container .options-trigger {
+  background-color: #000000; }
 
 .links-container .button-options-container {
   display: flex;
@@ -8591,16 +8613,20 @@ h2 {
   border-radius: 5px;
   z-index: 10; }
 
+.links-container .snippets {
+  position: relative; }
+  .links-container .snippets .button-options-container {
+    top: 85px; }
+
 .links-container .button-options {
   display: flex;
-  flex-direction: column;
   gap: 5px; }
   .links-container .button-options .button {
     flex-direction: row;
-    padding: 5px 10px;
+    padding: 10px;
     display: flex;
-    min-width: 100px;
-    justify-content: space-between; }
+    justify-content: center;
+    align-items: center; }
 
 .button,
 .button.is-link {
@@ -8715,7 +8741,8 @@ input:checked + .slider:before {
     width: 3rem;
     height: 3rem;
     background: linear-gradient(40deg, #ff9966, #ff5e62 70%);
-    margin: auto; }
+    margin: auto;
+    box-shadow: var(--box-shadow); }
   .theme-toggle-switch-container .crescent {
     position: absolute;
     border-radius: 100%;
@@ -8748,12 +8775,15 @@ input:checked + .slider:before {
 .modal-card-foot {
   background: var(--greybg);
   flex-wrap: wrap;
-  gap: 10px; }
+  gap: 10px;
+  padding: 15px 10px;
+  justify-content: flex-end; }
   .modal-card-head .modal-card-title, .modal-card-foot .modal-card-title {
     color: var(--text-primary); }
 
 .modal-card-body {
-  background: var(--background); }
+  background: var(--background);
+  padding: 10px; }
   .modal-card-body .modal-card-title {
     color: var(--text-primary); }
   .modal-card-body input {
@@ -8776,11 +8806,14 @@ input:checked + .slider:before {
     .modal-card-body .clear-switch.remove {
       display: none; }
 
-.modal-close.cancel, .modal-close.delete {
-  background-color: #f14668;
-  position: absolute;
-  font-size: 0;
-  padding: 0; }
+.modal-close {
+  top: 13px;
+  right: 10px; }
+  .modal-close.cancel, .modal-close.delete {
+    background-color: #f14668;
+    position: absolute;
+    font-size: 0;
+    padding: 0; }
 
 .options-buttons {
   font-size: 1.4rem;

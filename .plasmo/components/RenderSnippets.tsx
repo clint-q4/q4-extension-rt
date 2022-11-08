@@ -1,28 +1,25 @@
 import { link } from "fs";
 import {useEffect, useState} from "react";
 import '../utils/slideToggle';
-import { linkToggle, toggleAll } from "../../content";
+import { linkToggle, toggleAll, toggleOptions, closeAllOptions } from "../../content";
 import {deleteLinks, getSingleRecord} from '../utils/apiCalls';
-import MainEditor from "./CodeEditor";
+import CodeEditor from "./CodeEditor";
 // import CodeMirrorEditor from "./CodeMirrorEditor";
 
 function RenderSnippets(props) {
   const isNotEmpty = Object.keys(props.filterdData).length;
   
-  async function triggerUpdateLinks(e) {
+  async function triggerUpdateLinks(e, dataId) {
     e.preventDefault();
     console.log(e);
-    let _t = e.target;
-    const match = _t.matches('.update-links-container');
-    match ? _t : _t = _t.parentNode;
-    const catEl = _t.previousSibling;
-    console.log(catEl);
-    if(catEl.matches('a.button')) {
-      const linkID = catEl.dataset.id;
-      props.setLinkID(linkID);
-      const linkData = await getSingleRecord('websites', linkID)
+    const _t = e.target;
+    const match = _t.matches('[title="Edit"]') || _t.matches('span') || _t.matches('i');
+    if(match) {
+      props.setSnippetID(dataId);
+      const linkData = await getSingleRecord('snippets', dataId)
       if(linkData) {
-        const formModal = document.getElementById('add-options-modal');
+        console.log('lindata',linkData);
+        const formModal = document.getElementById('add-snippet-modal');
         formModal.classList.add('is-active');
         formModal.click();
         const formModalTitle = document.querySelector('#add-options-modal .modal-card-title');
@@ -32,27 +29,23 @@ function RenderSnippets(props) {
         formModalButton.textContent = 'Update';
 
         // document.getElementById('add-options-button').click();
-        props.setFormLinkDetails({
+        props.setFormSnippetDetails({
           name: linkData.name,
           url: linkData.url,
+          snippet: linkData.snippet,
           category: linkData.category
         })
       }
     }
   }
 
-  async function triggerDeleteLinks(e) {
+  async function triggerDeleteSnippets(e, dataID) {
     e.preventDefault();
-    e.stopPropagation() 
     let _t = e.target;
-    const match = _t.matches('.delete-links-container');
-    match ? _t : _t = _t.parentNode;
-    const catEl = _t.previousSibling.previousSibling;
     console.log(_t);
-    if(catEl.matches('a.button')) {
-      const linkID = catEl.dataset.id;
-      console.log(linkID);
-      const response = await deleteLinks(linkID)
+    const match = _t.matches('[title="Delete"]') || _t.matches('span') || _t.matches('i');
+    if(match) {
+      const response = await deleteLinks('snippets', dataID)
       if(response) {
         console.log(response);
         props.setErrorMessage('Link has been deleted successfully!');
@@ -75,7 +68,6 @@ function RenderSnippets(props) {
     match ? _t : _t = _t.parentNode;
     console.log(_t);
     const id = _t.dataset.id;
-    // console.log(_t.dataset.id);
     // console.log(_t.parentElement.nextSibling);
     (document.querySelector(`.snippet-container[data-id="${id}"] textarea`) as HTMLInputElement).select();
     document.execCommand('copy');
@@ -88,6 +80,7 @@ function RenderSnippets(props) {
     if(_t.matches('.snip-toggle-icon')) {
       const id = _t.dataset.id;
       _t.classList.toggle('active');
+      closeAllOptions();
       (document.querySelector(`.snippet-container[data-id="${id}"]`) as HTMLInputElement).slideToggle(300);
     }
   }
@@ -133,21 +126,63 @@ function RenderSnippets(props) {
                       <span className="snip-toggle-icon" data-id={item.id} onClick={snipToggle}>
                         <i className="fa-solid fa-angles-down"></i>
                       </span>
-                      <span onClick={triggerUpdateLinks} className="options-buttons update-links-container">
+                      <span onClick={e => triggerUpdateLinks(e, item.id)} className="options-buttons update-links-container">
                       <i className="fa-solid fa-pen-to-square"></i>
                       </span>
-                      <span onClick={triggerDeleteLinks} className="options-buttons delete-links-container">
+                      <span onClick={e => triggerUpdateLinks(e, item.id)} className="options-buttons delete-links-container">
                         <i className="fa-regular fa-trash-can"></i>
                       </span>
                     </div>
                   </div>
                   <div className="snippet-container" data-id={item.id} style={{display: 'none'}}>
-                  <MainEditor
-                    // formSnippetDetails={item}
-                    // setFormSnippetDetails={props.setFormSnippetDetails}
-                    snippet={item.snippet}
-                    ></MainEditor>
+                    <button title="trigger-options" className="options-trigger" onClick={toggleOptions}>
+                      <i className="fa-solid fa-bars"></i>
+                      <i className="fa-solid fa-xmark"></i>
+                    </button>
+                    <CodeEditor
+                      // formSnippetDetails={item}
+                      // setFormSnippetDetails={props.setFormSnippetDetails}
+                      snippet={item.snippet}
+                      ></CodeEditor>
                   </div>
+                  <div className="button-options-container" style={{display: "none"}}>
+                      <div className="button-options update-links-container">
+                        {/* <h3 className="options-title">
+                          Option
+                        </h3> */}
+                        <button 
+                          className="button" 
+                          title="Visibility"
+                          // onClick={(e) => triggerDeleteLinks(e, item.id)}
+                          >
+                          {/* Share */}
+                            <span className="icon-container update-links-container">
+                              <i className="fa-solid fa-users" style={{display: 'none'}}></i>
+                              <i className="fa-solid fa-user-shield"></i>
+                            </span>
+                        </button>
+                        <button 
+                          className="button" 
+                          title="Edit"
+                          onClick={(e) => triggerUpdateLinks(e, item.id)}
+                          >
+                          {/* Edit */}
+                            <span className="icon-container update-links-container">
+                              <i className="fa-solid fa-pen-to-square"></i>
+                            </span>
+                        </button>
+                        <button 
+                          className="button" 
+                          title="Delete"
+                          onClick={(e) => triggerDeleteSnippets(e, item.id)}
+                          >
+                          {/* Delete */}
+                            <span className="icon-container update-links-container">
+                              <i className="fa-solid fa-trash-can"></i>
+                            </span>
+                        </button>
+                      </div>
+                    </div>
                 </div>
               ))}
             </div>

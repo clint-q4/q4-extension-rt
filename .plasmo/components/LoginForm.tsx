@@ -3,7 +3,7 @@ import PocketBase from 'pocketbase';
 import Auth from '../utils/auth';
 import { loginAuth } from '../utils/apiCalls';
 
-function LoginForm() {
+function LoginForm(props) {
   // form validation
   const LoginFormData = {
     email: "",
@@ -41,20 +41,21 @@ function LoginForm() {
     if(email.length && password.length) {
       document.querySelector<HTMLElement>('.error-text').style.color = 'green';
       setErrorMessage('Sending...');  
-      // document.getElementById('add-options-modal')[0].reset();
-      // const adminAuthData = await client.users.authViaEmail(email, password);
       const adminAuthData = await loginAuth(email, password);
       if(adminAuthData.token) {
         const $el = document.querySelector('#modal-login-form');
         Auth.login(adminAuthData.token);
-        console.log(adminAuthData);
         setLoginForm(LoginFormData);
         setErrorMessage('You have successfully logged in!');
         setTimeout(() => {
           if($el.classList.contains('is-active')) {
             $el.classList.remove('is-active');
           }
+          props.setRefresh(true);
         }, 500)
+      } else {
+        document.querySelector<HTMLElement>(".error-text").style.color = "red"
+        setErrorMessage('Sorry, Incorrect credintials. Please try again!');
       }
 
     } else {
@@ -83,7 +84,9 @@ function LoginForm() {
         </div>
       </div>
       <form className="modal" id="modal-login-form" onSubmit={handleSubmit}>
-        <div className="modal-background"></div>
+        <div className="modal-background">
+          <button className="button is-link modal-close cancel">Cancel</button>
+        </div>
         <div className="modal-content">
           <div className="login-form" id="loginForm">
             <div className="field">
@@ -111,9 +114,6 @@ function LoginForm() {
             <div className="field is-grouped">
               <div className="control">
                 <button type="submit" className="button">Login</button>
-              </div>
-              <div className="control">
-                <button className="button is-link modal-close cancel">Cancel</button>
               </div>
             </div>
           </div>

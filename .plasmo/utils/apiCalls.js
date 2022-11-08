@@ -12,19 +12,25 @@ const getLists = async function(collection, pageN = 1, perPage = 50, filerts) {
   if(!filerts) {
     filerts = filter;
   }
-  const resultList = await client.records.getList(collection, pageN, perPage, {
-    filerts
-  });
-  if(!resultList.items) {
-    return resultList;
+  try {
+    const resultList = await client.records.getList(collection, pageN, perPage, {
+      filerts
+    });
+    return resultList.items;
   }
-  console.log(resultList);
-  return resultList.items;
+  catch(err) {
+    return [];
+  }
 }
 
 const loginAuth = async function (email, password) {
-  const adminAuthData = await client.users.authViaEmail(email, password);
-  return adminAuthData;
+  try {
+    const adminAuthData = await client.users.authViaEmail(email, password);
+    return adminAuthData;
+  }
+  catch(err) {
+    return {};
+  }
 }
 
 const createLinks = async function (formData) {
@@ -108,15 +114,15 @@ const deleteCategory = async function(categoryID) {
   }
 }
 
-const deleteLinks = async function(linkID) {
+const deleteLinks = async function(el ,linkID) {
   const token = Auth.getToken();
   if(!token) return {};
   const newAuthData = await client.users.refresh();
   if(newAuthData) {
-    const response = await client.records.delete('websites', linkID);
+    const response = await client.records.delete(el, linkID);
     if(response === null) {
       const respose = {
-        message: 'Link has been deleted successfully!'
+        message: `${el} has been deleted successfully!`
       };
       return respose;
     } else {
@@ -134,6 +140,24 @@ const updateLinks = async function(linkID, formData) {
     formData.profile = newAuthData.user.profile.id;
   }
   const record = await client.records.update('websites', linkID , formData);
+  console.log(record);
+  if(!record) {
+    return 'Something went wrong!';
+  }
+  return record;
+}
+
+
+const updateSnippets = async function(snippetID, formData) {
+  console.log('test', snippetID, formData)
+  const token = Auth.getToken();
+  if(!token) return {};
+  const newAuthData = await client.users.refresh();
+  if(newAuthData) {
+    console.log(newAuthData);
+    formData.profile = newAuthData.user.profile.id;
+  }
+  const record = await client.records.update('snippets', snippetID , formData);
   console.log(record);
   if(!record) {
     return 'Something went wrong!';
@@ -165,6 +189,7 @@ export {
   deleteCategory,
   deleteLinks,
   updateLinks,
+  updateSnippets,
   getSingleRecord,
   createSnippets
 }

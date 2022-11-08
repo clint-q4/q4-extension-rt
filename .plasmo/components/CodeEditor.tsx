@@ -4,20 +4,10 @@ import CodeEditor from '@uiw/react-textarea-code-editor';
 function MainEditor(props) {
   const [code, setCode] = useState(props.snippet);
 
-  useEffect(() => {
-    if(props.formSnippetDetails && props.formSnippetDetails) {
-      props.setFormSnippetDetails({
-        ...props.formSnippetDetails,
-        snippet: code
-      });
-    }
-  }, [code]);
-
   return (
     <CodeEditor
       autoFocus
       value={code}
-      // onChange={code => setCode(code)}
       onChange={(evn) => setCode(evn.target.value)}
       padding={10}
       language="js"

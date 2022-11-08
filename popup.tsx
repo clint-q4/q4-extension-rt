@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react"
-import { useStorage } from "@plasmohq/storage";
 import useLocalStorage from 'use-local-storage';
 
 // CSS 
@@ -40,15 +39,20 @@ const formSnippetData = {
 
 
 function IndexPopup() {
-  const [categoryData, setCategoryData] = useState<{[key: string]: any}>([]);
-  const [linksData, setLinksData] = useState<{[key: string]: any}>([]);
-  const [snippetData, setSnippetData] = useState<{[key: string]: any}>([]);
-  const [filterdData, setfilterdData] = useState<{[key: string]: any}>({});
-  const [filterdSnippetData, setfilterdSnippetData] = useState<{[key: string]: any}>({});
-  const [errorMessage, setErrorMessage] = useState<string>('');
   const defaultDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
   const [theme, setTheme] = useLocalStorage('theme', defaultDark ? 'dark' : 'light');
+
+  const [categoryData, setCategoryData] = useLocalStorage('categories', []);
+  const [filterdData, setfilterdData] = useLocalStorage('links', {});
+  const [filterdSnippetData, setfilterdSnippetData] = useLocalStorage('snippets', {})
+  const [refresh, setRefresh] = useState<boolean>(false);
+  const [refreshSession, setRefreshSession] = useLocalStorage('refreshSession', '');
+
+  const [errorMessage, setErrorMessage] = useState<string>('');
+
   const [linkID, setLinkID] = useState<string>('');
+  const [snippetID, setSnippetID] = useState<string>('');
+
   const [formLinkDetails, setFormLinkDetails] = useState(formLinkData);
   const [formSnippetDetails, setFormSnippetDetails] = useState(formSnippetData);
 
@@ -59,34 +63,56 @@ function IndexPopup() {
     loginEditButtons();
 
     const el = (document.getElementById('theme-toggle-switch') as HTMLInputElement);
-    console.log(el);
     if(theme === 'dark') {
       el.checked = true;
     }
 
     (async function fetchData() {
-      const apiCategoryData = await getLists('category');
-      const apiLinksData = await getLists('websites');
-      const snippetData = await getLists('snippets');
-      setCategoryData(apiCategoryData);
-      setLinksData(apiLinksData);
-      setSnippetData(snippetData);
+      console.log('fetching');
+      const sessDate = new Date(refreshSession);
+      const now = new Date();
+      const HourDiff = (endDate, startDate) => {
+        const msInHour = 1000 * 60 * 60;
+        return Math.round(Math.abs(endDate - startDate) / msInHour);
+      }
+      const diff = HourDiff(sessDate, now);
+      const fetchData = async () => {
+        const apiLinksData = await getLists('websites');
+        const apiSnippetData = await getLists('snippets');
+        const apiCategoryData = await getLists('category');
+        if(Object.keys(apiLinksData).length && Object.keys(apiSnippetData).length) {
+          setCategoryData(apiCategoryData);
+          setfilterdData(groupLinks(apiCategoryData, apiLinksData, setfilterdData, 'links')) 
+          setfilterdSnippetData(groupLinks(apiCategoryData, apiSnippetData, setfilterdSnippetData, 'snippets'));
+          const sessionData = new Date().toLocaleString();
+          setRefreshSession(sessionData);
+        }
+      }
+      if(!Object.keys(filterdData).length && !Object.keys(filterdSnippetData).length) {
+        fetchData();
+        console.log('test 1')
+      } else if(diff >= 24) {
+        fetchData();
+        console.log('test 2')
+      } else if(refresh) {
+        fetchData();
+        console.log('test 3')
+      }
     })();
-  }, [])
+  }, [refresh])
 
-  useEffect(() => {
-    groupLinks(categoryData, linksData, setfilterdData, 'links');
-    groupLinks(categoryData, snippetData, setfilterdSnippetData, 'snippets');
-    console.log(filterdSnippetData);
-  }, [categoryData, linksData])
 
   function formCreateAction(e) {
     const _t = e.target;
     const id = _t.getAttribute('id');
+    let form = '';
+    id === 'add-snippet-button' ? form = 'Snippet' : form = 'Link';
     const targetId = _t.dataset.target;
     const target = document.getElementById(targetId);
     target.classList.add('is-active');
-    id === 'add-snippet-button' ? 
+    target.querySelector('.modal-card-title').textContent = `Create new ${form}`;
+    target.querySelector('button[type=submit]').textContent = `Submit`;
+    form === 'Snippet' ? 
       getCurrentTabLink(formSnippetDetails, setFormSnippetDetails) :
       getCurrentTabLink(formLinkDetails, setFormLinkDetails)
   }
@@ -130,10 +156,12 @@ function IndexPopup() {
             </div>
           ) : (
             <div className="is-flex is-align-items-center mr-5">
-              <p>Please log in to add links → </p>
+              <p>Please login → </p>
             </div>
           )}
-          <LoginForm></LoginForm>
+          <LoginForm
+            setRefresh={setRefresh}
+          ></LoginForm>
         </div>
         <Search 
          filterdData={filterdData}
@@ -155,6 +183,9 @@ function IndexPopup() {
           <RenderSnippets
             filterdData={filterdSnippetData}
             setErrorMessage={setErrorMessage}
+            setSnippetID={setSnippetID}
+            formSnippetDetails={formSnippetDetails}
+            setFormSnippetDetails={setFormSnippetDetails}
             ></RenderSnippets>
         </div>
         <FormCard 
@@ -169,7 +200,7 @@ function IndexPopup() {
         setCategoryData={setCategoryData}
         formSnippetDetails={formSnippetDetails}
         setFormSnippetDetails={setFormSnippetDetails}
-        linkID={linkID}
+        snippetID={snippetID}
         ></FormCardSnippet>
         <div className="error-message-container">
           <p>{errorMessage}</p>

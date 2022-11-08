@@ -1,8 +1,17 @@
 import { useState, useEffect } from "react"
 import Auth from '../utils/auth';
-import {client, createSnippets, createCategory, updateCategory, deleteCategory, getLists, updateLinks} from "../utils/apiCalls";
+import { 
+  client, 
+  createSnippets, 
+  createCategory, 
+  updateCategory, 
+  deleteCategory, 
+  getLists, 
+  updateLinks,
+  updateSnippets
+} from "../utils/apiCalls";
 import { error } from "console";
-import CodeEditor from "./CodeEditor";
+import CodeEditorForm from "./CodeEditorForm";
 
 function FormCardSnippet(props) {
   // form validation
@@ -108,7 +117,9 @@ function FormCardSnippet(props) {
           setErrorMessage('Please enter a valid URL!');
           return;
         }
-        const record = await updateLinks(props.linkID, props.formSnippetDetails);
+        const record = await updateSnippets(props.snippetID, props.formSnippetDetails);
+
+        console.log('updatedSnip Results', record);
 
   
         if(record) {
@@ -281,11 +292,11 @@ function FormCardSnippet(props) {
                   onChange={handleChange}
                   value={snippet}
                 /> */}
-                <CodeEditor
+                <CodeEditorForm
                   formSnippetDetails={formSnippetDetails}
                   setFormSnippetDetails={props.setFormSnippetDetails}
-                  snippet={''}
-                  ></CodeEditor>
+                  snippet={formSnippetDetails.snippet}
+                  ></CodeEditorForm>
                 <span className="icon is-small is-right">
                   <i className="fas fa-check"></i>
                 </span>
