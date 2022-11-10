@@ -7,20 +7,19 @@ import './node_modules/@fortawesome/fontawesome-free/css/all.min.css';
 
 // Utility functions
 import {getLists} from "~.plasmo/utils/apiCalls";
-import fetchData from "~.plasmo/utils/fetchData";
 import {modalFunctions} from "~.plasmo/utils/modal";
 import {checkSite, loginEditButtons, groupLinks, initDeleteOrModify, getCurrentTabLink} from "./content";
 import Auth from '~.plasmo/utils/auth';
 
 // Components
-import CMSLinks from "~.plasmo/components/CMSLinks";
+import CMSLinks from "~.plasmo/components/CMS/CMSLinks";
 import RenderLinks from "~.plasmo/components/RenderLinks";
 import RenderSnippets from "~.plasmo/components/RenderSnippets";
-import LoginForm from "~.plasmo/components/LoginForm";
+import LoginForm from "~.plasmo/components/forms/LoginForm";
 import Search from "~.plasmo/components/Search";
 import ThemeToggleSwitch from "~.plasmo/components/ThemeToggleSwitch";
-import FormCard from "~.plasmo/components/FormCard";
-import FormCardSnippet from "~.plasmo/components/FormCardSnippet";
+import FormCard from "~.plasmo/components/forms/FormCard";
+import FormCardSnippet from "~.plasmo/components/forms/FormCardSnippet";
 
 // form validation
 const formLinkData = {
@@ -43,8 +42,9 @@ function IndexPopup() {
   const [theme, setTheme] = useLocalStorage('theme', defaultDark ? 'dark' : 'light');
 
   const [categoryData, setCategoryData] = useLocalStorage('categories', []);
-  const [filterdData, setfilterdData] = useLocalStorage('links', {});
-  const [filterdSnippetData, setfilterdSnippetData] = useLocalStorage('snippets', {})
+  const [localStorageData, setLocalStorageData] = useLocalStorage('localData', {});
+  const [filterdData, setfilterdData] = useState(localStorageData.links || {});
+  const [filterdSnippetData, setfilterdSnippetData] = useState(localStorageData.snippets || {})
   const [refresh, setRefresh] = useState<boolean>(false);
   const [refreshSession, setRefreshSession] = useLocalStorage('refreshSession', '');
 
@@ -55,6 +55,8 @@ function IndexPopup() {
 
   const [formLinkDetails, setFormLinkDetails] = useState(formLinkData);
   const [formSnippetDetails, setFormSnippetDetails] = useState(formSnippetData);
+
+  console.log(formLinkDetails);
 
   useEffect(() => {
     // Run modal helper funtions
@@ -82,8 +84,17 @@ function IndexPopup() {
         const apiCategoryData = await getLists('category');
         if(Object.keys(apiLinksData).length && Object.keys(apiSnippetData).length) {
           setCategoryData(apiCategoryData);
-          setfilterdData(groupLinks(apiCategoryData, apiLinksData, setfilterdData, 'links')) 
-          setfilterdSnippetData(groupLinks(apiCategoryData, apiSnippetData, setfilterdSnippetData, 'snippets'));
+          const allLinks = groupLinks(apiCategoryData, apiLinksData, setfilterdData, 'links');
+          const allSnippets = groupLinks(apiCategoryData, apiSnippetData, setfilterdSnippetData, 'snippets');
+          console.log(allLinks, allSnippets);
+          const localData = {
+            categories: apiCategoryData,
+            links: allLinks,
+            snippets: allSnippets
+          }
+          setLocalStorageData(localData);
+          setfilterdData(allLinks) 
+          setfilterdSnippetData(allSnippets);
           const sessionData = new Date().toLocaleString();
           setRefreshSession(sessionData);
         }
@@ -96,10 +107,31 @@ function IndexPopup() {
         console.log('test 2')
       } else if(refresh) {
         fetchData();
-        console.log('test 3')
+        setRefresh(false);
       }
     })();
   }, [refresh])
+
+  useEffect(() => {
+    const errContainers = document.querySelectorAll<HTMLElement>('.error-message-container');
+    if(errorMessage.length) {
+      for(let errConts of errContainers) {
+        errConts.classList.add('show');
+      }
+    } else {
+      for(let errConts of errContainers) {
+        errConts.classList.remove('show');
+      }
+    }
+  }, [errorMessage])
+
+  useEffect(() => {
+    if(!Object.keys(filterdData).length && !Object.keys(filterdSnippetData).length) {
+      setErrorMessage('Sorry! No results found...')
+    } else {
+      setErrorMessage('');
+    }
+  }, [filterdData, filterdSnippetData]);
 
 
   function formCreateAction(e) {
@@ -117,6 +149,45 @@ function IndexPopup() {
       getCurrentTabLink(formLinkDetails, setFormLinkDetails)
   }
 
+  function handleClear(e, type) {
+    e.preventDefault();
+    const inputEl = e.target.previousSibling;
+    const inp = inputEl.name;
+    switch (type) {
+      case 'links':
+        setFormLinkDetails({
+          ...formLinkDetails,
+          [inp]: ''
+        })
+        break;
+      case 'snippets':
+        setFormSnippetDetails({
+          ...formSnippetDetails,
+          [inp]: ''
+        })
+        break;
+      case 'search':
+        const ev = new KeyboardEvent("keyup", {
+          'keyCode': 8,
+          'bubbles': true
+        });
+        console.log(ev);
+        inputEl.value = '';
+        inputEl.dispatchEvent(ev);
+        break;
+    }
+  }
+
+  const closeErrorModal = (e) => {
+    e.preventDefault();
+    const _t = e.target;
+    const match = _t.matches('button[title="delete"]');
+    if(!match) return;
+
+    const parentEl = _t.parentElement as HTMLElement;
+    parentEl.classList.remove()
+  }
+
 
   return (
     <div className="root-container" data-theme={theme}>
@@ -124,10 +195,6 @@ function IndexPopup() {
         <div className="popup-title-container">
           <h2 className="has-text-weight-bold is-flex-grow-1">ClipMe.<span id="q4-site-verification"></span></h2>
           <span className="theme-toggle">
-            {/* <button onClick={switchMode} title="Toggle Theme" className="theme-toggle-button">
-              <i className="fa-regular fa-circle"></i>
-              <i className="fa-solid fa-circle" style={{display: 'none'}}></i>
-            </button> */}
             <ThemeToggleSwitch
               theme={theme}
               setTheme={setTheme}
@@ -156,7 +223,7 @@ function IndexPopup() {
             </div>
           ) : (
             <div className="is-flex is-align-items-center mr-5">
-              <p>Please login → </p>
+              {/* <p>Please login → </p> */}
             </div>
           )}
           <LoginForm
@@ -168,7 +235,16 @@ function IndexPopup() {
          setfilterdData={setfilterdData}
          filterdSnippetData={filterdSnippetData}
          setfilterdSnippetData={setfilterdSnippetData}
+         handleClear={handleClear}
          ></Search>
+        <div className="error-message-container">
+          <p>{errorMessage}</p>
+          <button 
+          title="delete" 
+          className="delete has-background-danger"
+          onClick={e => setErrorMessage('')}
+          ></button>
+        </div>
         <CMSLinks></CMSLinks>
         <div className="content-container">
           <RenderLinks 
@@ -177,6 +253,7 @@ function IndexPopup() {
             formLinkDetails={formLinkDetails}
             setFormLinkDetails={setFormLinkDetails}
             setLinkID={setLinkID}
+            setRefresh={setRefresh}
             ></RenderLinks>
         </div>
         <div className="content-container">
@@ -186,6 +263,7 @@ function IndexPopup() {
             setSnippetID={setSnippetID}
             formSnippetDetails={formSnippetDetails}
             setFormSnippetDetails={setFormSnippetDetails}
+            setRefresh={setRefresh}
             ></RenderSnippets>
         </div>
         <FormCard 
@@ -193,7 +271,9 @@ function IndexPopup() {
         setCategoryData={setCategoryData}
         formLinkDetails={formLinkDetails}
         setFormLinkDetails={setFormLinkDetails}
+        setRefresh={setRefresh}
         linkID={linkID}
+        handleClear={handleClear}
         ></FormCard>
       <FormCardSnippet
         categoryData={categoryData}
@@ -201,10 +281,9 @@ function IndexPopup() {
         formSnippetDetails={formSnippetDetails}
         setFormSnippetDetails={setFormSnippetDetails}
         snippetID={snippetID}
+        setRefresh={setRefresh}
+        handleClear={handleClear}
         ></FormCardSnippet>
-        <div className="error-message-container">
-          <p>{errorMessage}</p>
-        </div>
       </div>
     </div>
   )

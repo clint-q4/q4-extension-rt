@@ -1,6 +1,5 @@
 import PocketBase from 'pocketbase';
 import Auth from '../utils/auth';
-import getSuspender from './getSuspender';
 
 const client = new PocketBase('http://127.0.0.1:8090');
 
@@ -84,17 +83,17 @@ const createCategory = async function(formData) {
 const updateCategory = async function(formData, categoryID) {
   const token = Auth.getToken();
   if(!token) return {};
-  const newAuthData = await client.users.refresh();
-  if(newAuthData) {
-    console.log(newAuthData);
-    formData.profile = newAuthData.user.profile.id;
+  try {
+    const newAuthData = await client.users.refresh();
+    if(newAuthData) {
+      formData.profile = newAuthData.user.profile.id;
+    }
+    const record = await client.records.update('category', categoryID , formData);
+    return record;
   }
-  const record = await client.records.update('category', categoryID , formData);
-  console.log(record);
-  if(!record) {
-    return 'Something went wrong!';
+  catch(err) {
+      return 'Something went wrong!';
   }
-  return record;
 }
 
 const deleteCategory = async function(categoryID) {

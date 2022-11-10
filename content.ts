@@ -16,7 +16,7 @@ export const groupLinks = (categoryData, linksData, setfilterdData, name) => {
       return groups
     }, {})
 
-    console.log('running')
+    // console.log('running')
 
     return groupedData;
     // localStorage.setItem(name, JSON.stringify(groupedData))
@@ -33,7 +33,7 @@ export const checkSite = async () => {
     active: true,
     currentWindow: true
   })
-  console.log(currentTab)
+  // console.log(currentTab)
   chrome.scripting.executeScript(
     {
       target: { tabId: currentTab.id },
@@ -41,7 +41,7 @@ export const checkSite = async () => {
       func: checkQ4Site
     },
     (result) => {
-      console.log(result)
+      // console.log(result)
       for (let r of result) {
         if (r.result) {
           document.querySelector("#q4-site-verification").innerHTML =
@@ -207,7 +207,6 @@ export const linkToggle = (e) => {
   let _t = e.target
   let match = _t.matches(".link-list-toggle")
   match ? _t : (_t = _t.closest(".link-list-toggle"))
-  console.log(_t)
   if (_t.matches(".link-list-toggle")) {
     const id = _t.dataset.toggle
     _t.classList.toggle("active")
@@ -233,7 +232,7 @@ export const toggleAll = (e, parentEl) => {
       _t.classList.add("active")
       for (let link of toggleLinks) {
         const id = (link as HTMLInputElement).dataset.toggle
-        console.log(link.classList)
+        // console.log(link.classList)
         link.classList.add("active")
         const linkTarget = document.getElementById(id)
         ;(linkTarget as HTMLInputElement).slideDown(300)
@@ -256,11 +255,11 @@ export const toggleOptions = (e) => {
   let _t = e.target
   let match = _t.matches(".options-trigger")
   _t = match ? _t : _t.parentElement
-  console.log("check", _t)
+  // console.log("check", _t)
   match = _t.matches(".options-trigger")
   if (match) {
     const toggleCont = _t.parentElement.nextSibling
-    console.log(toggleCont)
+    // console.log(toggleCont)
     if (!toggleCont.classList.contains("active")) {
       _t.classList.toggle("active")
       toggleCont.classList.add("active")
@@ -270,7 +269,7 @@ export const toggleOptions = (e) => {
       _t.classList.toggle("active")
       ;(toggleCont as HTMLInputElement).slideUp(300)
     }
-    console.log(toggleCont)
+    // console.log(toggleCont)
   }
 }
 
@@ -312,7 +311,7 @@ export const initDeleteOrModify = (e) => {
           _t.classList.add("active")
           for (let link of toggleLinks) {
             const id = (link as HTMLInputElement).dataset.toggle
-            console.log(link.classList)
+            // console.log(link.classList)
             link.classList.add("active")
             const linkTarget = document.getElementById(id)
             ;(linkTarget as HTMLInputElement).slideDown(300)
@@ -337,7 +336,7 @@ export const initDeleteOrModify = (e) => {
           _t.classList.add("active")
           for (let link of toggleLinks) {
             const id = (link as HTMLInputElement).dataset.toggle
-            console.log(link.classList)
+            // console.log(link.classList)
             link.classList.add("active")
             const linkTarget = document.getElementById(id)
             ;(linkTarget as HTMLInputElement).slideDown(300)

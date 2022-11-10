@@ -1,38 +1,40 @@
 
 
-import { useRef } from "react"
+import { useRef, useState } from "react"
 import '../utils/slideToggle';
 import "../../content";
 
 export default function Search(props) {
-  const localLinks = JSON.parse(localStorage.getItem('links'));
-  const localSnippets = JSON.parse(localStorage.getItem('snippets'));
+  const [allLinks,] = useState(props.filterdData)
+  const [allSnippets,] = useState(props.filterdSnippetData)
   const keyUpTimer = useRef(null); // keyUpTimer will be a Ref object
   const keyUpTimerDelay = 300;
-  // const propLinks = props.filterdData;
-  // const propSnippets = props.filterdSnippetData;
-  function searchAll() {
+  function searchAll(e) {
+    const clarBtn = document.getElementById('clearSearch') as HTMLInputElement;
+    const searchIcon = document.getElementById('popupSearchIcon') as HTMLInputElement;
     clearTimeout(keyUpTimer.current);
     keyUpTimer.current = setTimeout(() => {
       const links = {};
       const snippets = {}
       const input = document.getElementById('popup-search') as HTMLInputElement;
       const filterTxt = input.value.toLowerCase();
-        for (const property in localLinks) {
-          const arr = localLinks[property];
+        for (const property in allLinks) {
+          const arr = allLinks[property];
           const filtered = arr.filter(a => a.name.toLowerCase().includes(filterTxt));
           if(filtered.length) {
             links[property] = filtered;
           }
         }
-        for (const property in localSnippets) {
-          const arr = localSnippets[property];
+        for (const property in allSnippets) {
+          const arr = allSnippets[property];
           const filtered = arr.filter(a => a.name.toLowerCase().includes(filterTxt));
           if(filtered.length) {
             snippets[property] = filtered;
           }
         }
       if(filterTxt.length) {
+        clarBtn.classList.add('active');
+        searchIcon.classList.add('hide');
         props.setfilterdData(links);
         props.setfilterdSnippetData(snippets);
         const buttons = document.querySelectorAll<HTMLElement>('.popup-buttons-container button.link-list-toggle');
@@ -49,8 +51,10 @@ export default function Search(props) {
           }
         }
       } else {
-        props.setfilterdData(localLinks);
-        props.setfilterdSnippetData(localSnippets);
+        clarBtn.classList.remove('active');
+        searchIcon.classList.remove('hide');
+        props.setfilterdData(allLinks);
+        props.setfilterdSnippetData(allSnippets);
       }
     }, keyUpTimerDelay);
   }
@@ -61,7 +65,13 @@ export default function Search(props) {
       <div className="control is-expanded">
         <label htmlFor="popup-search" className="hidden">Seach</label>
         <input id="popup-search" className="input" type="text" placeholder="Seach away..." onKeyUp={searchAll} />
-        <span className="popup-search-icon"><i className="fa-solid fa-magnifying-glass"></i></span>
+        <button 
+          id="clearSearch"
+          title="clear"
+          className="clear-switch button"
+          onClick={e => props.handleClear(e, 'search')}
+        ><i className="fa-solid fa-xmark"></i></button>
+        <span id="popupSearchIcon" className="popup-search-icon"><i className="fa-solid fa-magnifying-glass"></i></span>
       </div>
     </div>
   )

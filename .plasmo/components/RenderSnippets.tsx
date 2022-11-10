@@ -3,63 +3,14 @@ import {useEffect, useState} from "react";
 import '../utils/slideToggle';
 import { linkToggle, toggleAll, toggleOptions, closeAllOptions } from "../../content";
 import {deleteLinks, getSingleRecord} from '../utils/apiCalls';
-import CodeEditor from "./CodeEditor";
+import CodeEditor from "./codeEditor/CodeEditor";
+import Auth from '~.plasmo/utils/auth';
+import TriggerOptions from "./TriggerOptions";
 // import CodeMirrorEditor from "./CodeMirrorEditor";
 
 function RenderSnippets(props) {
   const isNotEmpty = Object.keys(props.filterdData).length;
-  
-  async function triggerUpdateLinks(e, dataId) {
-    e.preventDefault();
-    console.log(e);
-    const _t = e.target;
-    const match = _t.matches('[title="Edit"]') || _t.matches('span') || _t.matches('i');
-    if(match) {
-      props.setSnippetID(dataId);
-      const linkData = await getSingleRecord('snippets', dataId)
-      if(linkData) {
-        console.log('lindata',linkData);
-        const formModal = document.getElementById('add-snippet-modal');
-        formModal.classList.add('is-active');
-        formModal.click();
-        const formModalTitle = document.querySelector('#add-options-modal .modal-card-title');
-        const formModalButton = document.querySelector('#add-options-modal button[type="submit"]');
-        formModal.dataset.option = 'update';
-        formModalTitle.textContent = 'Update Link';
-        formModalButton.textContent = 'Update';
 
-        // document.getElementById('add-options-button').click();
-        props.setFormSnippetDetails({
-          name: linkData.name,
-          url: linkData.url,
-          snippet: linkData.snippet,
-          category: linkData.category
-        })
-      }
-    }
-  }
-
-  async function triggerDeleteSnippets(e, dataID) {
-    e.preventDefault();
-    let _t = e.target;
-    console.log(_t);
-    const match = _t.matches('[title="Delete"]') || _t.matches('span') || _t.matches('i');
-    if(match) {
-      const response = await deleteLinks('snippets', dataID)
-      if(response) {
-        console.log(response);
-        props.setErrorMessage('Link has been deleted successfully!');
-        setTimeout(function () {
-          window.location.reload();
-        }, 500)
-      } else {
-        const temp = 'Sorry! Something went wrong';
-        props.setErrorMessage(temp);
-        // categoryStatus.style.color = 'red';
-      }
-    }
-
-  }
 
   function copySnippet(e) {
     e.preventDefault();
@@ -126,63 +77,47 @@ function RenderSnippets(props) {
                       <span className="snip-toggle-icon" data-id={item.id} onClick={snipToggle}>
                         <i className="fa-solid fa-angles-down"></i>
                       </span>
-                      <span onClick={e => triggerUpdateLinks(e, item.id)} className="options-buttons update-links-container">
+                      {/* <span onClick={e => triggerUpdateLinks(e, item.id)} className="options-buttons update-links-container">
                       <i className="fa-solid fa-pen-to-square"></i>
                       </span>
                       <span onClick={e => triggerUpdateLinks(e, item.id)} className="options-buttons delete-links-container">
                         <i className="fa-regular fa-trash-can"></i>
-                      </span>
+                      </span> */}
                     </div>
                   </div>
                   <div className="snippet-container" data-id={item.id} style={{display: 'none'}}>
-                    <button title="trigger-options" className="options-trigger" onClick={toggleOptions}>
-                      <i className="fa-solid fa-bars"></i>
-                      <i className="fa-solid fa-xmark"></i>
-                    </button>
+                    {
+                      Auth.loggedIn() ? 
+                        <button title="options-trigger" className="options-trigger" onClick={toggleOptions}>
+                          <i className="fa-solid fa-bars"></i>
+                          <i className="fa-solid fa-xmark"></i>
+                        </button> : ''
+                    }
                     <CodeEditor
                       // formSnippetDetails={item}
                       // setFormSnippetDetails={props.setFormSnippetDetails}
                       snippet={item.snippet}
                       ></CodeEditor>
                   </div>
-                  <div className="button-options-container" style={{display: "none"}}>
-                      <div className="button-options update-links-container">
-                        {/* <h3 className="options-title">
-                          Option
-                        </h3> */}
-                        <button 
-                          className="button" 
-                          title="Visibility"
-                          // onClick={(e) => triggerDeleteLinks(e, item.id)}
-                          >
-                          {/* Share */}
-                            <span className="icon-container update-links-container">
-                              <i className="fa-solid fa-users" style={{display: 'none'}}></i>
-                              <i className="fa-solid fa-user-shield"></i>
-                            </span>
-                        </button>
-                        <button 
-                          className="button" 
-                          title="Edit"
-                          onClick={(e) => triggerUpdateLinks(e, item.id)}
-                          >
-                          {/* Edit */}
-                            <span className="icon-container update-links-container">
-                              <i className="fa-solid fa-pen-to-square"></i>
-                            </span>
-                        </button>
-                        <button 
-                          className="button" 
-                          title="Delete"
-                          onClick={(e) => triggerDeleteSnippets(e, item.id)}
-                          >
-                          {/* Delete */}
-                            <span className="icon-container update-links-container">
-                              <i className="fa-solid fa-trash-can"></i>
-                            </span>
-                        </button>
-                      </div>
-                    </div>
+                  <TriggerOptions
+                        setErrorMessage={props.setErrorMessage}
+                        setRefresh={props.setRefresh}
+                        setFormSnippetDetails={props.setFormSnippetDetails}
+                        setSnippetID={props.setSnippetID}
+                        item={item}
+                        data={{
+                          id: item.id,
+                          collection: 'snippets',
+                          formModalID: 'add-snippet-modal',
+                          formModalTitle: '#add-snippet-modal .modal-card-title',
+                          formModalButton: '#add-snippet-modal button[type="submit"]',
+                          formModalOption: 'update',
+                          formModalHeaderTitle: 'Update Snippet',
+                          formModalButtonText: 'Update',
+                          deleteMsg: 'Snippet has been deleted successfully!',
+                        }}
+                      >
+                    </TriggerOptions>
                 </div>
               ))}
             </div>

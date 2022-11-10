@@ -28,9 +28,11 @@ export const modalFunctions = () => {
     const $target = document.getElementById(modal);
 
     $trigger.addEventListener('click', () => {
-      console.log('$trigger', $trigger)
-      console.log(createNew, $trigger.classList);
-      createNew ? openNewFromModal($target) : openModal($target);
+      console.log($target)
+      openModal($target)
+      // console.log('$trigger', $trigger)
+      // console.log(createNew, $trigger.classList);
+      // createNew ? openNewFromModal($target) : openModal($target);
     });
   });
 

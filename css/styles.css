@@ -8522,6 +8522,19 @@ h2 {
     right: 15px;
     font-size: 1.5rem;
     opacity: 0.5; }
+    .popup-search-container .popup-search-icon.hide {
+      display: none; }
+  .popup-search-container .clear-switch.button {
+    font-size: 1.5rem;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    width: 15px;
+    height: 15px;
+    padding: 0;
+    display: none; }
+    .popup-search-container .clear-switch.button.active {
+      display: flex; }
 
 #modal-login-form {
   padding: 20px; }
@@ -8532,20 +8545,26 @@ h2 {
     color: var(--text-primary);
     border-radius: 5px; }
 
-#remove-category-modal .modal-card .control,
+#linkRemoveCategoryModal .modal-card .control,
+#snippetRemoveCategoryModal .modal-card .control,
 #remove-snip-category-modal .modal-card .control {
+  align-items: center;
   display: flex;
-  padding: 5px 0;
-  gap: 20px;
-  align-items: center; }
-  #remove-category-modal .modal-card .control .buttons-container,
+  box-shadow: var(--box-shadow);
+  padding: 5px 10px;
+  justify-content: space-between;
+  border-radius: 5px;
+  margin-bottom: 5px; }
+  #linkRemoveCategoryModal .modal-card .control .buttons-container,
+  #snippetRemoveCategoryModal .modal-card .control .buttons-container,
   #remove-snip-category-modal .modal-card .control .buttons-container {
     display: flex;
     gap: 10px; }
-    #remove-category-modal .modal-card .control .buttons-container button,
+    #linkRemoveCategoryModal .modal-card .control .buttons-container button,
+    #snippetRemoveCategoryModal .modal-card .control .buttons-container button,
     #remove-snip-category-modal .modal-card .control .buttons-container button {
-      width: 35px;
-      height: 35px;
+      width: 30px;
+      height: 30px;
       color: var(--text-primary);
       background: var(--background);
       border: none;
@@ -8555,18 +8574,14 @@ h2 {
       align-items: center;
       justify-content: center;
       padding: 0; }
-      #remove-category-modal .modal-card .control .buttons-container button i,
+      #linkRemoveCategoryModal .modal-card .control .buttons-container button i,
+      #snippetRemoveCategoryModal .modal-card .control .buttons-container button i,
       #remove-snip-category-modal .modal-card .control .buttons-container button i {
         width: 35px;
         height: 35px;
         line-height: 35px; }
-    #remove-category-modal .modal-card .control .buttons-container #modify-category,
-    #remove-snip-category-modal .modal-card .control .buttons-container #modify-category {
-      border-radius: 50%; }
-    #remove-category-modal .modal-card .control .buttons-container #delete-category,
-    #remove-snip-category-modal .modal-card .control .buttons-container #delete-category {
-      border-radius: 50%; }
-  #remove-category-modal .modal-card .control .categoryName,
+  #linkRemoveCategoryModal .modal-card .control .categoryName,
+  #snippetRemoveCategoryModal .modal-card .control .categoryName,
   #remove-snip-category-modal .modal-card .control .categoryName {
     font-size: 1.4rem; }
 
@@ -8779,16 +8794,22 @@ input:checked + .slider:before {
   padding: 15px 10px;
   justify-content: flex-end; }
   .modal-card-head .modal-card-title, .modal-card-foot .modal-card-title {
-    color: var(--text-primary); }
+    color: var(--text-primary);
+    background: transparent; }
 
 .modal-card-body {
   background: var(--background);
   padding: 10px; }
   .modal-card-body .modal-card-title {
     color: var(--text-primary); }
-  .modal-card-body input {
+  .modal-card-body input, .modal-card-body select {
     position: relative;
-    padding-right: 20px; }
+    padding-right: 20px;
+    background: var(--background);
+    border: 2px solid var(--icon--color);
+    border-radius: 3px; }
+    .modal-card-body input:hover, .modal-card-body select:hover {
+      border-color: var(--icon--color); }
   .modal-card-body .clear-switch {
     cursor: pointer;
     width: 12px;
@@ -8814,6 +8835,8 @@ input:checked + .slider:before {
     position: absolute;
     font-size: 0;
     padding: 0; }
+    .modal-close.cancel:before, .modal-close.cancel:after, .modal-close.delete:before, .modal-close.delete:after {
+      top: 50%; }
 
 .options-buttons {
   font-size: 1.4rem;
@@ -8822,7 +8845,20 @@ input:checked + .slider:before {
   background-color: var(--background);
   color: var(--text-primary); }
 
-#category-select-container {
+#linkCategorySelectCont,
+#snippetCategorySelectCont {
   height: auto; }
-  #category-select-container:after {
+  #linkCategorySelectCont::after,
+  #snippetCategorySelectCont::after {
     font-size: 1.4rem; }
+
+.error-message-container {
+  display: none;
+  padding: 10px;
+  box-shadow: var(--box-shadow);
+  border: 2px solid var(--icon--color);
+  margin: 5px 10px;
+  border-radius: 5px;
+  justify-content: space-between; }
+  .error-message-container.show {
+    display: flex; }

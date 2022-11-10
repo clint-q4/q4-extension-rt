@@ -1,18 +1,16 @@
 import { useState, useEffect } from "react"
-import FormCard from "~.plasmo/components/FormCard";
-import FormCardSnippet from "~.plasmo/components/FormCardSnippet";
+import FormCard from "~.plasmo/components/forms/FormCard";
+import FormCardSnippet from "~.plasmo/components/forms/FormCardSnippet";
 import RenderLinks from "~.plasmo/components/RenderLinks";
 import RenderSnippets from "~.plasmo/components/RenderSnippets";
 import {modalFunctions} from "~.plasmo/utils/modal";
 import apiLinks from "~.plasmo/utils/apiLinks";
 import {getLists} from "~.plasmo/utils/apiCalls";
 import {groupLinks, linkToggle, initDeleteOrModify} from "./content";
-import fetchData from "~.plasmo/utils/fetchData";
 import './css/styles.css';
 import axios from 'axios';
-import getSuspender from "~.plasmo/utils/getSuspender";
 import PocketBase from 'pocketbase';
-import LoginForm from "~.plasmo/components/LoginForm";
+import LoginForm from "~.plasmo/components/forms/LoginForm";
 import Auth from '~.plasmo/utils/auth';
 import './node_modules/@fortawesome/fontawesome-free/css/all.min.css';
 

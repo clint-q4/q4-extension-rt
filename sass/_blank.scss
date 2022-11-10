@@ -495,7 +495,23 @@ h2 {
     right: 15px;
     font-size: 1.5rem;
     opacity: 0.5;
+    &.hide {
+      display: none;
+    }
   } 
+  .clear-switch.button {
+    font-size: 1.5rem;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    width: 15px;
+    height: 15px;
+    padding: 0;
+    display: none;
+    &.active {
+      display: flex;
+    }
+  }
 }
 
 #modal-login-form {
@@ -512,20 +528,24 @@ h2 {
   }
 }
 
-#remove-category-modal,
+#linkRemoveCategoryModal,
+#snippetRemoveCategoryModal,
 #remove-snip-category-modal {
   .modal-card {
     .control {
-      display: flex;
-      padding: 5px 0;
-      gap: 20px;
       align-items: center;
+      display: flex;
+      box-shadow: var(--box-shadow);
+      padding: 5px 10px;
+      justify-content: space-between;
+      border-radius: 5px;
+      margin-bottom: 5px;
       .buttons-container {
         display: flex;
         gap: 10px;
         button {
-          width: 35px;
-          height: 35px;
+          width: 30px;
+          height: 30px;
           color: var(--text-primary);
           background: var(--background);
           border: none;
@@ -540,13 +560,6 @@ h2 {
             height: 35px;
             line-height: 35px;
           }
-        }
-        #modify-category {
-          border-radius: 50%;
-          
-        }
-        #delete-category {
-          border-radius: 50%;
         }
       }
       .categoryName {
@@ -639,16 +652,6 @@ h2 {
     color: var(--text-primary);
   }
 }
-
-
-// .control {
-//   .is-danger.modal-close.cancel{
-//     position: fixed;
-//     font-size: 0px;
-//     top: 0;
-//     right: 0;
-//   }
-// }
 
 .button {
   white-space: pre-wrap;
@@ -814,6 +817,7 @@ input:checked + .slider:before {
   justify-content: flex-end;
   .modal-card-title {
     color: var(--text-primary);
+    background: transparent;
   }
 }
 .modal-card-body {
@@ -822,9 +826,15 @@ input:checked + .slider:before {
   .modal-card-title {
     color: var(--text-primary);
   }
-  input {
+  input, select {
     position: relative;
     padding-right: 20px;
+    background: var(--background);
+    border: 2px solid var(--icon--color);
+    border-radius: 3px;
+    &:hover {
+      border-color: var(--icon--color);
+    }
   }
   .clear-switch {
     cursor: pointer;
@@ -855,6 +865,9 @@ input:checked + .slider:before {
     position: absolute;
     font-size: 0;
     padding: 0;
+    &:before, &:after {
+      top: 50%;
+    }
   }
 }
 
@@ -866,12 +879,32 @@ input:checked + .slider:before {
   color: var(--text-primary);
 }
 
-#category-select-container {
+#linkCategorySelectCont,
+#snippetCategorySelectCont {
   height: auto;
-  &:after {
+  &::after {
     font-size: 1.4rem;
   }
 }
 
+.error-message-container {
+  display: none;
+  padding: 10px;
+  box-shadow: var(--box-shadow);
+  border: 2px solid var(--icon--color);
+  margin: 5px 10px;
+  border-radius: 5px;
+  justify-content: space-between;
+  &.show {
+    display: flex;
+  }
+}
+
+.delete:before, 
+.modal-close:before, 
+.delete:after, 
+.modal-close:after {
+
+}
 
 
