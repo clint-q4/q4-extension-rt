@@ -7,25 +7,64 @@ export const config: PlasmoContentScript = {
 
 
 export const groupLinks = (categoryData, linksData, setfilterdData, name) => {
-  if (categoryData.length && linksData.length) {
-    const groupedData = linksData.reduce((groups, item) => {
-      const group =
-        groups[categoryData.find((c) => c.id === item.category).name] || []
-      group.push(item)
-      groups[categoryData.find((c) => c.id === item.category).name] = group
-      return groups
-    }, {})
+  if(!categoryData.length || !linksData.length) return;
+  console.log(categoryData, linksData);
 
-    // console.log('running')
+  const groupedData = linksData.reduce((groups, item) => {
+    const group = groups[categoryData.find((c) => c.id === item.category).name] || []
+    console.log('group', group);
+    group.push(item)
+    groups[categoryData.find((c) => c.id === item.category).name] = group
+    console.log('groups', groups);
+    return groups
+  }, {})
 
-    return groupedData;
-    // localStorage.setItem(name, JSON.stringify(groupedData))
-    // const groupedLocalData = JSON.parse(localStorage.getItem(name))
-    // console.log(groupedLocalData, "group")
-    // setfilterdData(groupedLocalData)
-  } else {
-    return {};
+  console.log(groupedData)
+
+  // console.log('running')
+
+  return groupedData;
+}
+
+export const groupAndSort = (categoryData, linksData, indexArr, setIndexArray) => {
+  console.log('content', categoryData, linksData)
+  if(!categoryData.length || !linksData.length) return;
+  const res = [];
+  for(let data of categoryData) {
+    const obj = {
+      name: data.name,
+      list: linksData.filter(l => l.category === data.id)
+    };
+
+    if(obj.list.length) {
+      res.push(obj);
+    }
   }
+  if(indexArr.length) {
+    for(let inde of indexArr) {
+      res.find(el => {
+        if(el.name === inde.name) {
+          el.index = inde.index;
+        }
+      })
+    }
+    res.sort((a,b) => (a.index - b.index))
+  } else {
+    const indArr = [];
+    res.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0))
+    for(let ind in res) {
+      const obj = {
+        name: res[ind].name,
+        index: ind
+      }
+      console.log(obj)
+      res[ind].index = ind
+      indArr.push(obj);
+    }
+    setIndexArray(indArr);
+  }
+  console.log(res);
+  return res;
 }
 
 export const checkSite = async () => {
@@ -246,6 +285,19 @@ export const toggleAll = (e, parentEl) => {
         link.classList.remove("active")
         ;(linkTarget as HTMLInputElement).slideUp(300)
       }
+    }
+  }
+}
+
+export const slideAll = (toggleClass, direction) => {
+  const buttons = document.querySelectorAll<HTMLElement>(toggleClass);
+  for(let b of buttons) {
+    const id = b.dataset.toggle;
+    if(id) {
+      const linkTarget = document.getElementById(id);
+      direction === 'up' ? 
+        (linkTarget as HTMLInputElement).slideUp(300) :
+        (linkTarget as HTMLInputElement).slideDown(300)
     }
   }
 }

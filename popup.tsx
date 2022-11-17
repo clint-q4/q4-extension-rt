@@ -4,11 +4,12 @@ import useLocalStorage from 'use-local-storage';
 // CSS 
 import './css/styles.css';
 import './node_modules/@fortawesome/fontawesome-free/css/all.min.css';
+import slist from '~.plasmo/utils/sort.js'
 
 // Utility functions
-import {getLists} from "~.plasmo/utils/apiCalls";
+import {getLists, createIndexArray} from "~.plasmo/utils/apiCalls";
 import {modalFunctions} from "~.plasmo/utils/modal";
-import {checkSite, loginEditButtons, groupLinks, initDeleteOrModify, getCurrentTabLink} from "./content";
+import {checkSite, loginEditButtons, groupLinks, groupAndSort, initDeleteOrModify, getCurrentTabLink} from "./content";
 import Auth from '~.plasmo/utils/auth';
 
 // Components
@@ -43,10 +44,12 @@ function IndexPopup() {
 
   const [categoryData, setCategoryData] = useLocalStorage('categories', []);
   const [localStorageData, setLocalStorageData] = useLocalStorage('localData', {});
-  const [filterdData, setfilterdData] = useState(localStorageData.links || {});
-  const [filterdSnippetData, setfilterdSnippetData] = useState(localStorageData.snippets || {})
+  const [filterdData, setfilterdData] = useState(localStorageData?.links || []);
+  const [filterdSnippetData, setfilterdSnippetData] = useState(localStorageData?.snippets || [])
   const [refresh, setRefresh] = useState<boolean>(false);
   const [refreshSession, setRefreshSession] = useLocalStorage('refreshSession', '');
+  const [indexLinks, setIndexLinks] = useLocalStorage('indexLinks', []);
+  const [indexSnippets, setIndexSnippets] = useLocalStorage('indexSnippets', []);
 
   const [errorMessage, setErrorMessage] = useState<string>('');
 
@@ -56,7 +59,7 @@ function IndexPopup() {
   const [formLinkDetails, setFormLinkDetails] = useState(formLinkData);
   const [formSnippetDetails, setFormSnippetDetails] = useState(formSnippetData);
 
-  console.log(formLinkDetails);
+  console.log(filterdData, filterdSnippetData, 'rendering');
 
   useEffect(() => {
     // Run modal helper funtions
@@ -68,6 +71,30 @@ function IndexPopup() {
     if(theme === 'dark') {
       el.checked = true;
     }
+    const links = document.querySelector(".popup-buttons-container.quick-links");
+    const snippets = document.querySelector(".popup-buttons-container.quick-snippets");
+
+    if(links) {
+      slist(links, {
+        parentCont: 'quick-links',
+        setIndexLinks: setIndexLinks,
+        setLocalStorageData: setLocalStorageData,
+        localStorageData: localStorageData,
+        setfilterdData: setfilterdData
+      });
+    }
+    if(snippets) {
+      slist(snippets, {
+        parentCont: 'quick-snippets',
+        setIndexSnippets: setIndexSnippets,
+        setLocalStorageData: setLocalStorageData,
+        localStorageData: localStorageData,
+        setfilterdSnippetData: setfilterdSnippetData
+      })
+    }
+  }, [])
+
+  useEffect(() => {
 
     (async function fetchData() {
       console.log('fetching');
@@ -82,10 +109,13 @@ function IndexPopup() {
         const apiLinksData = await getLists('websites');
         const apiSnippetData = await getLists('snippets');
         const apiCategoryData = await getLists('category');
+        console.log(apiCategoryData, apiLinksData, apiSnippetData);
         if(Object.keys(apiLinksData).length && Object.keys(apiSnippetData).length) {
           setCategoryData(apiCategoryData);
-          const allLinks = groupLinks(apiCategoryData, apiLinksData, setfilterdData, 'links');
-          const allSnippets = groupLinks(apiCategoryData, apiSnippetData, setfilterdSnippetData, 'snippets');
+          // const allLinks = groupLinks(apiCategoryData, apiLinksData, setfilterdData, 'links');
+          // const allSnippets = groupLinks(apiCategoryData, apiSnippetData, setfilterdSnippetData, 'snippets');
+          const allLinks = groupAndSort(apiCategoryData, apiLinksData, indexLinks, setIndexLinks);
+          const allSnippets = groupAndSort(apiCategoryData, apiSnippetData, indexSnippets, setIndexSnippets);
           console.log(allLinks, allSnippets);
           const localData = {
             categories: apiCategoryData,

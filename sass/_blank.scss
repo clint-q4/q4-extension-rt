@@ -20,6 +20,7 @@
   --icon--color: #4666FF;
 }
 
+
 html {
   font-size: 10px;
 }
@@ -57,6 +58,7 @@ html {
 }
 
 a, p, input, label, select, textarea, button, .label, .input, .button, .select select {
+  font-family: $family-sans-serif;
   font-size: 1.4rem;
   line-height: 1.5;
   font-weight: 400;
@@ -900,11 +902,22 @@ input:checked + .slider:before {
   }
 }
 
-.delete:before, 
-.modal-close:before, 
-.delete:after, 
-.modal-close:after {
+/* Test */
 
+.slist {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* (B) DRAG-AND-DROP HINT */
+.slist .popup-buttons-container-sublist.hint {
+  border: 1px solid #ffc49a;
+  background: #feffb4;
+}
+.slist .popup-buttons-container-sublist.active {
+  border: 1px solid #ffa5a5;
+  background: #ffe7e7;
 }
 
 

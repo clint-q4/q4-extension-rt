@@ -4,7 +4,8 @@ import TriggerOptions from "./TriggerOptions";
 import Auth from '~.plasmo/utils/auth';
 
 function RenderLinks(props) {
-  const isNotEmpty = Object.keys(props.filterdData).length;
+  const isNotEmpty = props.filterdData.length;
+  console.log('filterd', props.filterdData);
   return (
     isNotEmpty ? 
     <>
@@ -20,15 +21,15 @@ function RenderLinks(props) {
         </span>
       </h3>
       <div className="popup-buttons-container quick-links">
-        {Object.keys(props.filterdData).map((key, index) => (
-          <div key={index} className="popup-buttons-container-sublist" data-title="quick-links">
+        {props.filterdData.map((el, index) => (
+          <div key={index} data-index={el.index} data-category={el.name} className="popup-buttons-container-sublist" data-title="quick-links">
             <button onClick={linkToggle} data-toggle={`toggle-id-${index}`} className="link-list-toggle">
-              {key}
+              {el.name}
               <span><i className="fa-regular fa-circle-down"></i></span>
             </button>
             <div className="links-container" id={`toggle-id-${index}`} style={{display: 'none'}}>
               <div className="links-container-inner">
-                {props.filterdData[key].map((item, ind) => (
+                {el.list.map((item, ind) => (
                   <div key={ind} className="links is-3">
                     <a className="button is-link" target="_blank" data-id={item.id} href={item.url}>{item.name}
                     {

@@ -27,11 +27,6 @@ $control-border-width: 2px;
 $input-border-color: $beige-lighter;
 $input-shadow: $dark-grey;
 
-
-html, body {
-  font-size: 10px;
-}
-
 // Import only what you need from Bulma
 @import "../node_modules/bulma/sass/utilities/_all.sass";
 @import "../node_modules/bulma/sass/base/_all.sass";
@@ -44,3 +39,4 @@ html, body {
 @import "../node_modules/bulma/sass/grid/_all.sass";
 @import "../node_modules/bulma/sass/form/_all.sass";
 @import "./blank"
+

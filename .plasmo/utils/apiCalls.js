@@ -79,6 +79,23 @@ const createCategory = async function(formData) {
   }
   return record;
 }
+
+const createIndexArray = async function(data) {
+  const token = Auth.getToken();
+  if(!token) return {};
+  const newAuthData = await client.users.refresh();
+  if(newAuthData) {
+    console.log(newAuthData);
+    data.profile = newAuthData.user.profile.id;
+  }
+  try {
+    const record = await client.records.create('sorting', data);
+    return record;
+  }
+  catch(err) {
+    console.log(err)
+  }
+}
  
 const updateCategory = async function(formData, categoryID) {
   const token = Auth.getToken();
@@ -190,5 +207,6 @@ export {
   updateLinks,
   updateSnippets,
   getSingleRecord,
-  createSnippets
+  createSnippets,
+  createIndexArray
 }

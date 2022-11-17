@@ -9,7 +9,7 @@ import TriggerOptions from "./TriggerOptions";
 // import CodeMirrorEditor from "./CodeMirrorEditor";
 
 function RenderSnippets(props) {
-  const isNotEmpty = Object.keys(props.filterdData).length;
+  const isNotEmpty = props.filterdData.length;
 
 
   function copySnippet(e) {
@@ -51,15 +51,15 @@ function RenderSnippets(props) {
         </span>
     </h3>
     <div className="popup-buttons-container quick-snippets">
-      {Object.keys(props.filterdData).map((key, index) => (
-        <div key={index} className="popup-buttons-container-sublist" data-title="quick-links">
+      {props.filterdData.map((el, index) => (
+        <div key={index} data-index={el.index} data-category={el.name} className="popup-buttons-container-sublist" data-title="quick-links">
           <button onClick={linkToggle} data-toggle={`toggle-id-snip-${index}`} className="link-list-toggle">
-            {key}
+            {el.name}
             <span><i className="fa-regular fa-circle-down"></i></span>
           </button>
           <div className="links-container" id={`toggle-id-snip-${index}`} style={{display: 'none'}}>
             <div className="p-4 links-container-inner">
-              {props.filterdData[key].map((item, ind) => (
+              {el.list.map((item, ind) => (
                 <div key={ind} className="snippets is-3">
                   <div className="snippet-title-buttons">
                     <div className="snippet-title">
@@ -125,7 +125,7 @@ function RenderSnippets(props) {
         </div>
       ))}
     </div>
-    </> : ''
+    </> : <></>
   )
 }
 
