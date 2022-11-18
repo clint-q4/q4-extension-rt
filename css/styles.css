@@ -8511,7 +8511,7 @@ h2 {
   .popup-search-container #popup-search {
     position: relative;
     padding-right: 40px;
-    color: var(--text-grey); }
+    color: var(--text-primary); }
     .popup-search-container #popup-search::placeholder {
       color: var(--text-grey); }
   .popup-search-container .popup-search-icon {

@@ -3,18 +3,19 @@ import Auth from '../utils/auth';
 
 const client = new PocketBase('http://127.0.0.1:8090');
 
-const getLists = async function(collection, pageN = 1, perPage = 50, filerts) {
+const getLists = async function(collection, pageN = 1, perPage = 50) {
   const token = Auth.getToken();
   if(!token) return [];
   const newAuthData = await client.users.refresh();
-  filter = `profile = ${newAuthData.user.profile.id}`;
-  if(!filerts) {
-    filerts = filter;
+  console.log('new', newAuthData);
+
+  let filters = {
+    filter: `profile = "${newAuthData.user.profile.id}"`
   }
+
   try {
-    const resultList = await client.records.getList(collection, pageN, perPage, {
-      filerts
-    });
+    const resultList = await client.records.getList(collection, pageN, perPage, filters);
+    console.log('rr', resultList);
     return resultList.items;
   }
   catch(err) {
@@ -28,6 +29,37 @@ const loginAuth = async function (email, password) {
     return adminAuthData;
   }
   catch(err) {
+    return {};
+  }
+}
+
+const registerAuth = async function (formData) {
+  // create user
+  try {
+    const user = await client.users.create({
+      email: formData.email,
+      password: formData.password,
+      passwordConfirm: formData.confirmPassword
+    });
+
+    console.log(user);
+  
+    // send verification email
+    // await client.users.requestVerification(user.email);
+    
+    const adminAuthData = await client.users.authViaEmail(formData.email, formData.password);
+
+    console.log('testlogin', adminAuthData);
+
+    // set user profile data
+    const updatedProfile = await client.records.update('profiles', adminAuthData.user.profile.id, {
+      name: formData.name,
+    });
+
+    return adminAuthData;
+  }
+  catch(err) {
+    console.log(err);
     return {};
   }
 }
@@ -199,6 +231,7 @@ export {
   client, 
   getLists, 
   loginAuth, 
+  registerAuth,
   createLinks, 
   createCategory, 
   updateCategory , 

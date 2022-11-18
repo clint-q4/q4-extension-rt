@@ -110,26 +110,33 @@ function IndexPopup() {
         const apiSnippetData = await getLists('snippets');
         const apiCategoryData = await getLists('category');
         console.log(apiCategoryData, apiLinksData, apiSnippetData);
-        if(Object.keys(apiLinksData).length && Object.keys(apiSnippetData).length) {
+        if(apiLinksData.length && apiCategoryData.length) {
           setCategoryData(apiCategoryData);
-          // const allLinks = groupLinks(apiCategoryData, apiLinksData, setfilterdData, 'links');
-          // const allSnippets = groupLinks(apiCategoryData, apiSnippetData, setfilterdSnippetData, 'snippets');
           const allLinks = groupAndSort(apiCategoryData, apiLinksData, indexLinks, setIndexLinks);
-          const allSnippets = groupAndSort(apiCategoryData, apiSnippetData, indexSnippets, setIndexSnippets);
-          console.log(allLinks, allSnippets);
-          const localData = {
+          console.log(allLinks);
+          setLocalStorageData({
+            ...localStorageData,
             categories: apiCategoryData,
             links: allLinks,
-            snippets: allSnippets
-          }
-          setLocalStorageData(localData);
+          });
           setfilterdData(allLinks) 
+          const sessionData = new Date().toLocaleString();
+          setRefreshSession(sessionData);
+        }
+        if(apiSnippetData.length && apiCategoryData.length) {
+          setCategoryData(apiCategoryData);
+          const allSnippets = groupAndSort(apiCategoryData, apiSnippetData, indexSnippets, setIndexSnippets);
           setfilterdSnippetData(allSnippets);
+          setLocalStorageData({
+            ...localStorageData,
+            categories: apiCategoryData,
+            links: allSnippets,
+          });
           const sessionData = new Date().toLocaleString();
           setRefreshSession(sessionData);
         }
       }
-      if(!Object.keys(filterdData).length && !Object.keys(filterdSnippetData).length) {
+      if(!filterdData.length || !filterdSnippetData.length) {
         fetchData();
         console.log('test 1')
       } else if(diff >= 24) {
@@ -258,6 +265,7 @@ function IndexPopup() {
           )}
           <LoginForm
             setRefresh={setRefresh}
+            setLocalStorageData={setLocalStorageData}
           ></LoginForm>
         </div>
         <Search 

@@ -1,18 +1,19 @@
 import { useState, useEffect } from "react";
 import PocketBase from 'pocketbase';
 import Auth from '../../utils/auth';
-import { loginAuth } from '../../utils/apiCalls';
-import RegisterForm from './RegisterForm';
+import { registerAuth } from '../../utils/apiCalls';
 
-function LoginForm(props) {
+function RegisterForm(props) {
   // form validation
-  const LoginFormData = {
+  const registerFormData = {
+    name: "",
     email: "",
-    password: ""
+    password: "",
+    confirmPassword: ""
   }
 
-  const [loginForm, setLoginForm] = useState(LoginFormData);
-  const {email, password} = loginForm;
+  const [registerForm, setRegisterForm] = useState(registerFormData);
+  const {email, password, confirmPassword, name} = registerForm;
   const [validated] = useState(false);
   const [errorMessage, setErrorMessage] = useState("")
 
@@ -29,25 +30,25 @@ function LoginForm(props) {
     }
 
     if (!errorMessage) {
-      setLoginForm({
-        ...loginForm,
+      setRegisterForm({
+        ...registerForm,
         [e.target.name]: e.target.value
       })
     }
-    console.log(loginForm, errorMessage);
+    console.log(registerForm, errorMessage);
   }
-  
+    
   async function handleSubmit(e) {
     e.preventDefault();
     if(email.length && password.length) {
-      document.querySelector<HTMLElement>('.error-text').style.color = 'green';
+      document.querySelector<HTMLElement>('#modal-register-form .error-text').style.color = 'green';
       setErrorMessage('Sending...');  
-      const adminAuthData = await loginAuth(email, password);
+      const adminAuthData = await registerAuth(registerForm);
       if(adminAuthData.token) {
-        const $el = document.querySelector('#modal-login-form');
+        const $el = document.querySelector('#modal-register-form');
         Auth.login(adminAuthData.token);
-        setLoginForm(LoginFormData);
-        setErrorMessage('You have successfully logged in!');
+        setRegisterForm(registerFormData);
+        setErrorMessage('You have successfully registered and logged in!');
         setTimeout(() => {
           if($el.classList.contains('is-active')) {
             $el.classList.remove('is-active');
@@ -60,39 +61,32 @@ function LoginForm(props) {
       }
 
     } else {
-      document.querySelector<HTMLElement>('.error-text').style.color = 'red';
+      document.querySelector<HTMLElement>('#modal-register-form .error-text').style.color = 'red';
       setErrorMessage('One or more fields are empty. Please try again!');
     }
   }
-  return (
-    <>
-      <div className="user-button-container is-flex is-align-items-center">
-      {Auth.loggedIn() ? (
-            <button onClick={(e) => Auth.logout(props.setLocalStorageData)} className="button logout-button" type="button">
-              <i className="fa-solid fa-user-bounty-hunter"></i>
-              Logout
-            </button>
-        ) : (
-            <button type="button" className="button js-modal-trigger" data-target="modal-login-form">
-              <i className="fa-solid fa-user-bounty-hunter"></i>
-              Login
-            </button>
-        )}
-      </div>
-      <div className="user-details-container">
-        <div>
 
-        </div>
-      </div>
-      <form className="modal" id="modal-login-form" onSubmit={handleSubmit}>
+  return (
+    <form className="modal" id="modal-register-form" onSubmit={handleSubmit}>
         <div className="modal-background"></div>
         <div className="modal-card">
         <header className="modal-card-head">
-          <p className="modal-card-title">Login</p>
+          <p className="modal-card-title">Register</p>
           <button className="button is-link modal-close cancel">Cancel</button>        
         </header>
         <div className="modal-card-body py-5">
-          <div className="login-form" id="loginForm">
+          <div className="register-form" id="registerForm">
+            <div className="field">
+              <p className="control has-icons-left has-icons-right">
+                <input className="input" name="name" type="name" placeholder="Name" onChange={handleChange}/>
+                <span className="icon is-small is-left">
+                  <i className="fas fa-envelope"></i>
+                </span>
+                <span className="icon is-small is-right">
+                  <i className="fas fa-check"></i>
+                </span>
+              </p>
+            </div>
             <div className="field">
               <p className="control has-icons-left has-icons-right">
                 <input className="input" name="email" type="email" placeholder="Email" onChange={handleChange}/>
@@ -112,6 +106,14 @@ function LoginForm(props) {
                 </span>
               </p>
             </div>
+            <div className="field">
+              <p className="control has-icons-left">
+                <input className="input" name="confirmPassword" type="password" placeholder="Re-enter Password" onChange={handleChange} />
+                <span className="icon is-small is-left">
+                  <i className="fas fa-lock"></i>
+                </span>
+              </p>
+            </div>
           </div>
         </div>
         <footer className="modal-card-foot">
@@ -120,24 +122,14 @@ function LoginForm(props) {
           </div>
           <div className="field is-grouped">
             <div className="control">
-              <button type="submit" className="button">Login</button>
-              <button type="button" onClick={(e) => {
-                e.preventDefault();
-                const regFrom = document.getElementById('modal-register-form');
-                const logFrom = document.getElementById('modal-login-form');
-                regFrom.classList.toggle('is-active');
-                logFrom.classList.toggle('is-active');
-              }} className="button">Register</button>
+              <button type="submit" className="button">Register</button>
+              <button type="button" className="button">Login</button>
             </div>
           </div>
         </footer>
         </div>
       </form>
-      <RegisterForm
-        setRefresh={props.setRefresh}
-      ></RegisterForm>
-    </>
   )
 }
 
-export default LoginForm;
+export default RegisterForm;
