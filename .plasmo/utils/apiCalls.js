@@ -2,20 +2,21 @@ import PocketBase from 'pocketbase';
 import Auth from '../utils/auth';
 
 const client = new PocketBase('http://127.0.0.1:8090');
+let profileID = '';
 
 const getLists = async function(collection, pageN = 1, perPage = 50) {
   const token = Auth.getToken();
   if(!token) return [];
-  const newAuthData = await client.users.refresh();
-  console.log('new', newAuthData);
-
-  let filters = {
-    filter: `profile = "${newAuthData.user.profile.id}"`
-  }
 
   try {
+    // const newAuthData = await client.users.refresh();
+    // console.log('aaaa', newAuthData)
+    // if(!newAuthData.token) return [];
+    let filters = {
+        // filter: `profile = "${newAuthData.user.profile.id}"`
+        filter: `profile = "${client.user.profile.id}"`
+      }
     const resultList = await client.records.getList(collection, pageN, perPage, filters);
-    console.log('rr', resultList);
     return resultList.items;
   }
   catch(err) {
@@ -26,10 +27,27 @@ const getLists = async function(collection, pageN = 1, perPage = 50) {
 const loginAuth = async function (email, password) {
   try {
     const adminAuthData = await client.users.authViaEmail(email, password);
-    return adminAuthData;
+    console.log(adminAuthData);
+    if(!adminAuthData.user.verified) {
+      const respose = {
+        status: false,
+        message: 'Please verify the email address first!'
+      };
+      return respose;
+    } else {
+      profileID = adminAuthData.user.profile.id;
+      console.log(profileID);
+      adminAuthData['status'] = true;
+      console.log('addd', adminAuthData);
+      return adminAuthData;
+    }
   }
   catch(err) {
-    return {};
+    console.error(err);
+    return {
+      status: false,
+      message: 'Incorrect creditinals! Please try again.'
+    };
   }
 }
 
@@ -40,92 +58,99 @@ const registerAuth = async function (formData) {
       email: formData.email,
       password: formData.password,
       passwordConfirm: formData.confirmPassword
-    });
-
-    console.log(user);
-  
+    });  
     // send verification email
-    // await client.users.requestVerification(user.email);
+    await client.users.requestVerification(user.email);
     
     const adminAuthData = await client.users.authViaEmail(formData.email, formData.password);
-
-    console.log('testlogin', adminAuthData);
 
     // set user profile data
     const updatedProfile = await client.records.update('profiles', adminAuthData.user.profile.id, {
       name: formData.name,
     });
 
-    return adminAuthData;
+    console.log(updatedProfile);
+
+    return updatedProfile;
   }
   catch(err) {
-    console.log(err);
+    console.error(err);
     return {};
   }
 }
 
 const createLinks = async function (formData) {
   const token = Auth.getToken();
-  if(!token) return {};
+  if(!token) return [];
   const newAuthData = await client.users.refresh();
+  if(!newAuthData.token) return [];
   if(newAuthData) {
-    console.log(newAuthData);
     formData.profile = newAuthData.user.profile.id;
   }
-
-  const record = await client.records.create('websites', formData);
-  if(!record) {
-    return 'Something went wrong!';
+  try {
+    console.log('authdata',newAuthData)
+    const record = await client.records.create('websites', formData);
+    console.log(record);
+    return record;
   }
-  return record;
+  catch(err) {
+    console.error(err);
+    return {};
+  }
 }
 
 const createSnippets = async function (formData) {
   const token = Auth.getToken();
   if(!token) return {};
-  const newAuthData = await client.users.refresh();
-  if(newAuthData) {
-    console.log(newAuthData);
-    formData.profile = newAuthData.user.profile.id;
+  try {
+    const newAuthData = await client.users.refresh();
+    if(newAuthData) {
+      formData.profile = newAuthData.user.profile.id;
+    }
+  
+    const record = await client.records.create('snippets', formData);
+    return record;
+  }
+  catch(err) {
+    console.error(err);
+    return {};
   }
 
-  const record = await client.records.create('snippets', formData);
-  if(!record) {
-    return 'Something went wrong!';
-  }
-  return record;
 }
 
 const createCategory = async function(formData) {
   const token = Auth.getToken();
   if(!token) return {};
-  const newAuthData = await client.users.refresh();
-  if(newAuthData) {
-    console.log(newAuthData);
-    formData.profile = newAuthData.user.profile.id;
+  try {
+    const newAuthData = await client.users.refresh();
+    if(newAuthData) {
+      formData.profile = newAuthData.user.profile.id;
+    }
+    const record = await client.records.create('category', formData);
+    console.log(record);
+    return record;
   }
-  const record = await client.records.create('category', formData);
-  console.log(record);
-  if(!record) {
-    return 'Something went wrong!';
+  catch(err) {
+    console.error(err);
+    return {};
   }
-  return record;
 }
 
 const createIndexArray = async function(data) {
   const token = Auth.getToken();
   if(!token) return {};
-  const newAuthData = await client.users.refresh();
-  if(newAuthData) {
-    console.log(newAuthData);
-    data.profile = newAuthData.user.profile.id;
-  }
   try {
+    const newAuthData = await client.users.refresh();
+    if(newAuthData) {
+      data.profile = newAuthData.user.profile.id;
+    }
     const record = await client.records.create('sorting', data);
+    console.log(record);
     return record;
   }
   catch(err) {
-    console.log(err)
+    console.error(err);
+    return {};
   }
 }
  
@@ -141,58 +166,76 @@ const updateCategory = async function(formData, categoryID) {
     return record;
   }
   catch(err) {
-      return 'Something went wrong!';
+    console.error(err);
+    return {};
   }
 }
 
 const deleteCategory = async function(categoryID) {
   const token = Auth.getToken();
   if(!token) return {};
-  const newAuthData = await client.users.refresh();
-  if(newAuthData) {
-    const response = await client.records.delete('category', categoryID);
-    if(response === null) {
-      const respose = {
-        message: 'Catgeory has been deleted successfully!'
-      };
-      return respose;
-    } else {
-      return response;
+  try {
+    const newAuthData = await client.users.refresh();
+    if(newAuthData) {
+      const response = await client.records.delete('category', categoryID);
+      if(response === null || response) {
+        const respose = {
+          status: true,
+          message: 'Catgeory has been deleted successfully!'
+        };
+        return respose;
+      }
     }
+  }
+  catch(err) {
+    console.error(err);
+    return {
+      status: false,
+      reason: 'Please make sure it is not linked to any items'
+    };
   }
 }
 
 const deleteLinks = async function(el ,linkID) {
   const token = Auth.getToken();
   if(!token) return {};
-  const newAuthData = await client.users.refresh();
-  if(newAuthData) {
-    const response = await client.records.delete(el, linkID);
-    if(response === null) {
-      const respose = {
-        message: `${el} has been deleted successfully!`
-      };
-      return respose;
-    } else {
-      return response;
+  try {
+    const newAuthData = await client.users.refresh();
+    if(newAuthData) {
+      const response = await client.records.delete(el, linkID);
+      console.log(response);
+      if(response || response === null) {
+        const respose = {
+          message: `${el} has been deleted successfully!`
+        };
+        return respose;
+      } 
     }
+  }
+  catch(err) {
+    console.error(err);
+    return {};
   }
 }
 
 const updateLinks = async function(linkID, formData) {
   const token = Auth.getToken();
   if(!token) return {};
-  const newAuthData = await client.users.refresh();
-  if(newAuthData) {
-    console.log(newAuthData);
-    formData.profile = newAuthData.user.profile.id;
+  try {
+    const newAuthData = await client.users.refresh();
+    if(newAuthData) {
+      formData.profile = newAuthData.user.profile.id;
+    }
+    const record = await client.records.update('websites', linkID , formData);
+    if(!record) {
+      return 'Something went wrong!';
+    }
+    return record;
   }
-  const record = await client.records.update('websites', linkID , formData);
-  console.log(record);
-  if(!record) {
-    return 'Something went wrong!';
+  catch(err) {
+    console.error(err);
+    return {};
   }
-  return record;
 }
 
 
@@ -200,30 +243,40 @@ const updateSnippets = async function(snippetID, formData) {
   console.log('test', snippetID, formData)
   const token = Auth.getToken();
   if(!token) return {};
-  const newAuthData = await client.users.refresh();
-  if(newAuthData) {
-    console.log(newAuthData);
-    formData.profile = newAuthData.user.profile.id;
+  try {
+    const newAuthData = await client.users.refresh();
+    if(newAuthData) {
+      formData.profile = newAuthData.user.profile.id;
+    }
+    const record = await client.records.update('snippets', snippetID , formData);
+    if(!record) {
+      return 'Something went wrong!';
+    }
+    return record;
   }
-  const record = await client.records.update('snippets', snippetID , formData);
-  console.log(record);
-  if(!record) {
-    return 'Something went wrong!';
+  catch(err) {
+    console.error(err);
+    return {};
   }
-  return record;
 }
 
 const getSingleRecord = async function (collection, id, relations) {
   const token = Auth.getToken();
   if(!token) return {};
-  const newAuthData = await client.users.refresh();
-  if(newAuthData) {
-    const record = await client.records.getOne(collection, id, relations);
-    console.log(record);
-    if(!record) {
-      return 'Something went wrong!';
+  try {
+    const newAuthData = await client.users.refresh();
+    if(newAuthData) {
+      const record = await client.records.getOne(collection, id, relations);
+      console.log(record);
+      if(!record) {
+        return 'Something went wrong!';
+      }
+      return record;
     }
-    return record;
+  }
+  catch(err) {
+    console.error(err);
+    return {};
   }
 }
 

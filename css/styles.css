@@ -8289,7 +8289,8 @@ h2 {
   display: block; }
 
 #add-snippet-button,
-#add-options-button {
+#add-options-button,
+#refreshAll {
   width: 3rem;
   height: 3rem;
   margin: 0 5px; }
@@ -8429,6 +8430,9 @@ h2 {
 
 .popup-buttons-container span.snip-toggle-icon.active i:before {
   transform: rotate(180deg); }
+
+.popup-buttons-container.cms-links {
+  margin-top: 10px; }
 
 .options-container.quick-snippets .links-container-inner,
 .popup-buttons-container.quick-snippets .links-container-inner {
@@ -8835,6 +8839,8 @@ input:checked + .slider:before {
     padding: 0; }
     .modal-close.cancel:before, .modal-close.cancel:after, .modal-close.delete:before, .modal-close.delete:after {
       top: 50%; }
+  .modal-close:hover {
+    background-color: #f14668; }
 
 .options-buttons {
   font-size: 1.4rem;
@@ -8855,11 +8861,14 @@ input:checked + .slider:before {
   padding: 10px;
   box-shadow: var(--box-shadow);
   border: 2px solid var(--icon--color);
-  margin: 5px 10px;
+  background-color: #ffe5e5;
+  margin: 10px 10px 0 10px;
   border-radius: 5px;
   justify-content: space-between; }
   .error-message-container.show {
     display: flex; }
+    [data-theme="dark"] .error-message-container.show p {
+      color: #222; }
 
 /* Test */
 .slist {

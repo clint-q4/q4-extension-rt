@@ -8,26 +8,17 @@ export const config: PlasmoContentScript = {
 
 export const groupLinks = (categoryData, linksData, setfilterdData, name) => {
   if(!categoryData.length || !linksData.length) return;
-  console.log(categoryData, linksData);
-
   const groupedData = linksData.reduce((groups, item) => {
     const group = groups[categoryData.find((c) => c.id === item.category).name] || []
-    console.log('group', group);
     group.push(item)
     groups[categoryData.find((c) => c.id === item.category).name] = group
-    console.log('groups', groups);
     return groups
   }, {})
-
-  console.log(groupedData)
-
-  // console.log('running')
 
   return groupedData;
 }
 
-export const groupAndSort = (categoryData, linksData, indexArr, setIndexArray) => {
-  console.log('content', categoryData, linksData)
+export const groupAndSort = (categoryData, linksData, indexArr, setIndexArray, createIndexArray, type) => {
   if(!categoryData.length || !linksData.length) return;
   const res = [];
   for(let data of categoryData) {
@@ -57,13 +48,17 @@ export const groupAndSort = (categoryData, linksData, indexArr, setIndexArray) =
         name: res[ind].name,
         index: ind
       }
-      console.log(obj)
       res[ind].index = ind
       indArr.push(obj);
     }
+
+    const data = {
+      index: indArr,
+      name: type
+    }
     setIndexArray(indArr);
+    createIndexArray(data);
   }
-  console.log(res);
   return res;
 }
 
@@ -72,7 +67,6 @@ export const checkSite = async () => {
     active: true,
     currentWindow: true
   })
-  // console.log(currentTab)
   chrome.scripting.executeScript(
     {
       target: { tabId: currentTab.id },
@@ -80,7 +74,6 @@ export const checkSite = async () => {
       func: checkQ4Site
     },
     (result) => {
-      // console.log(result)
       for (let r of result) {
         if (r.result) {
           document.querySelector("#q4-site-verification").innerHTML =
@@ -271,7 +264,6 @@ export const toggleAll = (e, parentEl) => {
       _t.classList.add("active")
       for (let link of toggleLinks) {
         const id = (link as HTMLInputElement).dataset.toggle
-        // console.log(link.classList)
         link.classList.add("active")
         const linkTarget = document.getElementById(id)
         ;(linkTarget as HTMLInputElement).slideDown(300)
@@ -307,11 +299,9 @@ export const toggleOptions = (e) => {
   let _t = e.target
   let match = _t.matches(".options-trigger")
   _t = match ? _t : _t.parentElement
-  // console.log("check", _t)
   match = _t.matches(".options-trigger")
   if (match) {
     const toggleCont = _t.parentElement.nextSibling
-    // console.log(toggleCont)
     if (!toggleCont.classList.contains("active")) {
       _t.classList.toggle("active")
       toggleCont.classList.add("active")
@@ -321,7 +311,6 @@ export const toggleOptions = (e) => {
       _t.classList.toggle("active")
       ;(toggleCont as HTMLInputElement).slideUp(300)
     }
-    // console.log(toggleCont)
   }
 }
 
@@ -363,7 +352,6 @@ export const initDeleteOrModify = (e) => {
           _t.classList.add("active")
           for (let link of toggleLinks) {
             const id = (link as HTMLInputElement).dataset.toggle
-            // console.log(link.classList)
             link.classList.add("active")
             const linkTarget = document.getElementById(id)
             ;(linkTarget as HTMLInputElement).slideDown(300)
@@ -388,7 +376,6 @@ export const initDeleteOrModify = (e) => {
           _t.classList.add("active")
           for (let link of toggleLinks) {
             const id = (link as HTMLInputElement).dataset.toggle
-            // console.log(link.classList)
             link.classList.add("active")
             const linkTarget = document.getElementById(id)
             ;(linkTarget as HTMLInputElement).slideDown(300)
@@ -407,4 +394,50 @@ export const initDeleteOrModify = (e) => {
         break
     }
   }
+}
+
+export const fetchData = async (obj) => {
+  const apiLinksData = await obj.getLists('websites') || [];
+  const apiSnippetData = await obj.getLists('snippets') || [];
+  const apiCategoryData = await obj.getLists('category') || [];
+  
+  let localData = {};
+
+  if(apiLinksData.length && apiCategoryData.length) {
+    const allLinks = groupAndSort(
+        apiCategoryData, 
+        apiLinksData, 
+        obj.indexLinks, 
+        obj.setIndexLinks,
+        obj.createIndexArray,
+        'links'
+      );
+    localData['links'] = allLinks;
+    obj.setfilterdData(allLinks);
+  } else if(!apiLinksData.length && apiCategoryData.length) {
+    localData['links'] = [];
+  }
+  if(apiSnippetData.length && apiCategoryData.length) {
+    const allSnippets = groupAndSort(
+        apiCategoryData, 
+        apiSnippetData, 
+        obj.indexSnippets, 
+        obj.setIndexSnippets,
+        obj.createIndexArray,
+        'snippets'
+      );
+    localData['snippets'] = allSnippets;
+    obj.setfilterdSnippetData(allSnippets);
+  } else if(!apiSnippetData.length && apiCategoryData.length) {
+    localData['snippets'] = [];
+  }
+  if(apiCategoryData.length) {
+    localData['categories'] = apiCategoryData;
+    obj.setCategoryData(apiCategoryData);
+  } 
+
+  const sessionData = new Date().toLocaleString();
+  obj.setRefreshSession(sessionData);
+  console.log('lc', localData)
+  obj.setLocalStorageData(localData);
 }

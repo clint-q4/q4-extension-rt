@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import PocketBase from 'pocketbase';
 import Auth from '../../utils/auth';
 import { loginAuth } from '../../utils/apiCalls';
 import RegisterForm from './RegisterForm';
@@ -34,28 +33,34 @@ function LoginForm(props) {
         [e.target.name]: e.target.value
       })
     }
-    console.log(loginForm, errorMessage);
   }
   
   async function handleSubmit(e) {
     e.preventDefault();
+    const errorCont = document.querySelector<HTMLElement>('#modal-login-form .error-text');
     if(email.length && password.length) {
-      document.querySelector<HTMLElement>('.error-text').style.color = 'green';
       setErrorMessage('Sending...');  
       const adminAuthData = await loginAuth(email, password);
-      if(adminAuthData.token) {
+      if(!adminAuthData.status) {
+        errorCont.style.color = 'red';
+        setErrorMessage(adminAuthData.message);
+        return;
+      }
+      if(adminAuthData.hasOwnProperty('token')) {
+        errorCont.style.color = 'green';
         const $el = document.querySelector('#modal-login-form');
-        Auth.login(adminAuthData.token);
+        Auth.login(adminAuthData['token']);
         setLoginForm(LoginFormData);
         setErrorMessage('You have successfully logged in!');
         setTimeout(() => {
           if($el.classList.contains('is-active')) {
             $el.classList.remove('is-active');
           }
-          props.setRefresh(true);
+          // props.setRefresh(true);
+          window.location.reload();
         }, 500)
       } else {
-        document.querySelector<HTMLElement>(".error-text").style.color = "red"
+        errorCont.style.color = 'red';
         setErrorMessage('Sorry, Incorrect credintials. Please try again!');
       }
 
@@ -89,7 +94,7 @@ function LoginForm(props) {
         <div className="modal-card">
         <header className="modal-card-head">
           <p className="modal-card-title">Login</p>
-          <button className="button is-link modal-close cancel">Cancel</button>        
+          <button className="button modal-close cancel">Cancel</button>        
         </header>
         <div className="modal-card-body py-5">
           <div className="login-form" id="loginForm">

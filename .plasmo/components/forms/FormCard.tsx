@@ -12,7 +12,6 @@ function FormCard(props) {
 
   const [formCategoryDetails, setformCategoryDetails] =
     useState(formCategoryData)
-    console.log(props.formLinkDetails, 'props')
   const { name, url, category } = props.formLinkDetails;
   const { mainCategory } = formCategoryDetails
   // const [categoryData, setCategoryData] = useState(props.categoryData);
@@ -58,7 +57,6 @@ function FormCard(props) {
         [e.target.name]: ''
       })
       clearSwitch.classList.remove('active');
-      console.log(clearSwitch.classList, 'after');
       setErrorMessage(
         `${
           e.target.name.charAt(0).toUpperCase() + e.target.name.slice(1)
@@ -88,6 +86,8 @@ function FormCard(props) {
           setErrorMessage('Please enter a valid URL!');
           return;
         }
+
+        console.log('form', props.formLinkDetails);
         const record = await createLinks(props.formLinkDetails);
   
         if(record) {

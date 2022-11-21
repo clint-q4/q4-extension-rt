@@ -58,7 +58,6 @@ function FormCardSnippet(props) {
     } else {
       setErrorMessage("")
     }
-    console.log('fired');
 
     if (!errorMessage) {
       props.setFormSnippetDetails({
@@ -81,7 +80,6 @@ function FormCardSnippet(props) {
     }
     if(option === 'create') {
       if(name.length && snippet.length && category.length) {
-        console.log(props.formSnippetDetails);
         setErrorMessage('adding... please wait!');  
         if(url.length && !validateUrl(url)) {
           errorStatus.style.color = 'red';
@@ -119,8 +117,6 @@ function FormCardSnippet(props) {
           return;
         }
         const record = await updateSnippets(props.snippetID, props.formSnippetDetails);
-
-        console.log('updatedSnip Results', record);
 
   
         if(record) {

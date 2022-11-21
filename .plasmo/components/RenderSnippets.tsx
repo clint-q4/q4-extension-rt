@@ -17,9 +17,7 @@ function RenderSnippets(props) {
     let _t = e.target;
     const match = _t.matches('.copy-icon');
     match ? _t : _t = _t.parentNode;
-    console.log(_t);
     const id = _t.dataset.id;
-    // console.log(_t.parentElement.nextSibling);
     (document.querySelector(`.snippet-container[data-id="${id}"] textarea`) as HTMLInputElement).select();
     document.execCommand('copy');
   }
@@ -63,7 +61,7 @@ function RenderSnippets(props) {
                 <div key={ind} className="snippets is-3">
                   <div className="snippet-title-buttons">
                     <div className="snippet-title">
-                      <p data-id={item.id}>{item.name}</p>
+                      <p title={item.name} data-id={item.id}>{item.name}</p>
                     </div>
                     <div className="snippet-buttons">
                       <span className="copy-icon" data-id={item.id} onClick={copySnippet}>

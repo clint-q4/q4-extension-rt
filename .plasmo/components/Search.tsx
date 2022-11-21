@@ -1,13 +1,18 @@
 
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { slideAll } from "../../content";
 import '../utils/slideToggle';
 import "../../content";
 
 export default function Search(props) {
-  const [allLinks,] = useState(props.filterdData || [])
-  const [allSnippets,] = useState(props.filterdSnippetData || [])
+  const [allLinks, setAllLinks] = useState([])
+  const [allSnippets, setAllSnippets] = useState([])
+  useEffect(() => {
+    setAllLinks(props.localStorageData.links);
+    setAllSnippets(props.localStorageData.snippets);
+  }, [props.localStorageData]);
+
   const keyUpTimer = useRef(null); // keyUpTimer will be a Ref object
   const keyUpTimerDelay = 300;
   // Filter data based on input
@@ -30,6 +35,8 @@ export default function Search(props) {
   }
   // Search function on keyup
   const searchAll = (e) => {
+    console.log('allLinks', allLinks);
+    console.log('allSnippets', allSnippets);
     const clarBtn = document.getElementById('clearSearch') as HTMLInputElement;
     const searchIcon = document.getElementById('popupSearchIcon') as HTMLInputElement;
     clearTimeout(keyUpTimer.current);

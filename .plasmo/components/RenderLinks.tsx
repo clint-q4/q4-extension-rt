@@ -5,7 +5,6 @@ import Auth from '~.plasmo/utils/auth';
 
 function RenderLinks(props) {
   const isNotEmpty = props.filterdData.length;
-  console.log('filterd', props.filterdData);
   return (
     isNotEmpty ? 
     <>
@@ -31,7 +30,7 @@ function RenderLinks(props) {
               <div className="links-container-inner">
                 {el.list.map((item, ind) => (
                   <div key={ind} className="links is-3">
-                    <a className="button is-link" target="_blank" data-id={item.id} href={item.url}>{item.name}
+                    <a className="button is-link" title={item.name} target="_blank" data-id={item.id} href={item.url}>{item.name}
                     {
                       Auth.loggedIn() ? 
                       <button title="options-trigger" className="options-trigger" onClick={toggleOptions}>

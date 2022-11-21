@@ -12,11 +12,12 @@ function CategoryForm(props) {
   async function categoryHandleSubmit(e) {
     e.preventDefault();
     const input = (document.getElementById(`${props.collectionType}CategoryInput`) as HTMLInputElement);
+    console.log('input', input)
     const inpValue = input.value;
     const toggleState = (document.querySelector(`.switch-checkbox.${props.collectionType}`) as HTMLInputElement).checked;
     const linked = toggleState ? 'both' : `${props.collectionType}`;
 
-    if(input) {
+    if(inpValue.length) {
       const data = {
         name: inpValue,
         linked: linked
@@ -85,9 +86,7 @@ function CategoryForm(props) {
   function modifyCategory(e) {
     e.preventDefault();
     const _t = e.target;
-    console.log(_t)
     const match = _t.matches(`#${props.collectionType}ModifyCategory`);
-    console.log(match)
     if(!match) return;
 
     const focusEvent = new Event('focus');
@@ -107,7 +106,6 @@ function CategoryForm(props) {
   async function triggerDeleteCategory(e) {
     e.preventDefault();
     const _t = e.target;
-    console.log(_t)
     const match = _t.matches(`#${props.collectionType}DeleteCategory`);
     if(match) {
       const categoryID = _t.closest('.control').dataset.value;
@@ -115,7 +113,12 @@ function CategoryForm(props) {
       if(categoryID) {
         const response = deleteCategory(categoryID);
         response.then((res) => {
-          if(res) {
+          if(!res.status) {
+            console.log(res);
+            props.setCategoryMessage(res.reason);
+            categoryStatus.style.color = 'red';
+          } else {
+            console.log(res);
             categoryStatus.style.color = 'green';
             props.setCategoryMessage('Category has been deleted successfully!');
             getLists('category').then((list) => {
@@ -124,13 +127,8 @@ function CategoryForm(props) {
             setTimeout(() => {
               props.setCategoryMessage('');
             }, 1000);
-          } else {
-            const temp = 'Sorry! Something went wrong';
-            props.setCategoryMessage(temp);
-            categoryStatus.style.color = 'red';
           }
         }).catch((err) => {
-          console.log(err);
           categoryStatus.style.color = 'red';
           const temp = 'Make sure that the category does not have any links!';
           props.setCategoryMessage(temp);

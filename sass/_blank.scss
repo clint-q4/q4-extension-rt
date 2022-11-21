@@ -209,7 +209,8 @@ h2 {
 }
 
 #add-snippet-button,
-#add-options-button {
+#add-options-button,
+#refreshAll {
   width: 3rem;
   height: 3rem;
   margin: 0 5px;
@@ -388,6 +389,9 @@ h2 {
       }
     }
   }
+  &.cms-links {
+    margin-top: 10px;
+  }
 }
 
 .options-container,
@@ -524,9 +528,6 @@ h2 {
     background-color: var(--background);
     color: var(--text-primary);
     border-radius: 5px;
-    .modal-close {
-      
-    }
   }
 }
 
@@ -871,6 +872,9 @@ input:checked + .slider:before {
       top: 50%;
     }
   }
+  &:hover {
+    background-color: #f14668;
+  }
 }
 
 .options-buttons {
@@ -894,11 +898,17 @@ input:checked + .slider:before {
   padding: 10px;
   box-shadow: var(--box-shadow);
   border: 2px solid var(--icon--color);
-  margin: 5px 10px;
+  background-color: #ffe5e5;
+  margin: 10px 10px 0 10px;
   border-radius: 5px;
   justify-content: space-between;
   &.show {
     display: flex;
+    p {
+      @at-root [data-theme="dark"] & {
+        color: $body-color;
+      }
+    }
   }
 }
 

@@ -41,11 +41,13 @@ class AuthService {
     }, 500)
   }
 
-  logout(setLocalStorageData) {
+  logout() {
     // Clear user token and profile data from localStorage
+    const localStorageItems = ['id_token', 'indexLinks', 'indexSnippets', 'theme', 'refreshSession', 'localData', 'categories', ]
     client.authStore.clear();
-    setLocalStorageData({});
-    localStorage.removeItem('id_token');
+    for(let item of localStorageItems) {
+      window.localStorage.removeItem(item);
+    }
     window.location.reload();
     // this will reload the page and reset the state of the application
   }

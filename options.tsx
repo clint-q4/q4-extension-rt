@@ -59,7 +59,6 @@ function IndexOptions() {
   useEffect(() => {
     groupLinks(categoryData, linksData, setfilterdData, 'links');
     groupLinks(categoryData, snippetData, setfilterdSnippetData, 'snippets');
-    console.log(filterdSnippetData);
   }, [categoryData, linksData])
 
   

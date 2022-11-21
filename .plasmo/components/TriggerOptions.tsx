@@ -55,12 +55,13 @@ function TriggerOptions(props) {
     parentSibling.classList.toggle("active")
     parentCont.slideUp(0);
     const linkID = data.id;
-    console.log(linkID);
     const response = await deleteLinks(data.collection, linkID)
-    if(response) {
-      console.log(response);
-      props.setErrorMessage(data.deleteMsg);
-      props.setRefresh(true);
+    if(response.message) {
+      props.setErrorMessage(response.message);
+      // props.setRefresh(true);
+      setTimeout(function() {
+        props.setRefresh(true);
+      }, 500)
     } else {
       props.setErrorMessage('Sorry! Something went wrong');
     }

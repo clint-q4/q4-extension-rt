@@ -9,7 +9,7 @@ import slist from '~.plasmo/utils/sort.js'
 // Utility functions
 import {getLists, createIndexArray} from "~.plasmo/utils/apiCalls";
 import {modalFunctions} from "~.plasmo/utils/modal";
-import {checkSite, loginEditButtons, groupLinks, groupAndSort, initDeleteOrModify, getCurrentTabLink} from "./content";
+import {fetchData, checkSite, loginEditButtons, groupLinks, groupAndSort, initDeleteOrModify, getCurrentTabLink} from "./content";
 import Auth from '~.plasmo/utils/auth';
 
 // Components
@@ -37,19 +37,38 @@ const formSnippetData = {
   category: ""
 }
 
+const HourDiff = (endDate, startDate) => {
+  const msInHour = 1000 * 60 * 60;
+  return Math.round(Math.abs(endDate - startDate) / msInHour);
+}
+
 
 function IndexPopup() {
-  const defaultDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const defaultDark = window.matchMedia('(prefers-color-scheme: light)').matches;
   const [theme, setTheme] = useLocalStorage('theme', defaultDark ? 'dark' : 'light');
 
   const [categoryData, setCategoryData] = useLocalStorage('categories', []);
   const [localStorageData, setLocalStorageData] = useLocalStorage('localData', {});
-  const [filterdData, setfilterdData] = useState(localStorageData?.links || []);
-  const [filterdSnippetData, setfilterdSnippetData] = useState(localStorageData?.snippets || [])
+  const [filterdData, setfilterdData] = useState(localStorageData.links || []);
+  const [filterdSnippetData, setfilterdSnippetData] = useState(localStorageData.snippets || [])
   const [refresh, setRefresh] = useState<boolean>(false);
   const [refreshSession, setRefreshSession] = useLocalStorage('refreshSession', '');
   const [indexLinks, setIndexLinks] = useLocalStorage('indexLinks', []);
   const [indexSnippets, setIndexSnippets] = useLocalStorage('indexSnippets', []);
+
+  const fetchArgs = {
+    getLists: getLists,
+    setfilterdData: setfilterdData,
+    setfilterdSnippetData: setfilterdSnippetData,
+    setCategoryData: setCategoryData,
+    setRefreshSession: setRefreshSession,
+    setLocalStorageData: setLocalStorageData,
+    indexLinks: indexLinks,
+    setIndexLinks: setIndexLinks,
+    indexSnippets: indexSnippets,
+    setIndexSnippets: setIndexSnippets,
+    createIndexArray: createIndexArray
+  }
 
   const [errorMessage, setErrorMessage] = useState<string>('');
 
@@ -59,7 +78,20 @@ function IndexPopup() {
   const [formLinkDetails, setFormLinkDetails] = useState(formLinkData);
   const [formSnippetDetails, setFormSnippetDetails] = useState(formSnippetData);
 
-  console.log(filterdData, filterdSnippetData, 'rendering');
+  console.log('filtered', filterdData);
+  console.log('filteredSnip', filterdSnippetData);
+
+
+  useEffect(() => {
+    console.log('running', localStorageData);
+    if(localStorageData.hasOwnProperty("links")) {
+      setfilterdData(localStorageData.links);
+    }
+    if(localStorageData.hasOwnProperty("snippets")) {
+      setfilterdSnippetData(localStorageData.snippets);
+    }
+
+  }, [localStorageData])
 
   useEffect(() => {
     // Run modal helper funtions
@@ -74,13 +106,17 @@ function IndexPopup() {
     const links = document.querySelector(".popup-buttons-container.quick-links");
     const snippets = document.querySelector(".popup-buttons-container.quick-snippets");
 
+    if(!localStorageData || Object.keys(localStorageData).length === 0) {
+      fetchData(fetchArgs);
+    }
+
     if(links) {
       slist(links, {
         parentCont: 'quick-links',
         setIndexLinks: setIndexLinks,
         setLocalStorageData: setLocalStorageData,
         localStorageData: localStorageData,
-        setfilterdData: setfilterdData
+        setfilterdData: setfilterdData,
       });
     }
     if(snippets) {
@@ -89,64 +125,24 @@ function IndexPopup() {
         setIndexSnippets: setIndexSnippets,
         setLocalStorageData: setLocalStorageData,
         localStorageData: localStorageData,
-        setfilterdSnippetData: setfilterdSnippetData
+        setfilterdSnippetData: setfilterdSnippetData,
       })
+    }
+
+    const sessDate = new Date(refreshSession);
+    const now = new Date();
+    const diff = HourDiff(sessDate, now);
+    if(diff >= 24) {
+      fetchData(fetchArgs);
+      setRefresh(false);
     }
   }, [])
 
   useEffect(() => {
-
-    (async function fetchData() {
-      console.log('fetching');
-      const sessDate = new Date(refreshSession);
-      const now = new Date();
-      const HourDiff = (endDate, startDate) => {
-        const msInHour = 1000 * 60 * 60;
-        return Math.round(Math.abs(endDate - startDate) / msInHour);
-      }
-      const diff = HourDiff(sessDate, now);
-      const fetchData = async () => {
-        const apiLinksData = await getLists('websites');
-        const apiSnippetData = await getLists('snippets');
-        const apiCategoryData = await getLists('category');
-        console.log(apiCategoryData, apiLinksData, apiSnippetData);
-        if(apiLinksData.length && apiCategoryData.length) {
-          setCategoryData(apiCategoryData);
-          const allLinks = groupAndSort(apiCategoryData, apiLinksData, indexLinks, setIndexLinks);
-          console.log(allLinks);
-          setLocalStorageData({
-            ...localStorageData,
-            categories: apiCategoryData,
-            links: allLinks,
-          });
-          setfilterdData(allLinks) 
-          const sessionData = new Date().toLocaleString();
-          setRefreshSession(sessionData);
-        }
-        if(apiSnippetData.length && apiCategoryData.length) {
-          setCategoryData(apiCategoryData);
-          const allSnippets = groupAndSort(apiCategoryData, apiSnippetData, indexSnippets, setIndexSnippets);
-          setfilterdSnippetData(allSnippets);
-          setLocalStorageData({
-            ...localStorageData,
-            categories: apiCategoryData,
-            links: allSnippets,
-          });
-          const sessionData = new Date().toLocaleString();
-          setRefreshSession(sessionData);
-        }
-      }
-      if(!filterdData.length || !filterdSnippetData.length) {
-        fetchData();
-        console.log('test 1')
-      } else if(diff >= 24) {
-        fetchData();
-        console.log('test 2')
-      } else if(refresh) {
-        fetchData();
-        setRefresh(false);
-      }
-    })();
+    if(refresh) {
+      fetchData(fetchArgs);
+    }
+    setRefresh(false);
   }, [refresh])
 
   useEffect(() => {
@@ -163,8 +159,10 @@ function IndexPopup() {
   }, [errorMessage])
 
   useEffect(() => {
-    if(!Object.keys(filterdData).length && !Object.keys(filterdSnippetData).length) {
-      setErrorMessage('Sorry! No results found...')
+    if(!filterdData.length && !filterdSnippetData.length) {
+      Auth.loggedIn() ? 
+        setErrorMessage('Sorry! No results found...') : 
+        setErrorMessage('Please log in to view all the items or add new items!');
     } else {
       setErrorMessage('');
     }
@@ -177,8 +175,10 @@ function IndexPopup() {
     let form = '';
     id === 'add-snippet-button' ? form = 'Snippet' : form = 'Link';
     const targetId = _t.dataset.target;
+    const targetOption= _t.dataset.option;
     const target = document.getElementById(targetId);
     target.classList.add('is-active');
+    target.dataset.option = 'create';
     target.querySelector('.modal-card-title').textContent = `Create new ${form}`;
     target.querySelector('button[type=submit]').textContent = `Submit`;
     form === 'Snippet' ? 
@@ -208,7 +208,6 @@ function IndexPopup() {
           'keyCode': 8,
           'bubbles': true
         });
-        console.log(ev);
         inputEl.value = '';
         inputEl.dispatchEvent(ev);
         break;
@@ -225,6 +224,8 @@ function IndexPopup() {
     parentEl.classList.remove()
   }
 
+  console.count();
+
 
   return (
     <div className="root-container" data-theme={theme}>
@@ -239,6 +240,14 @@ function IndexPopup() {
           </span>
             {Auth.loggedIn() ? (
             <div className="is-flex is-align-items-center">
+              <button 
+                title="Refresh All" 
+                className="button" 
+                id="refreshAll" 
+                onClick={() => setRefresh(true)}
+                >
+                <i className="fa-solid fa-arrow-rotate-right"></i>
+              </button>
               <button 
                 title="add-snippet" 
                 className="button" 
@@ -268,13 +277,6 @@ function IndexPopup() {
             setLocalStorageData={setLocalStorageData}
           ></LoginForm>
         </div>
-        <Search 
-         filterdData={filterdData}
-         setfilterdData={setfilterdData}
-         filterdSnippetData={filterdSnippetData}
-         setfilterdSnippetData={setfilterdSnippetData}
-         handleClear={handleClear}
-         ></Search>
         <div className="error-message-container">
           <p>{errorMessage}</p>
           <button 
@@ -283,6 +285,18 @@ function IndexPopup() {
           onClick={e => setErrorMessage('')}
           ></button>
         </div>
+        {Auth.loggedIn() ? (
+          <Search 
+            filterdData={filterdData}
+            setfilterdData={setfilterdData}
+            localStorageData={localStorageData}
+            filterdSnippetData={filterdSnippetData}
+            setfilterdSnippetData={setfilterdSnippetData}
+            handleClear={handleClear}
+            ></Search>
+          ) : (
+          <></>
+        )}
         <CMSLinks></CMSLinks>
         <div className="content-container">
           <RenderLinks 

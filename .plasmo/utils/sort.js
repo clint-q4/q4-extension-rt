@@ -4,7 +4,6 @@ function slist (target, args) {
   // (A) SET CSS + GET ALL LIST ITEMS
   target.classList.add("slist");
   let items = target.querySelectorAll(".popup-buttons-container-sublist"), current = null;
-  console.log(items);
   // (B) MAKE ITEMS DRAGGABLE + SORTABLE
   for (let i of items) {
     // (B1) ATTACH DRAGGABLE
@@ -41,7 +40,6 @@ function slist (target, args) {
     i.ondrop = (evt) => {
       evt.preventDefault();
       if (i != current) {
-        console.log('i', i, 'current', current);
         let currentpos = 0, droppedpos = 0;
         for (let it=0; it<items.length; it++) {
           if (current == items[it]) { currentpos = it; }
@@ -49,7 +47,6 @@ function slist (target, args) {
         }
 
         const divs = document.querySelectorAll(`.popup-buttons-container.${args.parentCont} .popup-buttons-container-sublist`)
-        console.log(divs);
         const oldOrder = [];
         const reorder = (args) => {
           const result = Array.from(args.list);
@@ -73,12 +70,14 @@ function slist (target, args) {
           startIndex: currentpos, 
           endIndex: droppedpos
         })
-        console.log(oldOrder, 'old');
-        console.log(newOrder, 'new');
 
         if(args.parentCont === 'quick-links') {
           args.setIndexLinks(newOrder);
           const links = args.localStorageData.links;
+          const data = {
+            index: newOrder,
+            name: 'links'
+          }
           for(l of links) {
             for(o of newOrder) {
               if(l.name === o.name) {
@@ -92,11 +91,14 @@ function slist (target, args) {
             links: links
           })
           args.setfilterdData(links)
-          console.log(links);
+          args.createIndexArray(data);
         } else {
           args.setIndexSnippets(newOrder)
           const snippets = args.localStorageData.snippets;
-          console.log(snippets, 'test');
+          const data = {
+            index: newOrder,
+            name: 'snippets'
+          }
           for(l of snippets) {
             for(o of newOrder) {
               if(l.name === o.name) {
@@ -110,6 +112,7 @@ function slist (target, args) {
             snippets: snippets
           })
           args.setfilterdSnippetData(snippets)
+          args.createIndexArray(data);
   
         }
       }

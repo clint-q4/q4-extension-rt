@@ -24,18 +24,33 @@ function RegisterForm(props) {
           e.target.name.charAt(0).toUpperCase() + e.target.name.slice(1)
         } is required.`
       )
-      document.querySelector<HTMLElement>(".error-text").style.color = "red"
+      document.querySelector<HTMLElement>("#modal-register-form .error-text").style.color = "red";
     } else {
       setErrorMessage("")
     }
 
-    if (!errorMessage) {
+    if (e.target.value.length) {
       setRegisterForm({
         ...registerForm,
         [e.target.name]: e.target.value
       })
     }
-    console.log(registerForm, errorMessage);
+  }
+
+  function triggerLoginModal(e) {
+    e.preventDefault();
+    const _t = e.target;
+    console.log(_t)
+    const $elRegister = (document.querySelector('#modal-register-form') as HTMLElement);
+    const $elLogin = (document.querySelector('#modal-login-form') as HTMLElement);
+    if($elRegister.classList.contains('is-active')) {
+      console.log($elRegister);
+      $elRegister.classList.remove('is-active');
+    }
+    if(!$elLogin.classList.contains('is-active')) {
+      console.log($elLogin);
+      $elLogin.classList.add('is-active');
+    }
   }
     
   async function handleSubmit(e) {
@@ -44,17 +59,17 @@ function RegisterForm(props) {
       document.querySelector<HTMLElement>('#modal-register-form .error-text').style.color = 'green';
       setErrorMessage('Sending...');  
       const adminAuthData = await registerAuth(registerForm);
-      if(adminAuthData.token) {
+      if(adminAuthData.id) {
         const $el = document.querySelector('#modal-register-form');
-        Auth.login(adminAuthData.token);
+        // Auth.login(adminAuthData.token);
         setRegisterForm(registerFormData);
-        setErrorMessage('You have successfully registered and logged in!');
-        setTimeout(() => {
-          if($el.classList.contains('is-active')) {
-            $el.classList.remove('is-active');
-          }
-          props.setRefresh(true);
-        }, 500)
+        setErrorMessage('You have successfully registered! You will receive an email for verification. You can sign in once the you verified the link!');
+        // setTimeout(() => {
+        //   if($el.classList.contains('is-active')) {
+        //     $el.classList.remove('is-active');
+        //   }
+        //   props.setRefresh(true);
+        // }, 1000)
       } else {
         document.querySelector<HTMLElement>(".error-text").style.color = "red"
         setErrorMessage('Sorry, Incorrect credintials. Please try again!');
@@ -72,7 +87,7 @@ function RegisterForm(props) {
         <div className="modal-card">
         <header className="modal-card-head">
           <p className="modal-card-title">Register</p>
-          <button className="button is-link modal-close cancel">Cancel</button>        
+          <button className="button modal-close cancel">Cancel</button>        
         </header>
         <div className="modal-card-body py-5">
           <div className="register-form" id="registerForm">
@@ -80,10 +95,7 @@ function RegisterForm(props) {
               <p className="control has-icons-left has-icons-right">
                 <input className="input" name="name" type="name" placeholder="Name" onChange={handleChange}/>
                 <span className="icon is-small is-left">
-                  <i className="fas fa-envelope"></i>
-                </span>
-                <span className="icon is-small is-right">
-                  <i className="fas fa-check"></i>
+                  <i className="fas fa-user"></i>
                 </span>
               </p>
             </div>
@@ -92,9 +104,6 @@ function RegisterForm(props) {
                 <input className="input" name="email" type="email" placeholder="Email" onChange={handleChange}/>
                 <span className="icon is-small is-left">
                   <i className="fas fa-envelope"></i>
-                </span>
-                <span className="icon is-small is-right">
-                  <i className="fas fa-check"></i>
                 </span>
               </p>
             </div>
@@ -123,7 +132,7 @@ function RegisterForm(props) {
           <div className="field is-grouped">
             <div className="control">
               <button type="submit" className="button">Register</button>
-              <button type="button" className="button">Login</button>
+              <button type="button" onClick={triggerLoginModal} className="button">Login</button>
             </div>
           </div>
         </footer>
