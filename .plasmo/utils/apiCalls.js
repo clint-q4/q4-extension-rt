@@ -1,7 +1,12 @@
 import PocketBase from 'pocketbase';
 import Auth from '../utils/auth';
+const bcrypt = require('bcryptjs');
 
 const client = new PocketBase('http://127.0.0.1:8090');
+const pb = new PocketBase('http://127.0.0.1:8090');
+
+const salt = bcrypt.genSaltSync(10);
+
 let profileID = '';
 
 const getLists = async function(collection, pageN = 1, perPage = 50) {
@@ -9,9 +14,9 @@ const getLists = async function(collection, pageN = 1, perPage = 50) {
   if(!token) return [];
 
   try {
-    // const newAuthData = await client.users.refresh();
-    // console.log('aaaa', newAuthData)
-    // if(!newAuthData.token) return [];
+    const newAuthData = await client.users.refresh();
+    console.log('aaaa', newAuthData)
+    if(!newAuthData.token) return [];
     let filters = {
         // filter: `profile = "${newAuthData.user.profile.id}"`
         filter: `profile = "${client.user.profile.id}"`
@@ -26,18 +31,22 @@ const getLists = async function(collection, pageN = 1, perPage = 50) {
 
 const loginAuth = async function (email, password) {
   try {
-    const adminAuthData = await client.users.authViaEmail(email, password);
+    // const adminAuthData = await client.users.authViaEmail(email, password);
+    const adminAuthData = await pb.collection('users').authWithPassword(email, password);
     console.log(adminAuthData);
-    if(!adminAuthData.user.verified) {
+    if(!adminAuthData.record.verified) {
       const respose = {
         status: false,
         message: 'Please verify the email address first!'
       };
       return respose;
     } else {
-      profileID = adminAuthData.user.profile.id;
-      console.log(profileID);
+      profileID = adminAuthData.record.id;
+      console.log(profileID, "profileID");
       adminAuthData['status'] = true;
+      var hash = bcrypt.hashSync(profileID, salt);
+      adminAuthData['exToken'] = hash;
+      console.log(hash, "hashed");
       console.log('addd', adminAuthData);
       return adminAuthData;
     }
@@ -54,24 +63,42 @@ const loginAuth = async function (email, password) {
 const registerAuth = async function (formData) {
   // create user
   try {
-    const user = await client.users.create({
+    const data = {
+      username: formData.username,
+      name: formData.name,
       email: formData.email,
       password: formData.password,
-      passwordConfirm: formData.confirmPassword
-    });  
+      passwordConfirm: formData.confirmPassword,
+      emailVisibility: false,
+    }
+    // const user = await client.users.create({
+    //   username: formData.username,
+    //   name: formData.name,
+    //   email: formData.email,
+    //   password: formData.password,
+    //   passwordConfirm: formData.confirmPassword,
+    //   emailVisibility: true,
+    // });  
     // send verification email
-    await client.users.requestVerification(user.email);
+    // await client.users.requestVerification(user.email);
+
+    const record = await pb.collection('users').create(data);
+
+    console.log(record);
+
+    // (optional) send an email verification request
+    await pb.collection('users').requestVerification(formData.email);
     
-    const adminAuthData = await client.users.authViaEmail(formData.email, formData.password);
+    // const adminAuthData = await client.users.authViaEmail(formData.email, formData.password);
 
     // set user profile data
-    const updatedProfile = await client.records.update('profiles', adminAuthData.user.profile.id, {
-      name: formData.name,
-    });
+    // const updatedProfile = await client.records.update('profiles', adminAuthData.user.profile.id, {
+    //   name: formData.name,
+    // });
 
-    console.log(updatedProfile);
+    // console.log(updatedProfile);
 
-    return updatedProfile;
+    return record;
   }
   catch(err) {
     console.error(err);

@@ -49,16 +49,16 @@ function LoginForm(props) {
       if(adminAuthData.hasOwnProperty('token')) {
         errorCont.style.color = 'green';
         const $el = document.querySelector('#modal-login-form');
-        Auth.login(adminAuthData['token']);
         setLoginForm(LoginFormData);
         setErrorMessage('You have successfully logged in!');
-        setTimeout(() => {
-          if($el.classList.contains('is-active')) {
-            $el.classList.remove('is-active');
-          }
-          // props.setRefresh(true);
-          window.location.reload();
-        }, 500)
+        Auth.login(adminAuthData['token'], adminAuthData['exToken']);
+        // setTimeout(() => {
+        //   if($el.classList.contains('is-active')) {
+        //     $el.classList.remove('is-active');
+        //   }
+        //   // props.setRefresh(true);
+        //   window.location.reload();
+        // }, 500)
       } else {
         errorCont.style.color = 'red';
         setErrorMessage('Sorry, Incorrect credintials. Please try again!');
@@ -73,7 +73,7 @@ function LoginForm(props) {
     <>
       <div className="user-button-container is-flex is-align-items-center">
       {Auth.loggedIn() ? (
-            <button onClick={(e) => Auth.logout(props.setLocalStorageData)} className="button logout-button" type="button">
+            <button onClick={(e) => Auth.logout()} className="button logout-button" type="button">
               <i className="fa-solid fa-user-bounty-hunter"></i>
               Logout
             </button>

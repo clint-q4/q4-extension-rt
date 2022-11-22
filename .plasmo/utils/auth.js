@@ -12,7 +12,8 @@ class AuthService {
   // check if user's logged in
   loggedIn() {
     // Checks if there is a saved token and it's still valid
-    const token = this.getToken();
+    const obj = this.getToken();
+    const token = obj.token;
     return !!token && !this.isTokenExpired(token); // handwaiving here
   }
 
@@ -30,20 +31,27 @@ class AuthService {
 
   getToken() {
     // Retrieves the user token from localStorage
-    return localStorage.getItem('id_token');
+    const token = window.localStorage.getItem('id_token');
+    const exToken = window.localStorage.getItem('ex_token');
+    const obj = {
+      token: token,
+      exToken: exToken
+    }
+    return obj;
   }
 
-  login(idToken) {
+  login(idToken, exToken) {
     // Saves user token to localStorage
-    localStorage.setItem('id_token', idToken);
-    setTimeout(function () {
-      window.location.reload();
-    }, 500)
+    window.localStorage.setItem('id_token', idToken);
+    window.localStorage.setItem('ex_token', exToken);
+    // setTimeout(function () {
+    //   window.location.reload();
+    // }, 500)
   }
 
   logout() {
     // Clear user token and profile data from localStorage
-    const localStorageItems = ['id_token', 'indexLinks', 'indexSnippets', 'theme', 'refreshSession', 'localData', 'categories', ]
+    const localStorageItems = ['id_token', 'ex_token', 'indexLinks', 'indexSnippets', 'theme', 'refreshSession', 'localData', 'categories', ]
     client.authStore.clear();
     for(let item of localStorageItems) {
       window.localStorage.removeItem(item);
