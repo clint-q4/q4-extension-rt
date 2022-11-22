@@ -2,7 +2,7 @@ import { link } from "fs";
 import {useEffect, useState} from "react";
 import '../utils/slideToggle';
 import { linkToggle, toggleAll, toggleOptions, closeAllOptions } from "../../content";
-import {deleteLinks, getSingleRecord} from '../utils/apiCalls';
+import {deleteItems, getSingleRecord} from '../utils/apiCalls';
 import CodeEditor from "./codeEditor/CodeEditor";
 import Auth from '~.plasmo/utils/auth';
 import TriggerOptions from "./TriggerOptions";

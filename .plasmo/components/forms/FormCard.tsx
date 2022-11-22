@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react"
 import Auth from '../../utils/auth';
-import {client, createLinks, createCategory, updateCategory, deleteCategory, getLists, updateLinks} from "../../utils/apiCalls";
-import { error } from "console";
+import {createLinks, updateLinks} from "../../utils/apiCalls";
 import CategoryForm from "./CategoryForm";
 
 function FormCard(props) {
@@ -87,7 +86,6 @@ function FormCard(props) {
           return;
         }
 
-        console.log('form', props.formLinkDetails);
         const record = await createLinks(props.formLinkDetails);
   
         if(record) {

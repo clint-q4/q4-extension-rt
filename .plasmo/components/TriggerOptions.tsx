@@ -1,5 +1,5 @@
 import { linkToggle, toggleAll, toggleOptions, closeAllOptions } from "../../content";
-import {deleteLinks, getSingleRecord} from '../utils/apiCalls';
+import {deleteItems, getSingleRecord} from '../utils/apiCalls';
 import Auth from '~.plasmo/utils/auth';
 
 
@@ -55,7 +55,7 @@ function TriggerOptions(props) {
     parentSibling.classList.toggle("active")
     parentCont.slideUp(0);
     const linkID = data.id;
-    const response = await deleteLinks(data.collection, linkID)
+    const response = await deleteItems(data.collection, linkID)
     if(response.message) {
       props.setErrorMessage(response.message);
       // props.setRefresh(true);

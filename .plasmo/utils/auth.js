@@ -1,6 +1,6 @@
 // use this to decode a token and get the user's information out of it
 import decode from 'jwt-decode';
-import {client} from './apiCalls';
+import {pb} from './apiCalls';
 
 // create a new class to instantiate for a user
 class AuthService {
@@ -52,7 +52,7 @@ class AuthService {
   logout() {
     // Clear user token and profile data from localStorage
     const localStorageItems = ['id_token', 'ex_token', 'indexLinks', 'indexSnippets', 'theme', 'refreshSession', 'localData', 'categories', ]
-    client.authStore.clear();
+    pb.authStore.clear();
     for(let item of localStorageItems) {
       window.localStorage.removeItem(item);
     }

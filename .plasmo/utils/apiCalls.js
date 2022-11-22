@@ -1,39 +1,29 @@
 import PocketBase from 'pocketbase';
 import Auth from '../utils/auth';
-const bcrypt = require('bcryptjs');
 
-const client = new PocketBase('http://127.0.0.1:8090');
+// cliten store pb
 const pb = new PocketBase('http://127.0.0.1:8090');
 
-const salt = bcrypt.genSaltSync(10);
-
-let profileID = '';
-
+// Get lists all collection
 const getLists = async function(collection, pageN = 1, perPage = 50) {
-  const token = Auth.getToken();
-  if(!token) return [];
-
+  const obj = Auth.getToken();
+  if(!obj || Object.keys(obj).length === 0) return {};
   try {
-    const newAuthData = await client.users.refresh();
-    console.log('aaaa', newAuthData)
-    if(!newAuthData.token) return [];
-    let filters = {
-        // filter: `profile = "${newAuthData.user.profile.id}"`
-        filter: `profile = "${client.user.profile.id}"`
-      }
-    const resultList = await client.records.getList(collection, pageN, perPage, filters);
-    return resultList.items;
+    const records = await pb.collection(collection).getFullList(200, {
+        filter: `user = "${obj.exToken}"`,
+        sort: '-created',
+    });
+    return records;
   }
   catch(err) {
     return [];
   }
 }
 
+// Login the user
 const loginAuth = async function (email, password) {
   try {
-    // const adminAuthData = await client.users.authViaEmail(email, password);
     const adminAuthData = await pb.collection('users').authWithPassword(email, password);
-    console.log(adminAuthData);
     if(!adminAuthData.record.verified) {
       const respose = {
         status: false,
@@ -42,24 +32,25 @@ const loginAuth = async function (email, password) {
       return respose;
     } else {
       profileID = adminAuthData.record.id;
-      console.log(profileID, "profileID");
       adminAuthData['status'] = true;
-      var hash = bcrypt.hashSync(profileID, salt);
-      adminAuthData['exToken'] = hash;
-      console.log(hash, "hashed");
-      console.log('addd', adminAuthData);
+      // const hash = bcrypt.hashSync(profileID, salt);
+      adminAuthData['exToken'] = profileID;
+      // console.log(hash, "hashed");
       return adminAuthData;
     }
   }
   catch(err) {
     console.error(err);
     return {
-      status: false,
+      // Check if the status is true, and if so return the value. If not, return
+      // the fallback value.
+      status: true,
       message: 'Incorrect creditinals! Please try again.'
     };
   }
 }
 
+// Register pb
 const registerAuth = async function (formData) {
   // create user
   try {
@@ -71,32 +62,10 @@ const registerAuth = async function (formData) {
       passwordConfirm: formData.confirmPassword,
       emailVisibility: false,
     }
-    // const user = await client.users.create({
-    //   username: formData.username,
-    //   name: formData.name,
-    //   email: formData.email,
-    //   password: formData.password,
-    //   passwordConfirm: formData.confirmPassword,
-    //   emailVisibility: true,
-    // });  
-    // send verification email
-    // await client.users.requestVerification(user.email);
 
     const record = await pb.collection('users').create(data);
 
-    console.log(record);
-
-    // (optional) send an email verification request
     await pb.collection('users').requestVerification(formData.email);
-    
-    // const adminAuthData = await client.users.authViaEmail(formData.email, formData.password);
-
-    // set user profile data
-    // const updatedProfile = await client.records.update('profiles', adminAuthData.user.profile.id, {
-    //   name: formData.name,
-    // });
-
-    // console.log(updatedProfile);
 
     return record;
   }
@@ -107,35 +76,24 @@ const registerAuth = async function (formData) {
 }
 
 const createLinks = async function (formData) {
-  const token = Auth.getToken();
-  if(!token) return [];
-  const newAuthData = await client.users.refresh();
-  if(!newAuthData.token) return [];
-  if(newAuthData) {
-    formData.profile = newAuthData.user.profile.id;
-  }
+  const obj = Auth.getToken();
+  if (!obj || Object.keys(obj).length === 0) return {};
+  formData.user = obj.exToken;
   try {
-    console.log('authdata',newAuthData)
-    const record = await client.records.create('websites', formData);
-    console.log(record);
+    const record = await pb.collection('websites').create(formData);
     return record;
-  }
-  catch(err) {
+  } catch (err) {
     console.error(err);
     return {};
   }
-}
+};
 
 const createSnippets = async function (formData) {
-  const token = Auth.getToken();
-  if(!token) return {};
+  const obj = Auth.getToken();
+  if(!obj || Object.keys(obj).length === 0) return {};
+  formData.user = obj.exToken;
   try {
-    const newAuthData = await client.users.refresh();
-    if(newAuthData) {
-      formData.profile = newAuthData.user.profile.id;
-    }
-  
-    const record = await client.records.create('snippets', formData);
+    const record = await pb.collection('snippets').create(formData);
     return record;
   }
   catch(err) {
@@ -146,15 +104,11 @@ const createSnippets = async function (formData) {
 }
 
 const createCategory = async function(formData) {
-  const token = Auth.getToken();
-  if(!token) return {};
+  const obj = Auth.getToken();
+  if(!obj || Object.keys(obj).length === 0) return {};
+  formData.user = obj.exToken;
   try {
-    const newAuthData = await client.users.refresh();
-    if(newAuthData) {
-      formData.profile = newAuthData.user.profile.id;
-    }
-    const record = await client.records.create('category', formData);
-    console.log(record);
+    const record = await pb.collection('category').create(formData);
     return record;
   }
   catch(err) {
@@ -164,32 +118,50 @@ const createCategory = async function(formData) {
 }
 
 const createIndexArray = async function(data) {
-  const token = Auth.getToken();
-  if(!token) return {};
+  const obj = Auth.getToken();
+  if(!obj || Object.keys(obj).length === 0) return {};
+  data.user = obj.exToken;
   try {
-    const newAuthData = await client.users.refresh();
-    if(newAuthData) {
-      data.profile = newAuthData.user.profile.id;
+    const records = await pb.collection('order').getFullList(200 , {
+        filter: `user = "${obj.exToken}" && name = "${data.name}"`,
+    });
+    if(records.length > 0) {
+      const record = await pb.collection('order').update(records[0].id, data);
+      return record;
+    } else {
+      const record = await pb.collection('order').create(data);
+      return record;
     }
-    const record = await client.records.create('sorting', data);
-    console.log(record);
-    return record;
   }
   catch(err) {
     console.error(err);
     return {};
   }
 }
+
+
+const getIndexArray = async function() {
+  const obj = Auth.getToken();
+  if(!obj || Object.keys(obj).length === 0) return [];
+  try {
+    const records = await pb.collection('order').getFullList(2, {
+      filter: `user = "${obj.exToken}"`,
+      '$autoCancel': false 
+    });
+    return records;
+  }
+  catch(err) {
+    console.error(err);
+    return [];
+  }
+}
  
 const updateCategory = async function(formData, categoryID) {
-  const token = Auth.getToken();
-  if(!token) return {};
+  const obj = Auth.getToken();
+  if(!obj || Object.keys(obj).length === 0) return {};
+  formData.user = obj.exToken;
   try {
-    const newAuthData = await client.users.refresh();
-    if(newAuthData) {
-      formData.profile = newAuthData.user.profile.id;
-    }
-    const record = await client.records.update('category', categoryID , formData);
+    const record = await pb.collection('category').update(categoryID, formData);
     return record;
   }
   catch(err) {
@@ -199,19 +171,16 @@ const updateCategory = async function(formData, categoryID) {
 }
 
 const deleteCategory = async function(categoryID) {
-  const token = Auth.getToken();
-  if(!token) return {};
+  const obj = Auth.getToken();
+  if(!obj || Object.keys(obj).length === 0) return {};
   try {
-    const newAuthData = await client.users.refresh();
-    if(newAuthData) {
-      const response = await client.records.delete('category', categoryID);
-      if(response === null || response) {
-        const respose = {
-          status: true,
-          message: 'Catgeory has been deleted successfully!'
-        };
-        return respose;
-      }
+    const response = await pb.collection('category').delete(categoryID);
+    if(response === null || response) {
+      const respose = {
+        status: true,
+        message: 'Catgeory has been deleted successfully!'
+      };
+      return respose;
     }
   }
   catch(err) {
@@ -223,40 +192,41 @@ const deleteCategory = async function(categoryID) {
   }
 }
 
-const deleteLinks = async function(el ,linkID) {
-  const token = Auth.getToken();
-  if(!token) return {};
+const deleteItems = async function(el ,itemId) {
+  const obj = Auth.getToken();
+  if(!obj || Object.keys(obj).length === 0) return {};
   try {
-    const newAuthData = await client.users.refresh();
-    if(newAuthData) {
-      const response = await client.records.delete(el, linkID);
-      console.log(response);
-      if(response || response === null) {
-        const respose = {
-          message: `${el} has been deleted successfully!`
-        };
-        return respose;
-      } 
-    }
+    const response = await pb.collection(el).delete(itemId);
+    if(response || response === null) {
+      let msg = '';
+      
+      if(el === 'websites') {
+        msg = `bookmark has been deleted successfully!`
+      } else {
+        msg = `Snippet has been deleted successfully!`
+      }
+      const respose = {
+        status: true, 
+        message: msg,
+      };
+      return respose;
+    } 
   }
   catch(err) {
     console.error(err);
-    return {};
+    return {
+      status: false,
+      message: err.message 
+    };
   }
 }
 
 const updateLinks = async function(linkID, formData) {
-  const token = Auth.getToken();
-  if(!token) return {};
+  const obj = Auth.getToken();
+  if(!obj || Object.keys(obj).length === 0) return {};
+  formData.user = obj.exToken;
   try {
-    const newAuthData = await client.users.refresh();
-    if(newAuthData) {
-      formData.profile = newAuthData.user.profile.id;
-    }
-    const record = await client.records.update('websites', linkID , formData);
-    if(!record) {
-      return 'Something went wrong!';
-    }
+    const record = await pb.collection('websites').update(linkID, formData);
     return record;
   }
   catch(err) {
@@ -267,18 +237,11 @@ const updateLinks = async function(linkID, formData) {
 
 
 const updateSnippets = async function(snippetID, formData) {
-  console.log('test', snippetID, formData)
-  const token = Auth.getToken();
-  if(!token) return {};
+  const obj = Auth.getToken();
+  if(!obj || Object.keys(obj).length === 0) return {};
+  formData.user = obj.exToken;
   try {
-    const newAuthData = await client.users.refresh();
-    if(newAuthData) {
-      formData.profile = newAuthData.user.profile.id;
-    }
-    const record = await client.records.update('snippets', snippetID , formData);
-    if(!record) {
-      return 'Something went wrong!';
-    }
+    const record = await pb.collection('snippets').update(snippetID, formData);
     return record;
   }
   catch(err) {
@@ -288,18 +251,11 @@ const updateSnippets = async function(snippetID, formData) {
 }
 
 const getSingleRecord = async function (collection, id, relations) {
-  const token = Auth.getToken();
-  if(!token) return {};
+  const obj = Auth.getToken();
+  if(!obj || Object.keys(obj).length === 0) return {};
   try {
-    const newAuthData = await client.users.refresh();
-    if(newAuthData) {
-      const record = await client.records.getOne(collection, id, relations);
-      console.log(record);
-      if(!record) {
-        return 'Something went wrong!';
-      }
-      return record;
-    }
+    const record = await pb.collection(collection).getOne(id, relations);
+    return record;
   }
   catch(err) {
     console.error(err);
@@ -308,7 +264,7 @@ const getSingleRecord = async function (collection, id, relations) {
 }
 
 export { 
-  client, 
+  pb,
   getLists, 
   loginAuth, 
   registerAuth,
@@ -316,10 +272,11 @@ export {
   createCategory, 
   updateCategory , 
   deleteCategory,
-  deleteLinks,
+  deleteItems,
   updateLinks,
   updateSnippets,
   getSingleRecord,
   createSnippets,
-  createIndexArray
+  createIndexArray,
+  getIndexArray
 }

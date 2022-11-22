@@ -35,8 +35,6 @@ export default function Search(props) {
   }
   // Search function on keyup
   const searchAll = (e) => {
-    console.log('allLinks', allLinks);
-    console.log('allSnippets', allSnippets);
     const clarBtn = document.getElementById('clearSearch') as HTMLInputElement;
     const searchIcon = document.getElementById('popupSearchIcon') as HTMLInputElement;
     clearTimeout(keyUpTimer.current);

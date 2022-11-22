@@ -7,9 +7,9 @@ import './node_modules/@fortawesome/fontawesome-free/css/all.min.css';
 import slist from '~.plasmo/utils/sort.js'
 
 // Utility functions
-import {getLists, createIndexArray} from "~.plasmo/utils/apiCalls";
+import {getLists, createIndexArray, getIndexArray} from "~.plasmo/utils/apiCalls";
 import {modalFunctions} from "~.plasmo/utils/modal";
-import {fetchData, checkSite, loginEditButtons, groupLinks, groupAndSort, initDeleteOrModify, getCurrentTabLink} from "./content";
+import {fetchData, checkSite, loginEditButtons, getCurrentTabLink, getAndSetIndexArray} from "./content";
 import Auth from '~.plasmo/utils/auth';
 
 // Components
@@ -49,26 +49,12 @@ function IndexPopup() {
 
   const [categoryData, setCategoryData] = useLocalStorage('categories', []);
   const [localStorageData, setLocalStorageData] = useLocalStorage('localData', {});
-  const [filterdData, setfilterdData] = useState(localStorageData.links || []);
-  const [filterdSnippetData, setfilterdSnippetData] = useState(localStorageData.snippets || [])
+  const [filterdData, setfilterdData] = useState(localStorageData['links'] || []);
+  const [filterdSnippetData, setfilterdSnippetData] = useState(localStorageData['links'] || [])
   const [refresh, setRefresh] = useState<boolean>(false);
   const [refreshSession, setRefreshSession] = useLocalStorage('refreshSession', '');
   const [indexLinks, setIndexLinks] = useLocalStorage('indexLinks', []);
   const [indexSnippets, setIndexSnippets] = useLocalStorage('indexSnippets', []);
-
-  const fetchArgs = {
-    getLists: getLists,
-    setfilterdData: setfilterdData,
-    setfilterdSnippetData: setfilterdSnippetData,
-    setCategoryData: setCategoryData,
-    setRefreshSession: setRefreshSession,
-    setLocalStorageData: setLocalStorageData,
-    indexLinks: indexLinks,
-    setIndexLinks: setIndexLinks,
-    indexSnippets: indexSnippets,
-    setIndexSnippets: setIndexSnippets,
-    createIndexArray: createIndexArray
-  }
 
   const [errorMessage, setErrorMessage] = useState<string>('');
 
@@ -78,38 +64,69 @@ function IndexPopup() {
   const [formLinkDetails, setFormLinkDetails] = useState(formLinkData);
   const [formSnippetDetails, setFormSnippetDetails] = useState(formSnippetData);
 
-  console.log('filtered', filterdData);
-  console.log('filteredSnip', filterdSnippetData);
-
+  const fetchArgs = {
+    getLists: getLists,
+    setfilterdData: setfilterdData,
+    setfilterdSnippetData: setfilterdSnippetData,
+    setCategoryData: setCategoryData,
+    setRefreshSession: setRefreshSession,
+    setLocalStorageData: setLocalStorageData,
+    indexLinks: indexLinks,
+    indexSnippets: indexSnippets,
+    setIndexLinks: setIndexLinks,
+    setIndexSnippets: setIndexSnippets,
+    createIndexArray: createIndexArray
+  }
 
   useEffect(() => {
-    console.log('running', localStorageData);
-    if(localStorageData.hasOwnProperty("links")) {
-      setfilterdData(localStorageData.links);
+    if(localStorageData.hasOwnProperty('links')) {
+      setfilterdData(localStorageData['links']);
     }
-    if(localStorageData.hasOwnProperty("snippets")) {
-      setfilterdSnippetData(localStorageData.snippets);
+    if(localStorageData.hasOwnProperty('snippets')) {
+      setfilterdSnippetData(localStorageData['snippets']);
     }
 
   }, [localStorageData])
 
   useEffect(() => {
-    // Run modal helper funtions
+    // Run modal/Q4 helper funtions
     modalFunctions();
     checkSite();
     loginEditButtons();
 
+    // Theme toggle
     const el = (document.getElementById('theme-toggle-switch') as HTMLInputElement);
     if(theme === 'dark') {
       el.checked = true;
     }
-    const links = document.querySelector(".popup-buttons-container.quick-links");
-    const snippets = document.querySelector(".popup-buttons-container.quick-snippets");
 
+    // fetch the order if it exist
+    // if(!indexLinks.length || !indexSnippets.length) {
+    //   getAndSetIndexArray({
+    //     setIndexLinks: setIndexLinks,
+    //     setIndexSnippets: setIndexSnippets,
+    //   })
+    // }
+
+    // Fetch data of the localstorage is empty
     if(!localStorageData || Object.keys(localStorageData).length === 0) {
       fetchData(fetchArgs);
     }
 
+    // Fetch data if the session has expired
+    const sessDate = new Date(refreshSession);
+    const now = new Date();
+    const diff = HourDiff(sessDate, now);
+    if(diff >= 24) {
+      fetchData(fetchArgs);
+      setRefresh(false);
+    }
+
+    // get list container for drag and drop
+    const links = document.querySelector(".popup-buttons-container.quick-links");
+    const snippets = document.querySelector(".popup-buttons-container.quick-snippets");
+
+    // if links or snippet exisit run drag and drop function
     if(links) {
       slist(links, {
         parentCont: 'quick-links',
@@ -128,17 +145,10 @@ function IndexPopup() {
         setfilterdSnippetData: setfilterdSnippetData,
       })
     }
-
-    const sessDate = new Date(refreshSession);
-    const now = new Date();
-    const diff = HourDiff(sessDate, now);
-    if(diff >= 24) {
-      fetchData(fetchArgs);
-      setRefresh(false);
-    }
   }, [])
 
   useEffect(() => {
+    // if refresh is set to true fetch data again
     if(refresh) {
       fetchData(fetchArgs);
     }

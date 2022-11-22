@@ -1,13 +1,7 @@
 import { useState, useEffect } from "react"
 import Auth from '../../utils/auth';
 import { 
-  client, 
   createSnippets, 
-  createCategory, 
-  updateCategory, 
-  deleteCategory, 
-  getLists, 
-  updateLinks,
   updateSnippets
 } from "../../utils/apiCalls";
 import { error } from "console";

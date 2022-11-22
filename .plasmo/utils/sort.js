@@ -1,4 +1,5 @@
 import { log } from "console";
+import {createIndexArray} from './apiCalls';
 
 function slist (target, args) {
   // (A) SET CSS + GET ALL LIST ITEMS
@@ -75,7 +76,7 @@ function slist (target, args) {
           args.setIndexLinks(newOrder);
           const links = args.localStorageData.links;
           const data = {
-            index: newOrder,
+            indexOrder: newOrder,
             name: 'links'
           }
           for(l of links) {
@@ -91,12 +92,12 @@ function slist (target, args) {
             links: links
           })
           args.setfilterdData(links)
-          args.createIndexArray(data);
+          createIndexArray(data)
         } else {
           args.setIndexSnippets(newOrder)
           const snippets = args.localStorageData.snippets;
           const data = {
-            index: newOrder,
+            indexOrder: newOrder,
             name: 'snippets'
           }
           for(l of snippets) {
@@ -112,7 +113,7 @@ function slist (target, args) {
             snippets: snippets
           })
           args.setfilterdSnippetData(snippets)
-          args.createIndexArray(data);
+          createIndexArray(data)
   
         }
       }

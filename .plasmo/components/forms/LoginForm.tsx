@@ -52,13 +52,13 @@ function LoginForm(props) {
         setLoginForm(LoginFormData);
         setErrorMessage('You have successfully logged in!');
         Auth.login(adminAuthData['token'], adminAuthData['exToken']);
-        // setTimeout(() => {
-        //   if($el.classList.contains('is-active')) {
-        //     $el.classList.remove('is-active');
-        //   }
-        //   // props.setRefresh(true);
-        //   window.location.reload();
-        // }, 500)
+        setTimeout(() => {
+          if($el.classList.contains('is-active')) {
+            $el.classList.remove('is-active');
+          }
+          // props.setRefresh(true);
+          window.location.reload();
+        }, 500)
       } else {
         errorCont.style.color = 'red';
         setErrorMessage('Sorry, Incorrect credintials. Please try again!');

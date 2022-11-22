@@ -40,15 +40,12 @@ function RegisterForm(props) {
   function triggerLoginModal(e) {
     e.preventDefault();
     const _t = e.target;
-    console.log(_t)
     const $elRegister = (document.querySelector('#modal-register-form') as HTMLElement);
     const $elLogin = (document.querySelector('#modal-login-form') as HTMLElement);
     if($elRegister.classList.contains('is-active')) {
-      console.log($elRegister);
       $elRegister.classList.remove('is-active');
     }
     if(!$elLogin.classList.contains('is-active')) {
-      console.log($elLogin);
       $elLogin.classList.add('is-active');
     }
   }

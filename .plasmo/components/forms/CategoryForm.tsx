@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import {client, createLinks, createCategory, updateCategory, deleteCategory, getLists, updateLinks} from "../../utils/apiCalls";
+import {createCategory, updateCategory, deleteCategory, getLists} from "../../utils/apiCalls";
 
 function CategoryForm(props) {
   const [addCategoryMessage, setAddCategoryMessage] = useState('');
@@ -12,7 +12,6 @@ function CategoryForm(props) {
   async function categoryHandleSubmit(e) {
     e.preventDefault();
     const input = (document.getElementById(`${props.collectionType}CategoryInput`) as HTMLInputElement);
-    console.log('input', input)
     const inpValue = input.value;
     const toggleState = (document.querySelector(`.switch-checkbox.${props.collectionType}`) as HTMLInputElement).checked;
     const linked = toggleState ? 'both' : `${props.collectionType}`;
@@ -114,11 +113,9 @@ function CategoryForm(props) {
         const response = deleteCategory(categoryID);
         response.then((res) => {
           if(!res.status) {
-            console.log(res);
             props.setCategoryMessage(res.reason);
             categoryStatus.style.color = 'red';
           } else {
-            console.log(res);
             categoryStatus.style.color = 'green';
             props.setCategoryMessage('Category has been deleted successfully!');
             getLists('category').then((list) => {

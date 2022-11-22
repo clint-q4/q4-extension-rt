@@ -1,5 +1,7 @@
 import type { PlasmoContentScript } from "plasmo"
 import useLocalStorage from 'use-local-storage';
+import {getIndexArray} from './.plasmo/utils/apiCalls';
+// import {createIndexArray} from './.plasmo/utils/apiCalls';
 
 export const config: PlasmoContentScript = {
   matches: ["<all_urls>"]
@@ -31,6 +33,7 @@ export const groupAndSort = (categoryData, linksData, indexArr, setIndexArray, c
       res.push(obj);
     }
   }
+  
   if(indexArr.length) {
     for(let inde of indexArr) {
       res.find(el => {
@@ -53,7 +56,7 @@ export const groupAndSort = (categoryData, linksData, indexArr, setIndexArray, c
     }
 
     const data = {
-      index: indArr,
+      indexOrder: indArr,
       name: type
     }
     setIndexArray(indArr);
@@ -396,18 +399,33 @@ export const initDeleteOrModify = (e) => {
   }
 }
 
+
 export const fetchData = async (obj) => {
   const apiLinksData = await obj.getLists('websites') || [];
   const apiSnippetData = await obj.getLists('snippets') || [];
   const apiCategoryData = await obj.getLists('category') || [];
-  
+  const indexData = await getIndexArray() || [];
+  let indexLinks = [];
+  let indexSnippets = [];
+  if(indexData.length) {
+    for(let arr of indexData) {
+      if(arr.name === 'links') {
+        obj.setIndexLinks(arr.indexOrder);
+        indexLinks = arr.indexOrder;
+      } else if(arr.name === 'snippets') {
+        obj.setIndexSnippets(arr.indexOrder);
+        indexSnippets = arr.indexOrder;
+      }
+    }
+  }
+
   let localData = {};
 
   if(apiLinksData.length && apiCategoryData.length) {
     const allLinks = groupAndSort(
         apiCategoryData, 
         apiLinksData, 
-        obj.indexLinks, 
+        indexLinks, 
         obj.setIndexLinks,
         obj.createIndexArray,
         'links'
@@ -421,7 +439,7 @@ export const fetchData = async (obj) => {
     const allSnippets = groupAndSort(
         apiCategoryData, 
         apiSnippetData, 
-        obj.indexSnippets, 
+        indexSnippets, 
         obj.setIndexSnippets,
         obj.createIndexArray,
         'snippets'
@@ -438,6 +456,7 @@ export const fetchData = async (obj) => {
 
   const sessionData = new Date().toLocaleString();
   obj.setRefreshSession(sessionData);
-  console.log('lc', localData)
   obj.setLocalStorageData(localData);
 }
+
+
