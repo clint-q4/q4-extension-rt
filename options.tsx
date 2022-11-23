@@ -1,22 +1,27 @@
 import { useState, useEffect } from "react"
-import FormCard from "~.plasmo/components/forms/FormCard";
-import FormCardSnippet from "~.plasmo/components/forms/FormCardSnippet";
+import useLocalStorage from 'use-local-storage';
+
+// CSS 
+import './css/styles.css';
+import './node_modules/@fortawesome/fontawesome-free/css/all.min.css';
+import dragSort from '~.plasmo/utils/sort.js'
+
+// Utility functions
+import {getLists, createIndexArray, getIndexArray} from "~.plasmo/utils/apiCalls";
+import {modalFunctions} from "~.plasmo/utils/modal";
+import {fetchData, checkSite, loginEditButtons, getCurrentTabLink} from "./content";
+import Auth from '~.plasmo/utils/auth';
+
+// Components
+import CMSLinks from "~.plasmo/components/CMS/CMSLinks";
 import RenderLinks from "~.plasmo/components/RenderLinks";
 import RenderSnippets from "~.plasmo/components/RenderSnippets";
-import {modalFunctions} from "~.plasmo/utils/modal";
-import apiLinks from "~.plasmo/utils/apiLinks";
-import {getLists} from "~.plasmo/utils/apiCalls";
-import {groupLinks, linkToggle, initDeleteOrModify} from "./content";
-import './css/styles.css';
-import axios from 'axios';
-import PocketBase from 'pocketbase';
 import LoginForm from "~.plasmo/components/forms/LoginForm";
-import Auth from '~.plasmo/utils/auth';
-import './node_modules/@fortawesome/fontawesome-free/css/all.min.css';
+import Search from "~.plasmo/components/Search";
+import ThemeToggleSwitch from "~.plasmo/components/ThemeToggleSwitch";
+import FormCard from "~.plasmo/components/forms/FormCard";
+import FormCardSnippet from "~.plasmo/components/forms/FormCardSnippet";
 
-import './.plasmo/utils/slideToggle';
-
-// getList();
 // form validation
 const formLinkData = {
   name: "",
@@ -32,82 +37,277 @@ const formSnippetData = {
   category: ""
 }
 
+const HourDiff = (endDate, startDate) => {
+  const msInHour = 1000 * 60 * 60;
+  return Math.round(Math.abs(endDate - startDate) / msInHour);
+}
+
 function IndexOptions() {
-  const [categoryData, setCategoryData] = useState<{[key: string]: any}>([]);
-  const [linksData, setLinksData] = useState<{[key: string]: any}>([]);
-  const [snippetData, setSnippetData] = useState<{[key: string]: any}>([]);
-  const [filterdData, setfilterdData] = useState<{[key: string]: any}>({});
-  const [filterdSnippetData, setfilterdSnippetData] = useState<{[key: string]: any}>({});
+  const defaultDark = window.matchMedia('(prefers-color-scheme: light)').matches;
+  const [theme, setTheme] = useLocalStorage('theme', defaultDark ? 'dark' : 'light');
+
+  const [categoryData, setCategoryData] = useLocalStorage('categories', []);
+  const [localStorageData, setLocalStorageData] = useLocalStorage('localData', {});
+  const [filterdData, setfilterdData] = useState(localStorageData['links'] || []);
+  const [filterdSnippetData, setfilterdSnippetData] = useState(localStorageData['snippets'] || [])
+  const [refresh, setRefresh] = useState<boolean>(false);
+  const [refreshSession, setRefreshSession] = useLocalStorage('refreshSession', '');
+  const [indexLinks, setIndexLinks] = useLocalStorage('indexLinks', []);
+  const [indexSnippets, setIndexSnippets] = useLocalStorage('indexSnippets', []);
+
   const [errorMessage, setErrorMessage] = useState<string>('');
+
+  const [linkID, setLinkID] = useState<string>('');
+  const [snippetID, setSnippetID] = useState<string>('');
+
   const [formLinkDetails, setFormLinkDetails] = useState(formLinkData);
   const [formSnippetDetails, setFormSnippetDetails] = useState(formSnippetData);
-  const [linkID, setLinkID] = useState<string>('');
-  useEffect(() => {
-    // Run modal helper funtions
-    modalFunctions();
-    (async function fetchData() {
-      const apiCategoryData = await getLists('category');
-      const apiLinksData = await getLists('websites');
-      const snippetData = await getLists('snippets');
-      setCategoryData(apiCategoryData);
-      setLinksData(apiLinksData);
-      setSnippetData(snippetData);
-    })();
 
+  const fetchArgs = {
+    getLists: getLists,
+    setfilterdData: setfilterdData,
+    setfilterdSnippetData: setfilterdSnippetData,
+    setCategoryData: setCategoryData,
+    setRefreshSession: setRefreshSession,
+    setLocalStorageData: setLocalStorageData,
+    indexLinks: indexLinks,
+    indexSnippets: indexSnippets,
+    setIndexLinks: setIndexLinks,
+    setIndexSnippets: setIndexSnippets,
+    createIndexArray: createIndexArray
+  }
+
+  useEffect(() => {
+    if(localStorageData.hasOwnProperty('links')) {
+      setfilterdData(localStorageData['links']);
+    }
+    if(localStorageData.hasOwnProperty('snippets')) {
+      setfilterdSnippetData(localStorageData['snippets']);
+    }
+
+  }, [localStorageData])
+
+  useEffect(() => {
+    // Run modal
+    modalFunctions();
+
+    // Theme toggle
+    const el = (document.getElementById('theme-toggle-switch') as HTMLInputElement);
+    if(theme === 'dark') {
+      el.checked = true;
+    }
+
+    // Fetch data of the localstorage is empty
+    if(!localStorageData || Object.keys(localStorageData).length === 0) {
+      fetchData(fetchArgs);
+    }
+
+    // Fetch data if the session has expired
+    const sessDate = new Date(refreshSession);
+    const now = new Date();
+    const diff = HourDiff(sessDate, now);
+    if(diff >= 24) {
+      fetchData(fetchArgs);
+      setRefresh(false);
+    }
+
+    // get list container for drag and drop
+    const links = document.querySelector(".popup-buttons-container.quick-links");
+    const snippets = document.querySelector(".popup-buttons-container.quick-snippets");
+
+    // if links or snippet exisit run drag and drop function
+    if(links) {
+      dragSort(links, {
+        parentCont: 'quick-links',
+        setIndexLinks: setIndexLinks,
+        setLocalStorageData: setLocalStorageData,
+        localStorageData: localStorageData,
+        setfilterdData: setfilterdData,
+      });
+    }
+    if(snippets) {
+      dragSort(snippets, {
+        parentCont: 'quick-snippets',
+        setIndexSnippets: setIndexSnippets,
+        setLocalStorageData: setLocalStorageData,
+        localStorageData: localStorageData,
+        setfilterdSnippetData: setfilterdSnippetData,
+      })
+    }
   }, [])
 
   useEffect(() => {
-    groupLinks(categoryData, linksData, setfilterdData, 'links');
-    groupLinks(categoryData, snippetData, setfilterdSnippetData, 'snippets');
-  }, [categoryData, linksData])
+    // if refresh is set to true fetch data again
+    if(refresh) {
+      fetchData(fetchArgs);
+    }
+    return () => {
+      setRefresh(false);
+    }
+  }, [refresh])
 
+  useEffect(() => {
+    const errContainers = document.querySelectorAll<HTMLElement>('.error-message-container');
+    if(errorMessage.length) {
+      for(let errConts of errContainers) {
+        errConts.classList.add('show');
+      }
+    } else {
+      for(let errConts of errContainers) {
+        errConts.classList.remove('show');
+      }
+    }
+  }, [errorMessage])
+
+  useEffect(() => {
+    if(!filterdData.length && !filterdSnippetData.length) {
+      Auth.loggedIn() ? 
+        setErrorMessage('Sorry! No results found...') : 
+        setErrorMessage('Please log in to view all the items or add new items!');
+    } else {
+      setErrorMessage('');
+    }
+  }, [filterdData, filterdSnippetData]);
+
+  function formCreateAction(e) {
+    const _t = e.target;
+    const id = _t.getAttribute('id');
+    let form = '';
+    id === 'add-snippet-button' ? form = 'Snippet' : form = 'Link';
+    const targetId = _t.dataset.target;
+    const targetOption= _t.dataset.option;
+    const target = document.getElementById(targetId);
+    target.classList.add('is-active');
+    target.dataset.option = 'create';
+    target.querySelector('.modal-card-title').textContent = `Create new ${form}`;
+    target.querySelector('button[type=submit]').textContent = `Submit`;
+    form === 'Snippet' ? 
+      getCurrentTabLink(formSnippetDetails, setFormSnippetDetails) :
+      getCurrentTabLink(formLinkDetails, setFormLinkDetails)
+  }
+
+  function handleClear(e, type) {
+    e.preventDefault();
+    const inputEl = e.target.previousSibling;
+    const inp = inputEl.name;
+    switch (type) {
+      case 'links':
+        setFormLinkDetails({
+          ...formLinkDetails,
+          [inp]: ''
+        })
+        break;
+      case 'snippets':
+        setFormSnippetDetails({
+          ...formSnippetDetails,
+          [inp]: ''
+        })
+        break;
+      case 'search':
+        const ev = new KeyboardEvent("keyup", {
+          'keyCode': 8,
+          'bubbles': true
+        });
+        inputEl.value = '';
+        inputEl.dispatchEvent(ev);
+        break;
+    }
+  }
   
 
   return (
-    <div className="options-container p-6">
-    <section className="header-section is-flex is-justify-content-space-between p-4 has-background-success-light border-radius-10">
-      <div className="is-flex-grow-1">
-        <h2 className="title is-size-1">ClipMe.</h2>
-      </div>
-      {Auth.loggedIn() ? (
-          <div className="is-flex is-align-items-center">
-            <button title="add-snippet" className="button js-modal-trigger create-new-button" id="add-snippet-button" data-target="add-snippet-modal">
-              <i className="fa-solid fa-code"></i>
-            </button>
-            <button title="add-link" className="button js-modal-trigger create-new-button" id="add-options-button" data-target="add-options-modal">
-              <i className="fa-solid fa-link"></i>
-            </button>
-            <button onClick={initDeleteOrModify} id="update-links" title="update links" className="button mr-3">
-              {/* Update */}
-              <i className="fa-solid fa-pen-to-square"></i>
-            </button>
-            <button onClick={initDeleteOrModify} id="delete-links" title="delete links" className="button mr-5">
-              {/* Delete */}
-              <i className="fa-regular fa-trash-can"></i>
-            </button>
+    <div className="options-container p-6" data-theme={theme}>
+    <section className="header-section">
+        <div className="options-title-container">
+          <h2 className="has-text-weight-bold is-flex-grow-1">ClipMe.<span id="q4-site-verification"></span></h2>
+          <div className="option-buttons-container">
+          <span className="theme-toggle">
+            <ThemeToggleSwitch
+              theme={theme}
+              setTheme={setTheme}
+            ></ThemeToggleSwitch>
+          </span>
+            {Auth.loggedIn() ? (
+            <div className="is-flex is-align-items-center">
+              <button 
+                title="Refresh All" 
+                className="button" 
+                id="refreshAll" 
+                onClick={() => setRefresh(true)}
+                >
+                <i className="fa-solid fa-arrow-rotate-right"></i>
+              </button>
+              <button 
+                title="add-snippet" 
+                className="button" 
+                id="add-snippet-button" 
+                data-target="add-snippet-modal"
+                onClick={formCreateAction}
+                >
+                <i className="fa-solid fa-code"></i>
+              </button>
+              <button 
+                title="add-link" 
+                className="button"
+                id="add-options-button" 
+                data-target="add-options-modal"
+                onClick={formCreateAction}
+                >
+                <i className="fa-solid fa-link"></i>
+              </button>
+            </div>
+          ) : (
+            <div className="is-flex is-align-items-center mr-5">
+              {/* <p>Please login → </p> */}
+            </div>
+          )}
+          <LoginForm
+            setRefresh={setRefresh}
+            setLocalStorageData={setLocalStorageData}
+          ></LoginForm>
           </div>
-        ) : (
-          <div className="is-flex is-align-items-center mr-5">
-            <p>Please log in to add links → </p>
-          </div>
-        )}
-      <LoginForm></LoginForm>
+        </div>
+        <div className="error-message-container">
+          <p>{errorMessage}</p>
+          <button 
+          title="delete" 
+          className="delete has-background-danger"
+          onClick={e => setErrorMessage('')}
+          ></button>
+        </div>
     </section>
+    {Auth.loggedIn() ? (
+          <Search 
+            filterdData={filterdData}
+            setfilterdData={setfilterdData}
+            localStorageData={localStorageData}
+            filterdSnippetData={filterdSnippetData}
+            setfilterdSnippetData={setfilterdSnippetData}
+            handleClear={handleClear}
+            ></Search>
+          ) : (
+          <></>
+        )}
     <div className="my-5 options-content">
-        <div className="content-container">
-        <RenderLinks 
-          filterdData={filterdData}
-          setErrorMessage={setErrorMessage}
-          formLinkDetails={formLinkDetails}
-          setFormLinkDetails={setFormLinkDetails}
-          setLinkID={setLinkID}
-          ></RenderLinks>
+    <div className="content-container">
+          <RenderLinks 
+            filterdData={filterdData}
+            setErrorMessage={setErrorMessage}
+            formLinkDetails={formLinkDetails}
+            setFormLinkDetails={setFormLinkDetails}
+            setLinkID={setLinkID}
+            setRefresh={setRefresh}
+            ></RenderLinks>
         </div>
         <div className="content-container">
           <RenderSnippets
-          filterdData={filterdSnippetData}
-          setErrorMessage={setErrorMessage}
-          ></RenderSnippets>
+            filterdData={filterdSnippetData}
+            setErrorMessage={setErrorMessage}
+            setSnippetID={setSnippetID}
+            formSnippetDetails={formSnippetDetails}
+            setFormSnippetDetails={setFormSnippetDetails}
+            setRefresh={setRefresh}
+            ></RenderSnippets>
         </div>
     </div>
     <FormCard 
@@ -115,18 +315,19 @@ function IndexOptions() {
       setCategoryData={setCategoryData}
       formLinkDetails={formLinkDetails}
       setFormLinkDetails={setFormLinkDetails}
+      setRefresh={setRefresh}
       linkID={linkID}
+      handleClear={handleClear}
       ></FormCard>
     <FormCardSnippet
       categoryData={categoryData}
       setCategoryData={setCategoryData}
       formSnippetDetails={formSnippetDetails}
       setFormSnippetDetails={setFormSnippetDetails}
-      linkID={linkID}
+      snippetID={snippetID}
+      setRefresh={setRefresh}
+      handleClear={handleClear}
       ></FormCardSnippet>
-    <div className="error-message-container">
-      <p>{errorMessage}</p>
-    </div>
   </div>
   )
 }

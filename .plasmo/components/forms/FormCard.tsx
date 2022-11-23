@@ -1,28 +1,22 @@
-import { useState, useEffect } from "react"
-import Auth from '../../utils/auth';
-import {createLinks, updateLinks} from "../../utils/apiCalls";
-import CategoryForm from "./CategoryForm";
+import { useEffect, useState } from "react"
+
+import { createLinks, updateLinks } from "../../utils/apiCalls"
+import Auth from "../../utils/auth"
+import CategoryForm from "./CategoryForm"
 
 function FormCard(props) {
-  // form validation
-  const formCategoryData = {
-    mainCategory: ""
-  }
 
-  const [formCategoryDetails, setformCategoryDetails] =
-    useState(formCategoryData)
-  const { name, url, category } = props.formLinkDetails;
-  const { mainCategory } = formCategoryDetails
-  // const [categoryData, setCategoryData] = useState(props.categoryData);
+  const { name, url, category } = props.formLinkDetails
   const [errorMessage, setErrorMessage] = useState("")
-  const [categoryMessage, setCategoryMessage] = useState('Please update/delete category using the buttons')
-  const [addCategoryMessage, setAddCategoryMessage] = useState('');
+  const [categoryMessage, setCategoryMessage] = useState(
+    "Please update/delete category using the buttons"
+  )
 
   useEffect(() => {
-    if(!props.categoryData.length) {
-      const token = Auth.getToken(); 
-      if(!token) {
-        setErrorMessage('Please login to generate catgeories');
+    if (!props.categoryData.length) {
+      const token = Auth.getToken()
+      if (!token) {
+        setErrorMessage("Please login to generate catgeories")
       }
     }
   }, [props.categoryData])
@@ -39,7 +33,7 @@ function FormCard(props) {
   }
 
   function handleChange(e) {
-    const clearSwitch = e.target.nextSibling;
+    const clearSwitch = e.target.nextSibling
     if (e.target.value.length) {
       setErrorMessage("")
       props.setFormLinkDetails({
@@ -47,107 +41,116 @@ function FormCard(props) {
         [e.target.name]: e.target.value
       })
     } else {
-      const err = document.querySelectorAll<HTMLElement>(".error-text");
-      for(let er of err) {
-        er.style.color = "red";
+      const err = document.querySelectorAll<HTMLElement>(".error-text")
+      for (let er of err) {
+        er.style.color = "red"
       }
       props.setFormLinkDetails({
         ...props.formLinkDetails,
-        [e.target.name]: ''
+        [e.target.name]: ""
       })
-      clearSwitch.classList.remove('active');
+      clearSwitch.classList.remove("active")
       setErrorMessage(
         `${
           e.target.name.charAt(0).toUpperCase() + e.target.name.slice(1)
         } is required.`
       )
-      clearSwitch.classList.add('remove');
+      clearSwitch.classList.add("remove")
     }
   }
 
-
   async function handleSubmit(e) {
-    e.preventDefault();
-    const modal = (document.querySelector('#add-options-modal') as HTMLInputElement);
-    const errorStatus = (document.querySelector('#add-options-modal .error-text') as HTMLInputElement);
-    const option = modal.dataset.option;
+    e.preventDefault()
+    const modal = document.querySelector(
+      "#add-options-modal"
+    ) as HTMLInputElement
+    const errorStatus = document.querySelector(
+      "#add-options-modal .error-text"
+    ) as HTMLInputElement
+    const option = modal.dataset.option
     const clear = {
       name: "",
       url: "",
-      category: "",
+      category: ""
     }
-    if(option === 'create') {
-      if(name.length && url.length && category.length) {
-        setErrorMessage('adding... please wait!');  
+    if (option === "create") {
+      if (name.length && url.length && category.length) {
+        setErrorMessage("adding... please wait!")
         // document.getElementById('add-options-modal')[0].reset();
-        if(!validateUrl(url)) {
-          errorStatus.style.color = 'red';
-          setErrorMessage('Please enter a valid URL!');
-          return;
+        if (!validateUrl(url)) {
+          errorStatus.style.color = "red"
+          setErrorMessage("Please enter a valid URL!")
+          return
         }
 
-        const record = await createLinks(props.formLinkDetails);
-  
-        if(record) {
-          const temp = `${record.name} has been addded to the list!`;
-          errorStatus.style.color = 'green';
-          setErrorMessage(temp);
-          props.setRefresh(true);
-          props.setFormLinkDetails(clear);
-          setTimeout(function() {
-            setErrorMessage("");
-            modal.classList.remove('is-active')
+        const record = await createLinks(props.formLinkDetails)
+
+        if (record) {
+          const temp = `${record.name} has been addded to the list!`
+          errorStatus.style.color = "green"
+          setErrorMessage(temp)
+          props.setRefresh(true)
+          props.setFormLinkDetails(clear)
+          setTimeout(function () {
+            setErrorMessage("")
+            modal.classList.remove("is-active")
           }, 1000)
         } else {
-          setErrorMessage('Sorry! Something went wrong!');
-          document.querySelector<HTMLElement>('.error-text').style.color = 'red';
+          setErrorMessage("Sorry! Something went wrong!")
+          document.querySelector<HTMLElement>(".error-text").style.color = "red"
         }
-  
       } else {
-        errorStatus.style.color = 'red';
-        setErrorMessage('One or more fields are empty. Please try again!');
+        errorStatus.style.color = "red"
+        setErrorMessage("One or more fields are empty. Please try again!")
       }
-    } else if (option === 'update') {
-      if(name.length && url.length && category.length) {
-        setErrorMessage('Sending...');
+    } else if (option === "update") {
+      if (name.length && url.length && category.length) {
+        setErrorMessage("Sending...")
         // document.getElementById('add-options-modal')[0].reset();
-        if(!validateUrl(url)) {
-          errorStatus.style.color = 'red';
-          setErrorMessage('Please enter a valid URL!');
-          return;
+        if (!validateUrl(url)) {
+          errorStatus.style.color = "red"
+          setErrorMessage("Please enter a valid URL!")
+          return
         }
-        const record = await updateLinks(props.linkID, props.formLinkDetails);
+        const record = await updateLinks(props.linkID, props.formLinkDetails)
 
-  
-        if(record) {
-          const temp = `${record.name} has been updated!`;
-          errorStatus.style.color = 'green';
-          props.setRefresh(true);
-          setErrorMessage(temp);
-          props.setFormLinkDetails(clear);
-          setTimeout(function() {
-            setErrorMessage("");
-            modal.classList.remove('is-active')
+        if (record) {
+          const temp = `${record.name} has been updated!`
+          errorStatus.style.color = "green"
+          props.setRefresh(true)
+          setErrorMessage(temp)
+          props.setFormLinkDetails(clear)
+          setTimeout(function () {
+            setErrorMessage("")
+            modal.classList.remove("is-active")
           }, 1000)
         } else {
-          setErrorMessage('Sorry! Something went wrong!');
-          document.querySelector<HTMLElement>('.error-text').style.color = 'red';
+          setErrorMessage("Sorry! Something went wrong!")
+          document.querySelector<HTMLElement>(".error-text").style.color = "red"
         }
-  
       } else {
-        errorStatus.style.color = 'red';
-        setErrorMessage('One or more fields are empty. Please try again!');
+        errorStatus.style.color = "red"
+        setErrorMessage("One or more fields are empty. Please try again!")
       }
     }
   }
-  
+
   return (
-    <form className="modal" id="add-options-modal" data-type="link" data-option="create" onSubmit={handleSubmit}>
+    <form
+      className="modal"
+      id="add-options-modal"
+      data-type="link"
+      data-option="create"
+      onSubmit={handleSubmit}>
       <div className="modal-background"></div>
       <div className="modal-card">
         <header className="modal-card-head">
           <p className="modal-card-title">Add New Link</p>
-          <button title="cancel" className="button modal-close cancel is-danger" type="button" aria-label="close"></button>
+          <button
+            title="cancel"
+            className="button modal-close cancel is-danger"
+            type="button"
+            aria-label="close"></button>
         </header>
         <section className="modal-card-body">
           <section className="form">
@@ -162,9 +165,12 @@ function FormCard(props) {
                   onChange={handleChange}
                   value={name}
                 />
-                <button title="clear" className="clear-switch button"
-                  onClick={e => props.handleClear(e, 'links')}
-                  ><i className="fa-solid fa-xmark"></i></button>
+                <button
+                  title="clear"
+                  className="clear-switch button"
+                  onClick={(e) => props.handleClear(e, "links")}>
+                  <i className="fa-solid fa-xmark"></i>
+                </button>
               </div>
             </div>
             <div className="field">
@@ -178,11 +184,12 @@ function FormCard(props) {
                   onChange={handleChange}
                   value={url}
                 />
-                <button 
-                title="clear"
-                className="clear-switch button"
-                onClick={e => props.handleClear(e, 'links')}
-                ><i className="fa-solid fa-xmark"></i></button>
+                <button
+                  title="clear"
+                  className="clear-switch button"
+                  onClick={(e) => props.handleClear(e, "links")}>
+                  <i className="fa-solid fa-xmark"></i>
+                </button>
               </div>
             </div>
             <CategoryForm
@@ -193,8 +200,7 @@ function FormCard(props) {
               categoryData={props.categoryData}
               setCategoryData={props.setCategoryData}
               setRefresh={props.setRefresh}
-              collectionType={'link'}
-            ></CategoryForm>
+              collectionType={"link"}></CategoryForm>
           </section>
         </section>
         <footer className="modal-card-foot">
@@ -203,10 +209,14 @@ function FormCard(props) {
           </div>
           <div className="field is-grouped">
             <div className="control">
-              <button type="submit" className="button is-link">Submit</button>
+              <button type="submit" className="button is-link">
+                Submit
+              </button>
             </div>
             <div className="control">
-              <button type="button" className="button is-link cancel">Cancel</button>
+              <button type="button" className="button is-link cancel">
+                Cancel
+              </button>
             </div>
           </div>
         </footer>
@@ -215,4 +225,4 @@ function FormCard(props) {
   )
 }
 
-export default FormCard;
+export default FormCard

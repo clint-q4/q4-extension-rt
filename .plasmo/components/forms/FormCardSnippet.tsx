@@ -1,31 +1,22 @@
-import { useState, useEffect } from "react"
-import Auth from '../../utils/auth';
-import { 
-  createSnippets, 
-  updateSnippets
-} from "../../utils/apiCalls";
-import { error } from "console";
-import CodeEditorForm from "../codeEditor/CodeEditorForm";
-import CategoryForm from "./CategoryForm";
+import { useEffect, useState } from "react"
+
+import { createSnippets, updateSnippets } from "../../utils/apiCalls"
+import Auth from "../../utils/auth"
+import CodeEditorForm from "../codeEditor/CodeEditorForm"
+import CategoryForm from "./CategoryForm"
 
 function FormCardSnippet(props) {
-  // form validation
-  // const formCategoryData = {
-  //   mainCategory: ""
-  // }
-
-  // const [formCategoryDetails, setformCategoryDetails] =
-  //   useState(formCategoryData)
   const { name, snippet, url, category } = props.formSnippetDetails
-  // const { mainCategory } = formCategoryDetails
   const [errorMessage, setErrorMessage] = useState("")
-  const [categoryMessage, setCategoryMessage] = useState('Please update/delete category using the buttons')
+  const [categoryMessage, setCategoryMessage] = useState(
+    "Please update/delete category using the buttons"
+  )
 
   useEffect(() => {
-    if(!props.categoryData.length) {
-      const token = Auth.getToken(); 
-      if(!token) {
-        setErrorMessage('Please login to generate catgeories');
+    if (!props.categoryData.length) {
+      const token = Auth.getToken()
+      if (!token) {
+        setErrorMessage("Please login to generate catgeories")
       }
     }
   }, [props.categoryData])
@@ -62,86 +53,98 @@ function FormCardSnippet(props) {
   }
 
   async function handleSubmitSnippet(e) {
-    e.preventDefault();
-    const modal = (document.querySelector('#add-snippet-modal') as HTMLInputElement);
-    const errorStatus = (document.querySelector('#add-snippet-modal .error-text') as HTMLInputElement);
-    const option = modal.dataset.option;
+    e.preventDefault()
+    const modal = document.querySelector(
+      "#add-snippet-modal"
+    ) as HTMLInputElement
+    const errorStatus = document.querySelector(
+      "#add-snippet-modal .error-text"
+    ) as HTMLInputElement
+    const option = modal.dataset.option
     const clear = {
       name: "",
       snippet: "",
       url: "",
-      category: "",
+      category: ""
     }
-    if(option === 'create') {
-      if(name.length && snippet.length && category.length) {
-        setErrorMessage('adding... please wait!');  
-        if(url.length && !validateUrl(url)) {
-          errorStatus.style.color = 'red';
-          setErrorMessage('Please enter a valid URL!');
-          return;
+    if (option === "create") {
+      if (name.length && snippet.length && category.length) {
+        setErrorMessage("adding... please wait!")
+        if (url.length && !validateUrl(url)) {
+          errorStatus.style.color = "red"
+          setErrorMessage("Please enter a valid URL!")
+          return
         }
-        const record = await createSnippets(props.formSnippetDetails);
-  
-        if(record) {
-          const temp = `${record.name} has been addded to the list!`;
-          errorStatus.style.color = 'green';
-          setErrorMessage(temp);
-          props.setRefresh(true);
-          props.setFormSnippetDetails(clear);
-          setTimeout(function() {
-            setErrorMessage("");
-            modal.classList.remove('is-active')
-          }, 1000)
-        } else {
-          setErrorMessage('Sorry! Something went wrong!');
-          document.querySelector<HTMLElement>('.error-text').style.color = 'red';
-        }
-  
-      } else {
-        errorStatus.style.color = 'red';
-        setErrorMessage('One or more fields are empty. Please try again!');
-      }
-    } else if (option === 'update') {
-      if(name.length && url.length && category.length) {
-        setErrorMessage('Sending...');
-        // document.getElementById('add-options-modal')[0].reset();
-        if(!validateUrl(url)) {
-          errorStatus.style.color = 'red';
-          setErrorMessage('Please enter a valid URL!');
-          return;
-        }
-        const record = await updateSnippets(props.snippetID, props.formSnippetDetails);
+        const record = await createSnippets(props.formSnippetDetails)
 
-  
-        if(record) {
-          const temp = `${record.name} has been updated!`;
-          errorStatus.style.color = 'green';
-          setErrorMessage(temp);
-          props.setRefresh(true);
-          props.setFormSnippetDetails(clear);
-          setTimeout(function() {
-            setErrorMessage("");
-            modal.classList.remove('is-active')
+        if (record) {
+          const temp = `${record.name} has been addded to the list!`
+          errorStatus.style.color = "green"
+          setErrorMessage(temp)
+          props.setRefresh(true)
+          props.setFormSnippetDetails(clear)
+          setTimeout(function () {
+            setErrorMessage("")
+            modal.classList.remove("is-active")
           }, 1000)
         } else {
-          setErrorMessage('Sorry! Something went wrong!');
-          document.querySelector<HTMLElement>('.error-text').style.color = 'red';
+          setErrorMessage("Sorry! Something went wrong!")
+          document.querySelector<HTMLElement>(".error-text").style.color = "red"
         }
-  
       } else {
-        errorStatus.style.color = 'red';
-        setErrorMessage('One or more fields are empty. Please try again!');
+        errorStatus.style.color = "red"
+        setErrorMessage("One or more fields are empty. Please try again!")
+      }
+    } else if (option === "update") {
+      if (name.length && url.length && category.length) {
+        setErrorMessage("Sending...")
+        // document.getElementById('add-options-modal')[0].reset();
+        if (!validateUrl(url)) {
+          errorStatus.style.color = "red"
+          setErrorMessage("Please enter a valid URL!")
+          return
+        }
+        const record = await updateSnippets(
+          props.snippetID,
+          props.formSnippetDetails
+        )
+
+        if (record) {
+          const temp = `${record.name} has been updated!`
+          errorStatus.style.color = "green"
+          setErrorMessage(temp)
+          props.setRefresh(true)
+          props.setFormSnippetDetails(clear)
+          setTimeout(function () {
+            setErrorMessage("")
+            modal.classList.remove("is-active")
+          }, 1000)
+        } else {
+          setErrorMessage("Sorry! Something went wrong!")
+          document.querySelector<HTMLElement>(".error-text").style.color = "red"
+        }
+      } else {
+        errorStatus.style.color = "red"
+        setErrorMessage("One or more fields are empty. Please try again!")
       }
     }
   }
-  
+
   return (
-    <form className="modal" id="add-snippet-modal" data-type="snippet" data-option="create" onSubmit={handleSubmitSnippet}>
+    <form
+      className="modal"
+      id="add-snippet-modal"
+      data-type="snippet"
+      data-option="create"
+      onSubmit={handleSubmitSnippet}>
       <div className="modal-background"></div>
       <div className="modal-card">
         <header className="modal-card-head">
           <p className="modal-card-title">Add New Snippet</p>
-          <button className="button modal-close cancel is-danger" type="button" aria-label="close"></button>
+          <button
+            className="button modal-close cancel is-danger"
+            type="button"
+            aria-label="close"></button>
         </header>
         <section className="modal-card-body">
           <section className="form">
@@ -156,11 +159,12 @@ function FormCardSnippet(props) {
                   onChange={handleChange}
                   value={name}
                 />
-                <button 
-                title="clear"
-                className="clear-switch button"
-                onClick={e => props.handleClear(e, 'snippets')}
-                ><i className="fa-solid fa-xmark"></i></button>
+                <button
+                  title="clear"
+                  className="clear-switch button"
+                  onClick={(e) => props.handleClear(e, "snippets")}>
+                  <i className="fa-solid fa-xmark"></i>
+                </button>
               </div>
             </div>
             <div className="field">
@@ -169,14 +173,13 @@ function FormCardSnippet(props) {
                 <CodeEditorForm
                   formSnippetDetails={props.formSnippetDetails}
                   setFormSnippetDetails={props.setFormSnippetDetails}
-                  snippet={snippet}
-                  ></CodeEditorForm>
-                <button 
-                title="clear"
-                className="clear-switch button"
-                onClick={e => props.handleClear(e, 'snippets')}
-                ><i className="fa-solid fa-xmark"></i></button>
-                
+                  snippet={snippet}></CodeEditorForm>
+                <button
+                  title="clear"
+                  className="clear-switch button"
+                  onClick={(e) => props.handleClear(e, "snippets")}>
+                  <i className="fa-solid fa-xmark"></i>
+                </button>
               </div>
             </div>
 
@@ -191,11 +194,12 @@ function FormCardSnippet(props) {
                   onChange={handleChange}
                   value={url}
                 />
-                <button 
-                title="clear"
-                className="clear-switch button"
-                onClick={e => props.handleClear(e, 'snippets')}
-                ><i className="fa-solid fa-xmark"></i></button>
+                <button
+                  title="clear"
+                  className="clear-switch button"
+                  onClick={(e) => props.handleClear(e, "snippets")}>
+                  <i className="fa-solid fa-xmark"></i>
+                </button>
               </div>
             </div>
             <CategoryForm
@@ -206,8 +210,7 @@ function FormCardSnippet(props) {
               categoryData={props.categoryData}
               setCategoryData={props.setCategoryData}
               setRefresh={props.setRefresh}
-              collectionType={'snippet'}
-            ></CategoryForm>
+              collectionType={"snippet"}></CategoryForm>
           </section>
         </section>
         <footer className="modal-card-foot">
@@ -216,10 +219,14 @@ function FormCardSnippet(props) {
           </div>
           <div className="field is-grouped">
             <div className="control">
-              <button type="submit" className="button is-link">Submit</button>
+              <button type="submit" className="button is-link">
+                Submit
+              </button>
             </div>
             <div className="control">
-              <button type="button" className="button is-link cancel">Cancel</button>
+              <button type="button" className="button is-link cancel">
+                Cancel
+              </button>
             </div>
           </div>
         </footer>
@@ -228,4 +235,4 @@ function FormCardSnippet(props) {
   )
 }
 
-export default FormCardSnippet;
+export default FormCardSnippet

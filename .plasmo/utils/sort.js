@@ -1,62 +1,77 @@
-import { log } from "console";
-import {createIndexArray} from './apiCalls';
+import { createIndexArray } from "./apiCalls"
 
-function slist (target, args) {
+function dragSort(target, args) {
   // (A) SET CSS + GET ALL LIST ITEMS
-  target.classList.add("slist");
-  let items = target.querySelectorAll(".popup-buttons-container-sublist"), current = null;
+  target.classList.add("slist")
+  let items = target.querySelectorAll(".popup-buttons-container-sublist"),
+    current = null
   // (B) MAKE ITEMS DRAGGABLE + SORTABLE
   for (let i of items) {
     // (B1) ATTACH DRAGGABLE
-    i.draggable = true;
+    i.draggable = true
 
     // (B2) DRAG START - YELLOW HIGHLIGHT DROPZONES
     i.ondragstart = (ev) => {
-      current = i;
+      current = i
       for (let it of items) {
-        if (it != current) { it.classList.add("hint"); }
+        if (it != current) {
+          it.classList.add("hint")
+        }
       }
-    };
+    }
 
     // (B3) DRAG ENTER - RED HIGHLIGHT DROPZONE
     i.ondragenter = (ev) => {
-      if (i != current) { i.classList.add("active"); }
-    };
+      if (i != current) {
+        i.classList.add("active")
+      }
+    }
 
     // (B4) DRAG LEAVE - REMOVE RED HIGHLIGHT
     i.ondragleave = () => {
-      i.classList.remove("active");
-    };
+      i.classList.remove("active")
+    }
 
     // (B5) DRAG END - REMOVE ALL HIGHLIGHTS
-    i.ondragend = () => { for (let it of items) {
-      it.classList.remove("hint");
-      it.classList.remove("active");
-    }};
+    i.ondragend = () => {
+      for (let it of items) {
+        it.classList.remove("hint")
+        it.classList.remove("active")
+      }
+    }
 
     // (B6) DRAG OVER - PREVENT THE DEFAULT "DROP", SO WE CAN DO OUR OWN
-    i.ondragover = (evt) => { evt.preventDefault(); };
+    i.ondragover = (evt) => {
+      evt.preventDefault()
+    }
 
-    // (B7) ON DROP - DO SOMETHING
+    // (B7) ON DROP - SAVE or UPDATE TEH SORT ARRAY
     i.ondrop = (evt) => {
-      evt.preventDefault();
+      evt.preventDefault()
       if (i != current) {
-        let currentpos = 0, droppedpos = 0;
-        for (let it=0; it<items.length; it++) {
-          if (current == items[it]) { currentpos = it; }
-          if (i == items[it]) { droppedpos = it; }
+        let currentpos = 0,
+          droppedpos = 0
+        for (let it = 0; it < items.length; it++) {
+          if (current == items[it]) {
+            currentpos = it
+          }
+          if (i == items[it]) {
+            droppedpos = it
+          }
         }
 
-        const divs = document.querySelectorAll(`.popup-buttons-container.${args.parentCont} .popup-buttons-container-sublist`)
-        const oldOrder = [];
+        const divs = document.querySelectorAll(
+          `.popup-buttons-container.${args.parentCont} .popup-buttons-container-sublist`
+        )
+        const oldOrder = []
         const reorder = (args) => {
-          const result = Array.from(args.list);
-          const [removed] = result.splice(args.startIndex, 1);
-          result.splice(args.endIndex, 0, removed);
-          for(let ind in result) {
-            result[ind].index = ind;
+          const result = Array.from(args.list)
+          const [removed] = result.splice(args.startIndex, 1)
+          result.splice(args.endIndex, 0, removed)
+          for (let ind in result) {
+            result[ind].index = ind
           }
-          return result;
+          return result
         }
         const arr = Array.from(divs)
         for (const [index, div] of arr.entries()) {
@@ -64,29 +79,29 @@ function slist (target, args) {
             name: div.dataset.category,
             index: index
           }
-          oldOrder.push(obj);
+          oldOrder.push(obj)
         }
         const newOrder = reorder({
           list: oldOrder,
-          startIndex: currentpos, 
+          startIndex: currentpos,
           endIndex: droppedpos
         })
 
-        if(args.parentCont === 'quick-links') {
-          args.setIndexLinks(newOrder);
-          const links = args.localStorageData.links;
+        if (args.parentCont === "quick-links") {
+          args.setIndexLinks(newOrder)
+          const links = args.localStorageData.links
           const data = {
             indexOrder: newOrder,
-            name: 'links'
+            name: "links"
           }
-          for(l of links) {
-            for(o of newOrder) {
-              if(l.name === o.name) {
-                l.index = o.index;
+          for (l of links) {
+            for (o of newOrder) {
+              if (l.name === o.name) {
+                l.index = o.index
               }
             }
           }
-          links.sort((a,b) => (a.index - b.index));
+          links.sort((a, b) => a.index - b.index)
           args.setLocalStorageData({
             ...args.localStorageData,
             links: links
@@ -95,30 +110,29 @@ function slist (target, args) {
           createIndexArray(data)
         } else {
           args.setIndexSnippets(newOrder)
-          const snippets = args.localStorageData.snippets;
+          const snippets = args.localStorageData.snippets
           const data = {
             indexOrder: newOrder,
-            name: 'snippets'
+            name: "snippets"
           }
-          for(l of snippets) {
-            for(o of newOrder) {
-              if(l.name === o.name) {
-                l.index = o.index;
+          for (l of snippets) {
+            for (o of newOrder) {
+              if (l.name === o.name) {
+                l.index = o.index
               }
             }
           }
-          snippets.sort((a,b) => (a.index - b.index));
+          snippets.sort((a, b) => a.index - b.index)
           args.setLocalStorageData({
             ...args.localStorageData,
             snippets: snippets
           })
           args.setfilterdSnippetData(snippets)
           createIndexArray(data)
-  
         }
       }
-    };
+    }
   }
 }
 
-export default slist;
+export default dragSort;

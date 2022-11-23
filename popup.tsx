@@ -4,12 +4,12 @@ import useLocalStorage from 'use-local-storage';
 // CSS 
 import './css/styles.css';
 import './node_modules/@fortawesome/fontawesome-free/css/all.min.css';
-import slist from '~.plasmo/utils/sort.js'
+import dragSort from '~.plasmo/utils/sort.js'
 
 // Utility functions
 import {getLists, createIndexArray, getIndexArray} from "~.plasmo/utils/apiCalls";
 import {modalFunctions} from "~.plasmo/utils/modal";
-import {fetchData, checkSite, loginEditButtons, getCurrentTabLink, getAndSetIndexArray} from "./content";
+import {fetchData, checkSite, loginEditButtons, getCurrentTabLink} from "./content";
 import Auth from '~.plasmo/utils/auth';
 
 // Components
@@ -50,7 +50,7 @@ function IndexPopup() {
   const [categoryData, setCategoryData] = useLocalStorage('categories', []);
   const [localStorageData, setLocalStorageData] = useLocalStorage('localData', {});
   const [filterdData, setfilterdData] = useState(localStorageData['links'] || []);
-  const [filterdSnippetData, setfilterdSnippetData] = useState(localStorageData['links'] || [])
+  const [filterdSnippetData, setfilterdSnippetData] = useState(localStorageData['snippets'] || [])
   const [refresh, setRefresh] = useState<boolean>(false);
   const [refreshSession, setRefreshSession] = useLocalStorage('refreshSession', '');
   const [indexLinks, setIndexLinks] = useLocalStorage('indexLinks', []);
@@ -100,14 +100,6 @@ function IndexPopup() {
       el.checked = true;
     }
 
-    // fetch the order if it exist
-    // if(!indexLinks.length || !indexSnippets.length) {
-    //   getAndSetIndexArray({
-    //     setIndexLinks: setIndexLinks,
-    //     setIndexSnippets: setIndexSnippets,
-    //   })
-    // }
-
     // Fetch data of the localstorage is empty
     if(!localStorageData || Object.keys(localStorageData).length === 0) {
       fetchData(fetchArgs);
@@ -128,7 +120,7 @@ function IndexPopup() {
 
     // if links or snippet exisit run drag and drop function
     if(links) {
-      slist(links, {
+      dragSort(links, {
         parentCont: 'quick-links',
         setIndexLinks: setIndexLinks,
         setLocalStorageData: setLocalStorageData,
@@ -137,7 +129,7 @@ function IndexPopup() {
       });
     }
     if(snippets) {
-      slist(snippets, {
+      dragSort(snippets, {
         parentCont: 'quick-snippets',
         setIndexSnippets: setIndexSnippets,
         setLocalStorageData: setLocalStorageData,
@@ -152,7 +144,9 @@ function IndexPopup() {
     if(refresh) {
       fetchData(fetchArgs);
     }
-    setRefresh(false);
+    return () => {
+      setRefresh(false);
+    }
   }, [refresh])
 
   useEffect(() => {
