@@ -2,12 +2,13 @@ import { useEffect, useRef, useState } from "react"
 
 import { slideAll } from "../../content"
 
-import "../utils/slideToggle"
+// import "../utils/slideToggle"
 import "../../content"
 
 export default function Search(props) {
   const [allLinks, setAllLinks] = useState([])
   const [allSnippets, setAllSnippets] = useState([])
+
   useEffect(() => {
     setAllLinks(props.localStorageData.links)
     setAllSnippets(props.localStorageData.snippets)
@@ -33,8 +34,10 @@ export default function Search(props) {
     props.setfilterdData(l)
     props.setfilterdSnippetData(s)
   }
+
   // Search function on keyup
   const searchAll = (e) => {
+    const textLengthLimit = 0;
     const clarBtn = document.getElementById("clearSearch") as HTMLInputElement
     const searchIcon = document.getElementById(
       "popupSearchIcon"
@@ -47,10 +50,11 @@ export default function Search(props) {
       const filterTxt = input.value.toLowerCase()
       filterSearchItems(filterTxt, allLinks, links)
       filterSearchItems(filterTxt, allSnippets, snippets)
-      if (filterTxt.length) {
+      if (filterTxt.length > textLengthLimit) {
         clarBtn.classList.add("active")
         searchIcon.classList.add("hide")
         setData(links, snippets)
+        console.log("text")
         slideAll(".popup-buttons-container button.link-list-toggle", "down")
       } else {
         clarBtn.classList.remove("active")

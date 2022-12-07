@@ -16,6 +16,9 @@ function RegisterForm(props) {
   const [errorMessage, setErrorMessage] = useState("")
 
   function handleChange(e) {
+    const errorCont = document.querySelector<HTMLElement>(
+      "#modal-register-form .error-text"
+    )
     if (!e.target.value.length) {
       setErrorMessage(
         `${
@@ -27,6 +30,15 @@ function RegisterForm(props) {
       ).style.color = "red"
     } else {
       setErrorMessage("")
+    }
+
+    if(e.target.name === "confirmPassword" || e.target.name === "password") {
+      if(e.target.value.length <= 8) {
+        errorCont.style.color = "red";
+        setErrorMessage("Password: the length must be between 8 and 72.")
+      } else {
+        setErrorMessage("")
+      }
     }
 
     if (e.target.value.length) {
@@ -54,26 +66,24 @@ function RegisterForm(props) {
 
   async function handleSubmit(e) {
     e.preventDefault()
+    const errContainer = document.querySelector<HTMLElement>("#modal-register-form .error-text");
     if (email.length && password.length) {
-      document.querySelector<HTMLElement>(
-        "#modal-register-form .error-text"
-      ).style.color = "green"
+      errContainer.style.color = "green"
       setErrorMessage("Sending...")
       const adminAuthData = await registerAuth(registerForm)
-      if (adminAuthData.id) {
+      if (adminAuthData.status) {
         const $el = document.querySelector("#modal-register-form")
-        setRegisterForm(registerFormData)
+        setRegisterForm(registerFormData);
         setErrorMessage(
-          "You have successfully registered! You will receive an email for verification. You can sign in once the you verified the link!"
+          "You have successfully registered! You will receive an email for verification. You can sign in once you verified the link!"
         )
       } else {
-        document.querySelector<HTMLElement>(".error-text").style.color = "red"
-        setErrorMessage("Sorry, Incorrect credintials. Please try again!")
+        errContainer.style.color = "red";
+        setErrorMessage("Sorry, Incorrect credintials. Please try again!");
+        setRegisterForm(registerFormData);
       }
     } else {
-      document.querySelector<HTMLElement>(
-        "#modal-register-form .error-text"
-      ).style.color = "red"
+      errContainer.style.color = "red"
       setErrorMessage("One or more fields are empty. Please try again!")
     }
   }

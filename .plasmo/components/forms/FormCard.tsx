@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 
 import { createLinks, updateLinks } from "../../utils/apiCalls"
 import Auth from "../../utils/auth"
@@ -12,14 +12,12 @@ function FormCard(props) {
     "Please update/delete category using the buttons"
   )
 
-  useEffect(() => {
-    if (!props.categoryData.length) {
-      const token = Auth.getToken()
-      if (!token) {
-        setErrorMessage("Please login to generate catgeories")
-      }
+  if (!props.categoryData.length) {
+    const token = Auth.getToken()
+    if (!token) {
+      setErrorMessage("Please login to generate catgeories")
     }
-  }, [props.categoryData])
+  }
 
   function validateUrl(string) {
     let url
@@ -161,7 +159,7 @@ function FormCard(props) {
                   name="name"
                   className="input"
                   type="text"
-                  placeholder="Text input"
+                  placeholder="Enter a name"
                   onChange={handleChange}
                   value={name}
                 />
@@ -180,7 +178,7 @@ function FormCard(props) {
                   name="url"
                   className="input"
                   type="text"
-                  placeholder="Text input"
+                  placeholder="Enter the URL"
                   onChange={handleChange}
                   value={url}
                 />

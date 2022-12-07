@@ -87,17 +87,23 @@ function dragSort(target, args) {
           endIndex: droppedpos
         })
 
+        // const localStorageObj = JSON.parse(localStorage.getItem("localData"));
+
         if (args.parentCont === "quick-links") {
           args.setIndexLinks(newOrder)
           const links = args.localStorageData.links
+          // const links = localStorageObj.links;
           const data = {
             indexOrder: newOrder,
             name: "links"
           }
-          for (l of links) {
-            for (o of newOrder) {
-              if (l.name === o.name) {
-                l.index = o.index
+          
+          if(links.length) {
+            for (let l of links) {
+              for (let o of newOrder) {
+                if (l.name === o.name) {
+                  l.index = o.index
+                }
               }
             }
           }
@@ -110,13 +116,14 @@ function dragSort(target, args) {
           createIndexArray(data)
         } else {
           args.setIndexSnippets(newOrder)
-          const snippets = args.localStorageData.snippets
+          const snippets = args.localStorageData.snippets;
+          // const snippets = localStorageObj.snippets;
           const data = {
             indexOrder: newOrder,
             name: "snippets"
           }
-          for (l of snippets) {
-            for (o of newOrder) {
+          for (let l of snippets) {
+            for (let o of newOrder) {
               if (l.name === o.name) {
                 l.index = o.index
               }

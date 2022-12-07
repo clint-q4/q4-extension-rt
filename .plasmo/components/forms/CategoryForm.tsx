@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 
 import {
   createCategory,
@@ -10,7 +10,7 @@ import {
 function CategoryForm(props) {
   const [addCategoryMessage, setAddCategoryMessage] = useState("")
 
-  let category
+  let category = '';
   props.collectionType === "link"
     ? (category = props.formLinkDetails.category)
     : (category = props.formSnippetDetails.category)
@@ -54,7 +54,7 @@ function CategoryForm(props) {
           }, 1000)
         }
       } else {
-        setAddCategoryMessage("Something went wrong!")
+        setAddCategoryMessage("Something went wrong! Please try again.")
       }
     }
   }
@@ -63,40 +63,40 @@ function CategoryForm(props) {
     e.preventDefault()
     const _t = e.target
     const match = _t.matches(`#${props.collectionType}UpdateCategory`)
-    if (match) {
-      const categoryInput = _t.parentElement.previousSibling
-      const categoryID = categoryInput.parentElement.dataset.value
-      const updatedCategory = categoryInput.value
-      _t.style.display = "none"
-      _t.previousSibling.style.display = "flex"
-      if (updatedCategory && categoryID) {
-        const data = {
-          name: updatedCategory
-        }
-        const response = updateCategory(data, categoryID)
-        const textInput = document.createElement("span")
-        textInput.classList.add("categoryName")
-        textInput.textContent = updatedCategory
-        categoryInput.replaceWith(textInput)
-        const categoryStatus = document.querySelector(
-          `#${props.collectionType}RemoveCategoryModal .category-status`
-        ) as HTMLInputElement
-        response.then((res) => {
-          if (res.name) {
-            const temp = `Catgeory has been updated to ${res.name}`
-            categoryStatus.style.color = "green"
-            props.setCategoryMessage(temp)
-            props.setRefresh(true)
-            setTimeout(function () {
-              props.setCategoryMessage("")
-            }, 1000)
-          } else {
-            const temp = "Sorry! Something went wrong"
-            props.setCategoryMessage(temp)
-            categoryStatus.style.color = "red"
-          }
-        })
+    if(!match || match === null) return;
+
+    const categoryInput = _t.parentElement.previousSibling
+    const categoryID = categoryInput.parentElement.dataset.value
+    const updatedCategory = categoryInput.value
+    _t.style.display = "none"
+    _t.previousSibling.style.display = "flex"
+    if (updatedCategory && categoryID) {
+      const data = {
+        name: updatedCategory
       }
+      const response = updateCategory(data, categoryID)
+      const textInput = document.createElement("span")
+      textInput.classList.add("categoryName")
+      textInput.textContent = updatedCategory
+      categoryInput.replaceWith(textInput)
+      const categoryStatus = document.querySelector(
+        `#${props.collectionType}RemoveCategoryModal .category-status`
+      ) as HTMLInputElement
+      response.then((res) => {
+        if (res.name) {
+          const temp = `Catgeory has been updated to ${res.name}`
+          categoryStatus.style.color = "green"
+          props.setCategoryMessage(temp)
+          props.setRefresh(true)
+          setTimeout(function () {
+            props.setCategoryMessage("")
+          }, 1000)
+        } else {
+          const temp = "Sorry! Something went wrong"
+          props.setCategoryMessage(temp)
+          categoryStatus.style.color = "red"
+        }
+      })
     }
   }
 
@@ -124,40 +124,43 @@ function CategoryForm(props) {
     e.preventDefault()
     const _t = e.target
     const match = _t.matches(`#${props.collectionType}DeleteCategory`)
-    if (match) {
-      const categoryID = _t.closest(".control").dataset.value
-      const categoryStatus = document.querySelector(
-        `#${props.collectionType}RemoveCategoryModal .category-status`
-      ) as HTMLInputElement
-      if (categoryID) {
-        const response = deleteCategory(categoryID)
-        response
-          .then((res) => {
-            if (!res.status) {
-              props.setCategoryMessage(res.reason)
-              categoryStatus.style.color = "red"
-            } else {
-              categoryStatus.style.color = "green"
-              props.setCategoryMessage(
-                "Category has been deleted successfully!"
-              )
-              getLists("category").then((list) => {
-                props.setCategoryData(list)
-              })
-              setTimeout(() => {
-                props.setCategoryMessage("")
-              }, 1000)
-            }
-          })
-          .catch((err) => {
-            categoryStatus.style.color = "red"
-            const temp = "Make sure that the category does not have any links!"
-            props.setCategoryMessage(temp)
-            setTimeout(() => {
-              props.setCategoryMessage("")
-            }, 1000)
-          })
+    if(!match || match === null) return;
+
+    const categoryID = _t.closest(".control").dataset.value
+    const categoryStatus = document.querySelector(
+      `#${props.collectionType}RemoveCategoryModal .category-status`
+    ) as HTMLInputElement
+
+    if(!categoryID || categoryID === null) return;
+
+    try {
+      const response = await deleteCategory(categoryID)
+      if (!response.status) {
+        props.setCategoryMessage(response.reason)
+        categoryStatus.style.color = "red"
+      } else {
+        categoryStatus.style.color = "green"
+        props.setCategoryMessage(
+          "Category has been deleted successfully!"
+        )
+        getLists("category").then((list) => {
+          props.setCategoryData(list)
+        }).catch((err) => {
+          props.setCategoryMessage(err)
+        });
+        setTimeout(() => {
+          props.setCategoryMessage("")
+        }, 1000)
       }
+    } 
+    
+    catch {
+      categoryStatus.style.color = "red"
+      const temp = "Make sure that the category does not have any links!"
+      props.setCategoryMessage(temp)
+      setTimeout(() => {
+        props.setCategoryMessage("")
+      }, 1000)
     }
   }
 
@@ -220,7 +223,7 @@ function CategoryForm(props) {
                       id={`${props.collectionType}CategoryInput`}
                       className="input"
                       type="text"
-                      placeholder="Text input"
+                      placeholder="Enter a name"
                     />
                   </div>
                 </div>

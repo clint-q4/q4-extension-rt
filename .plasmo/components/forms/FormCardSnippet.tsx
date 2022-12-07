@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 
 import { createSnippets, updateSnippets } from "../../utils/apiCalls"
 import Auth from "../../utils/auth"
@@ -12,14 +12,12 @@ function FormCardSnippet(props) {
     "Please update/delete category using the buttons"
   )
 
-  useEffect(() => {
-    if (!props.categoryData.length) {
-      const token = Auth.getToken()
-      if (!token) {
-        setErrorMessage("Please login to generate catgeories")
-      }
+  if (!props.categoryData.length) {
+    const token = Auth.getToken()
+    if (!token) {
+      setErrorMessage("Please login to generate catgeories")
     }
-  }, [props.categoryData])
+  }
 
   function validateUrl(string) {
     let url
@@ -44,12 +42,10 @@ function FormCardSnippet(props) {
       setErrorMessage("")
     }
 
-    if (!errorMessage) {
-      props.setFormSnippetDetails({
-        ...props.formSnippetDetails,
-        [e.target.name]: e.target.value
-      })
-    }
+    props.setFormSnippetDetails({
+      ...props.formSnippetDetails,
+      [e.target.name]: e.target.value
+    })
   }
 
   async function handleSubmitSnippet(e) {
@@ -81,12 +77,12 @@ function FormCardSnippet(props) {
           const temp = `${record.name} has been addded to the list!`
           errorStatus.style.color = "green"
           setErrorMessage(temp)
-          props.setRefresh(true)
           props.setFormSnippetDetails(clear)
+          props.setRefresh(true)
           setTimeout(function () {
             setErrorMessage("")
             modal.classList.remove("is-active")
-          }, 1000)
+          }, 1000);
         } else {
           setErrorMessage("Sorry! Something went wrong!")
           document.querySelector<HTMLElement>(".error-text").style.color = "red"
@@ -155,7 +151,7 @@ function FormCardSnippet(props) {
                   name="name"
                   className="input"
                   type="text"
-                  placeholder="Text input"
+                  placeholder="Enter a name"
                   onChange={handleChange}
                   value={name}
                 />
@@ -190,7 +186,7 @@ function FormCardSnippet(props) {
                   name="url"
                   className="input"
                   type="text"
-                  placeholder="Text input"
+                  placeholder="Enter any related URL"
                   onChange={handleChange}
                   value={url}
                 />

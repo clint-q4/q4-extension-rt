@@ -257,7 +257,7 @@ function IndexOptions() {
               </button>
             </div>
           ) : (
-            <div className="is-flex is-align-items-center mr-5">
+            <div>
               {/* <p>Please login → </p> */}
             </div>
           )}

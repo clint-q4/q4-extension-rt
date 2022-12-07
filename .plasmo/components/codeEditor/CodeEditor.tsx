@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import CodeEditor from '@uiw/react-textarea-code-editor';
 
 function MainEditor(props) {
@@ -7,7 +7,7 @@ function MainEditor(props) {
   return (
     <CodeEditor
       autoFocus
-      value={code}
+      value={props.snippet}
       onChange={(evn) => setCode(evn.target.value)}
       padding={10}
       language="js"

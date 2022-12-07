@@ -1,4 +1,4 @@
-import "../utils/slideToggle"
+// import "../utils/slideToggle"
 
 import Auth from "~.plasmo/utils/auth"
 
@@ -20,7 +20,7 @@ function RenderLinks(props) {
           <button
             onClick={(e) => toggleAll(e, ".quick-links")}
             id="toggle-all-links"
-            className="button"
+            className="button toggle-all"
             title="toggle">
             Toggle all
             <i className="fa-solid fa-arrow-down-wide-short"></i>
@@ -41,7 +41,7 @@ function RenderLinks(props) {
               className="link-list-toggle">
               {el.name}
               <span>
-                <i className="fa-regular fa-circle-down"></i>
+                <i className="fa-solid fa-circle-chevron-down"></i>
               </span>
             </button>
             <div

@@ -32,11 +32,9 @@ const loginAuth = async function (email, password) {
       }
       return respose
     } else {
-      profileID = adminAuthData.record.id
+      const profileID = adminAuthData.record.id
       adminAuthData["status"] = true
-      // const hash = bcrypt.hashSync(profileID, salt);
       adminAuthData["exToken"] = profileID
-      // console.log(hash, "hashed");
       return adminAuthData
     }
   } catch (err) {
@@ -63,13 +61,16 @@ const registerAuth = async function (formData) {
     }
 
     const record = await pb.collection("users").create(data)
-
+    record["status"] = true;
     await pb.collection("users").requestVerification(formData.email)
-
+    console.log(record);
     return record
   } catch (err) {
-    console.error(err)
-    return {}
+    console.log(err)
+    return {
+      status: false,
+      message: "Email: The email is invalid or already in use."
+    }
   }
 }
 

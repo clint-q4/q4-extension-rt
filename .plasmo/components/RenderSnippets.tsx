@@ -1,4 +1,4 @@
-import "../utils/slideToggle"
+// import "../utils/slideToggle"
 
 import Auth from "~.plasmo/utils/auth"
 
@@ -14,6 +14,7 @@ import CodeEditor from "./codeEditor/CodeEditor"
 // import CodeMirrorEditor from "./CodeMirrorEditor";
 
 function RenderSnippets(props) {
+  console.log('rend-snip', props.filterdData);
   const isNotEmpty = props.filterdData.length
 
   function copySnippet(e) {
@@ -37,12 +38,12 @@ function RenderSnippets(props) {
     if (_t.matches(".snip-toggle-icon")) {
       const id = _t.dataset.id
       _t.classList.toggle("active")
-      closeAllOptions()
-      ;(
-        document.querySelector(
-          `.snippet-container[data-id="${id}"]`
-        ) as HTMLInputElement
-      ).slideToggle(300)
+      closeAllOptions();
+      const _el = document.querySelector(
+        `.snippet-container[data-id="${id}"]`
+      ) as HTMLElement;
+      _el.classList.toggle("active");
+      _el.slideToggle(300);
     }
   }
 
@@ -54,7 +55,7 @@ function RenderSnippets(props) {
           <button
             onClick={(e) => toggleAll(e, ".quick-snippets")}
             id="toggle-all-snippets"
-            className="button"
+            className="button toggle-all"
             title="toggle">
             Toggle all
             <i className="fa-solid fa-arrow-down-wide-short"></i>
@@ -75,14 +76,14 @@ function RenderSnippets(props) {
               className="link-list-toggle">
               {el.name}
               <span>
-                <i className="fa-regular fa-circle-down"></i>
+                <i className="fa-solid fa-circle-chevron-down"></i>
               </span>
             </button>
             <div
               className="links-container"
               id={`toggle-id-snip-${index}`}
               style={{ display: "none" }}>
-              <div className="p-4 links-container-inner">
+              <div className="links-container-inner">
                 {el.list.map((item, ind) => (
                   <div key={ind} className="snippets is-3">
                     <div className="snippet-title-buttons">
@@ -92,16 +93,18 @@ function RenderSnippets(props) {
                         </p>
                       </div>
                       <div className="snippet-buttons">
-                        <span
-                          className="copy-icon"
+                        <button
+                          type="button"
+                          title="copy-icon"
+                          className="copy-icon button"
                           data-id={item.id}
                           onClick={copySnippet}>
                           <i className="fa-solid fa-copy"></i>
-                        </span>
+                        </button>
                         {item.url ? (
                           <a
                             title="link"
-                            className="link-icon"
+                            className="link-icon button"
                             href={item.url}
                             target="_blank">
                             <i className="fa-solid fa-up-right-from-square"></i>
@@ -109,12 +112,14 @@ function RenderSnippets(props) {
                         ) : (
                           ""
                         )}
-                        <span
-                          className="snip-toggle-icon"
+                        <button
+                          type="button"
+                          title="snip-toggle-icon"
+                          className="snip-toggle-icon button"
                           data-id={item.id}
                           onClick={snipToggle}>
                           <i className="fa-solid fa-angles-down"></i>
-                        </span>
+                        </button>
                         {/* <span onClick={e => triggerUpdateLinks(e, item.id)} className="options-buttons update-links-container">
                       <i className="fa-solid fa-pen-to-square"></i>
                       </span>

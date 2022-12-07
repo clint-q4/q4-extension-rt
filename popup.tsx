@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react"
 import useLocalStorage from 'use-local-storage';
+import logoImage from "./.plasmo/gen-assets/clipme_logo.png";
 
 // CSS 
 import './css/styles.css';
 import './node_modules/@fortawesome/fontawesome-free/css/all.min.css';
 import dragSort from '~.plasmo/utils/sort.js'
+import './.plasmo/utils/slideToggle';
 
 // Utility functions
 import {getLists, createIndexArray, getIndexArray} from "~.plasmo/utils/apiCalls";
@@ -111,7 +113,6 @@ function IndexPopup() {
     const diff = HourDiff(sessDate, now);
     if(diff >= 24) {
       fetchData(fetchArgs);
-      setRefresh(false);
     }
 
     // get list container for drag and drop
@@ -137,13 +138,17 @@ function IndexPopup() {
         setfilterdSnippetData: setfilterdSnippetData,
       })
     }
+
+    return () => {
+      setRefresh(false);
+    }
   }, [])
 
   useEffect(() => {
     // if refresh is set to true fetch data again
-    if(refresh) {
-      fetchData(fetchArgs);
-    }
+    if(refresh) return;
+    fetchData(fetchArgs);
+
     return () => {
       setRefresh(false);
     }
@@ -234,24 +239,31 @@ function IndexPopup() {
   return (
     <div className="root-container" data-theme={theme}>
       <div className="popup-container">
-        <div className="popup-title-container">
-          <h2 className="has-text-weight-bold is-flex-grow-1">ClipMe.<span id="q4-site-verification"></span></h2>
-          <span className="theme-toggle">
-            <ThemeToggleSwitch
-              theme={theme}
-              setTheme={setTheme}
-            ></ThemeToggleSwitch>
-          </span>
+        <div className="popup-header-container">
+          <div className="logo-container">
+            <img src={logoImage} alt="clipme logo" />
+            <span id="extension-name">ClipMe.</span>
+          </div>
+          <div className="popup-header-buttons">
+            <span className="q4icon-container" id="q4-site-verification">
+              <span className="q4icon">Q4</span>
+            </span>
+            <span className="theme-toggle">
+              <ThemeToggleSwitch
+                theme={theme}
+                setTheme={setTheme}
+              ></ThemeToggleSwitch>
+            </span>
             {Auth.loggedIn() ? (
             <div className="is-flex is-align-items-center">
-              <button 
+              {/* <button 
                 title="Refresh All" 
                 className="button" 
                 id="refreshAll" 
                 onClick={() => setRefresh(true)}
                 >
                 <i className="fa-solid fa-arrow-rotate-right"></i>
-              </button>
+              </button> */}
               <button 
                 title="add-snippet" 
                 className="button" 
@@ -271,15 +283,16 @@ function IndexPopup() {
                 <i className="fa-solid fa-link"></i>
               </button>
             </div>
-          ) : (
-            <div className="is-flex is-align-items-center mr-5">
-              {/* <p>Please login → </p> */}
-            </div>
-          )}
-          <LoginForm
-            setRefresh={setRefresh}
-            setLocalStorageData={setLocalStorageData}
-          ></LoginForm>
+            ) : (
+              <div>
+                {/* <p>Please login → </p> */}
+              </div>
+            )}
+            <LoginForm
+              setRefresh={setRefresh}
+              setLocalStorageData={setLocalStorageData}
+            ></LoginForm>
+          </div>
         </div>
         <div className="error-message-container">
           <p>{errorMessage}</p>

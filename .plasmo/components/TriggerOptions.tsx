@@ -72,7 +72,7 @@ function TriggerOptions(props) {
   return Auth.loggedIn() ? (
     <div className="button-options-container" style={{ display: "none" }}>
       <div className="button-options update-links-container">
-        <button
+        {/* <button
           className="button"
           title="Visibility"
           // onClick={(e) => triggerDeleteLinks(e, item.id)}
@@ -81,7 +81,7 @@ function TriggerOptions(props) {
             <i className="fa-solid fa-users" style={{ display: "none" }}></i>
             <i className="fa-solid fa-user-shield"></i>
           </span>
-        </button>
+        </button> */}
         <button
           className="button"
           title="Edit"

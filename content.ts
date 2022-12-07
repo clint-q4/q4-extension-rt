@@ -7,7 +7,7 @@ export const config: PlasmoContentScript = {
   matches: ["<all_urls>"]
 }
 
-
+// Not using this...
 export const groupLinks = (categoryData, linksData, setfilterdData, name) => {
   if(!categoryData.length || !linksData.length) return;
   const groupedData = linksData.reduce((groups, item) => {
@@ -20,6 +20,7 @@ export const groupLinks = (categoryData, linksData, setfilterdData, name) => {
   return groupedData;
 }
 
+// Group and sort the items
 export const groupAndSort = (categoryData, linksData, indexArr, setIndexArray, createIndexArray, type) => {
   if(!categoryData.length || !linksData.length) return;
   const res = [];
@@ -77,19 +78,39 @@ export const checkSite = async () => {
       func: checkQ4Site
     },
     (result) => {
-      for (let r of result) {
-        if (r.result) {
-          document.querySelector("#q4-site-verification").innerHTML =
-            '<span class="q4icon">Q4</span>'
-        } else {
-          document.querySelector("#q4-site-verification").innerHTML = ""
-          document.querySelector<HTMLElement>(
-            ".popup-buttons-container"
-          ).style.display = "none"
+      if(result && result.length) {
+        for (let r of result) {
+          const q4Logo = document.querySelector<HTMLElement>("#q4-site-verification");
+          if (r.result) {
+            q4Logo.style.display = "flex";
+          } else {
+            q4Logo.style.display = "none";
+            document.querySelector<HTMLElement>(
+              ".popup-buttons-container.cms-links"
+            ).style.display = "none"
+          }
         }
       }
     }
   )
+
+  // add a save button below snippets
+  // function checkCodeEditor() {
+  //   const temp = `
+  //     <div class="saveSnippetContainer">
+  //       <button class="saveSnippetBtn">Save</button>
+  //     </div>
+  //   `;
+  //   if (document.querySelector("pre code")) {
+  //     const all = (document.querySelectorAll("code") as NodeListOf<Element>);
+  //     for (let el of all) {
+  //       const mainCont = el.closest("pre");
+  //       if(mainCont && mainCont.nodeName.toLowerCase() === "pre") {
+  //         mainCont.insertAdjacentHTML("afterend", temp);
+  //       }
+  //     }
+  //   }
+  // }
 
   function checkQ4Site() {
     let q4SiteVerification = false
@@ -204,39 +225,39 @@ export const loadPreviewEditPage = () => {
 }
 
 // Not using this...
-export const slideToggle = (e) => {
-  e.preventDefault()
-  const el = e.target
-  const id = el.dataset.toggle
-    ? el.dataset.toggle
-    : el.closest("button").dataset.toggle
-  const t = document.querySelector(`button[data-toggle="${id}"]`)
-  var container = document.getElementById(id)
-  const statE = !container.classList.contains("active")
-  const statT = !t.classList.contains("active")
-  if (statE && statT) {
-    container.classList.add("active")
-    t.classList.add("active")
-    container.style.height = "auto"
-    const height = container.clientHeight + "px"
-    container.style.height = "0px"
-    setTimeout(function () {
-      container.style.height = height
-    }, 0)
-  } else {
-    container.style.height = "0px"
-    t.classList.remove("active")
-    container.addEventListener(
-      "transitionend",
-      function () {
-        container.classList.remove("active")
-      },
-      {
-        once: true
-      }
-    )
-  }
-}
+// export const slideToggle = (e) => {
+//   e.preventDefault()
+//   const el = e.target
+//   const id = el.dataset.toggle
+//     ? el.dataset.toggle
+//     : el.closest("button").dataset.toggle
+//   const t = document.querySelector(`button[data-toggle="${id}"]`)
+//   var container = document.getElementById(id)
+//   const statE = !container.classList.contains("active")
+//   const statT = !t.classList.contains("active")
+//   if (statE && statT) {
+//     container.classList.add("active")
+//     t.classList.add("active")
+//     container.style.height = "auto"
+//     const height = container.clientHeight + "px"
+//     container.style.height = "0px"
+//     setTimeout(function () {
+//       container.style.height = height
+//     }, 0)
+//   } else {
+//     container.style.height = "0px"
+//     t.classList.remove("active")
+//     container.addEventListener(
+//       "transitionend",
+//       function () {
+//         container.classList.remove("active")
+//       },
+//       {
+//         once: true
+//       }
+//     )
+//   }
+// }
 
 export const linkToggle = (e) => {
   let _t = e.target
@@ -285,16 +306,18 @@ export const toggleAll = (e, parentEl) => {
 }
 
 export const slideAll = (toggleClass, direction) => {
-  const buttons = document.querySelectorAll<HTMLElement>(toggleClass);
-  for(let b of buttons) {
-    const id = b.dataset.toggle;
-    if(id) {
-      const linkTarget = document.getElementById(id);
-      direction === 'up' ? 
-        (linkTarget as HTMLInputElement).slideUp(300) :
-        (linkTarget as HTMLInputElement).slideDown(300)
+  setTimeout(() => {
+    const buttons = document.querySelectorAll<HTMLElement>(toggleClass);
+    for(let b of buttons) {
+      const id = b.dataset.toggle;
+      if(id) {
+        const linkTarget = document.getElementById(id);
+        direction === 'up' ? 
+          (linkTarget as HTMLInputElement).slideUp(300) :
+          (linkTarget as HTMLInputElement).slideDown(300)
+      }
     }
-  }
+  }, 100);
 }
 
 export const toggleOptions = (e) => {
@@ -381,7 +404,7 @@ export const initDeleteOrModify = (e) => {
             const id = (link as HTMLInputElement).dataset.toggle
             link.classList.add("active")
             const linkTarget = document.getElementById(id)
-            ;(linkTarget as HTMLInputElement).slideDown(300)
+            ;(linkTarget as HTMLElement).slideDown(300)
           }
         } else {
           container.classList.remove("delete-links-init")

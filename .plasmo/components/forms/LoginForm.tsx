@@ -3,6 +3,7 @@ import { useState } from "react"
 import { loginAuth, listAuthMethods } from "../../utils/apiCalls"
 import Auth from "../../utils/auth"
 import RegisterForm from "./RegisterForm"
+import loaderSvg from '../../../assets/loading.svg';
 
 function LoginForm(props) {
   // form validation
@@ -14,6 +15,7 @@ function LoginForm(props) {
   const [loginForm, setLoginForm] = useState(LoginFormData)
   const { email, password } = loginForm
   const [errorMessage, setErrorMessage] = useState("")
+  const [loader, intiateLoader] = useState(false)
 
   function handleChange(e) {
     if (!e.target.value.length) {
@@ -27,7 +29,7 @@ function LoginForm(props) {
       setErrorMessage("")
     }
 
-    if (!errorMessage) {
+    if (e.target.value.length) {
       setLoginForm({
         ...loginForm,
         [e.target.name]: e.target.value
@@ -41,17 +43,19 @@ function LoginForm(props) {
       "#modal-login-form .error-text"
     )
     if (email.length && password.length) {
-      setErrorMessage("Please wait...")
+      // setErrorMessage("Please wait...")
+      intiateLoader(true)
       const adminAuthData = await loginAuth(email, password)
-      if (!adminAuthData.status) {
+      if (!adminAuthData['status']) {
         errorCont.style.color = "red"
-        setErrorMessage(adminAuthData.message)
+        setErrorMessage(adminAuthData['message']);
         return
       }
       if (adminAuthData.hasOwnProperty("token")) {
         errorCont.style.color = "green"
         const $el = document.querySelector("#modal-login-form")
         setLoginForm(LoginFormData)
+        intiateLoader(false)
         setErrorMessage("You have successfully logged in!")
         Auth.login(adminAuthData["token"], adminAuthData["exToken"])
         setTimeout(() => {
@@ -59,11 +63,11 @@ function LoginForm(props) {
             $el.classList.remove("is-active")
           }
           // props.setRefresh(true);
-          window.location.reload()
+          window.location.reload();
         }, 500)
       } else {
         errorCont.style.color = "red"
-        setErrorMessage("Sorry, Something went wrong! Please try with differnent username or email address!");
+        setErrorMessage("Email Address or Password is incorrect!");
       }
     } else {
       document.querySelector<HTMLElement>(".error-text").style.color = "red"
@@ -116,9 +120,6 @@ function LoginForm(props) {
                   <span className="icon is-small is-left">
                     <i className="fas fa-envelope"></i>
                   </span>
-                  <span className="icon is-small is-right">
-                    <i className="fas fa-check"></i>
-                  </span>
                 </p>
               </div>
               <div className="field">
@@ -135,9 +136,23 @@ function LoginForm(props) {
                   </span>
                 </p>
               </div>
+              <div className="field">
+                <button 
+                  className="link forgot-password"
+                  type="button"
+                  title="forgot password"
+                  >
+                  Forgot Password?
+                </button>
+              </div>
             </div>
           </div>
           <footer className="modal-card-foot">
+            {loader ? (
+              <div className="loader-container">
+                <img src={loaderSvg} alt="loader" />
+              </div>
+            ) : <></>}
             <div className="error-container">
               <p className="error-text">{errorMessage}</p>
             </div>
