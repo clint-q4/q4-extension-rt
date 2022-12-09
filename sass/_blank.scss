@@ -1028,4 +1028,17 @@ input:checked + .slider:before {
   margin: 0 5px;
 }
 
+.modal-card-foot {
+  position: relative;
+  .loader-container {
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+  }
+}
+
+
+
 

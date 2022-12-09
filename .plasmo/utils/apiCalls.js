@@ -260,12 +260,26 @@ const getSingleRecord = async function (collection, id, relations) {
   }
 }
 
+// list auth methods pb
 const listAuthMethods = async function () {
   try {
     const methods = await pb.collection('users').listAuthMethods();
     console.log(methods);
     return methods
   } catch (err) {
+    console.error(err)
+    return {}
+  }
+}
+
+// password reset auth
+const passwordResetAuth = async function (email) {
+  try {
+    console.log(email);
+    const result = await pb.collection('users').requestPasswordReset(email);
+    return result;
+  }
+  catch (err) {
     console.error(err)
     return {}
   }
@@ -287,5 +301,6 @@ export {
   createSnippets,
   createIndexArray,
   getIndexArray,
-  listAuthMethods
+  listAuthMethods,
+  passwordResetAuth
 }

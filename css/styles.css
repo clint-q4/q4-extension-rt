@@ -8985,3 +8985,12 @@ input:checked + .slider:before {
   border-radius: 5px;
   font-weight: 500;
   margin: 0 5px; }
+
+.modal-card-foot {
+  position: relative; }
+  .modal-card-foot .loader-container {
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    bottom: 15px;
+    left: 15px; }

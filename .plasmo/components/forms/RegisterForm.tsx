@@ -1,6 +1,7 @@
 import { useState } from "react"
 
 import { registerAuth } from "../../utils/apiCalls"
+import loaderSvg from '../../../assets/loading.svg';
 
 function RegisterForm(props) {
   // form validation
@@ -14,8 +15,9 @@ function RegisterForm(props) {
   const [registerForm, setRegisterForm] = useState(registerFormData)
   const { email, password, confirmPassword, name } = registerForm
   const [errorMessage, setErrorMessage] = useState("")
+  const [loader, intiateLoader] = useState(false)
 
-  function handleChange(e) {
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const errorCont = document.querySelector<HTMLElement>(
       "#modal-register-form .error-text"
     )
@@ -25,9 +27,8 @@ function RegisterForm(props) {
           e.target.name.charAt(0).toUpperCase() + e.target.name.slice(1)
         } is required.`
       )
-      document.querySelector<HTMLElement>(
-        "#modal-register-form .error-text"
-      ).style.color = "red"
+      errorCont.style.color = "red"
+      return;
     } else {
       setErrorMessage("")
     }
@@ -36,17 +37,17 @@ function RegisterForm(props) {
       if(e.target.value.length <= 8) {
         errorCont.style.color = "red";
         setErrorMessage("Password: the length must be between 8 and 72.")
+        return;
       } else {
         setErrorMessage("")
       }
     }
 
-    if (e.target.value.length) {
-      setRegisterForm({
-        ...registerForm,
-        [e.target.name]: e.target.value
-      })
-    }
+    setRegisterForm({
+      ...registerForm,
+      [e.target.name]: e.target.value
+    })
+
   }
 
   function triggerLoginModal(e) {
@@ -66,25 +67,31 @@ function RegisterForm(props) {
 
   async function handleSubmit(e) {
     e.preventDefault()
+    intiateLoader(true);
     const errContainer = document.querySelector<HTMLElement>("#modal-register-form .error-text");
     if (email.length && password.length) {
       errContainer.style.color = "green"
-      setErrorMessage("Sending...")
       const adminAuthData = await registerAuth(registerForm)
       if (adminAuthData.status) {
         const $el = document.querySelector("#modal-register-form")
         setRegisterForm(registerFormData);
+        intiateLoader(false);
         setErrorMessage(
           "You have successfully registered! You will receive an email for verification. You can sign in once you verified the link!"
         )
       } else {
+        intiateLoader(false);
         errContainer.style.color = "red";
-        setErrorMessage("Sorry, Incorrect credintials. Please try again!");
+        setErrorMessage("Sorry! Something went wrong. Please double check the entries and please try again!");
         setRegisterForm(registerFormData);
       }
     } else {
+      intiateLoader(false);
       errContainer.style.color = "red"
-      setErrorMessage("One or more fields are empty. Please try again!")
+      setErrorMessage("One or more fields are empty. Please try again!");
+      setTimeout(() => {
+        setErrorMessage("");
+      }, 5000);
     }
   }
 
@@ -94,7 +101,7 @@ function RegisterForm(props) {
       <div className="modal-card">
         <header className="modal-card-head">
           <p className="modal-card-title">Register</p>
-          <button className="button modal-close cancel">Cancel</button>
+          <button type="button" className="button modal-close cancel">Cancel</button>
         </header>
         <div className="modal-card-body py-5">
           <div className="register-form" id="registerForm">
@@ -171,6 +178,11 @@ function RegisterForm(props) {
           </div>
         </div>
         <footer className="modal-card-foot">
+            {loader ? (
+              <div className="loader-container">
+                <img src={loaderSvg} alt="loader" />
+              </div>
+            ) : <></>}
           <div className="error-container">
             <p className="error-text">{errorMessage}</p>
           </div>

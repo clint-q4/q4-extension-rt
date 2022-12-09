@@ -3,6 +3,7 @@ import { useState } from "react"
 import { loginAuth, listAuthMethods } from "../../utils/apiCalls"
 import Auth from "../../utils/auth"
 import RegisterForm from "./RegisterForm"
+import ForgetPassword from "./ForgetPasswordForm"
 import loaderSvg from '../../../assets/loading.svg';
 
 function LoginForm(props) {
@@ -19,17 +20,14 @@ function LoginForm(props) {
 
   function handleChange(e) {
     if (!e.target.value.length) {
+      document.querySelector<HTMLElement>(".error-text").style.color = "red"
       setErrorMessage(
         `${
           e.target.name.charAt(0).toUpperCase() + e.target.name.slice(1)
         } is required.`
       )
-      document.querySelector<HTMLElement>(".error-text").style.color = "red"
     } else {
       setErrorMessage("")
-    }
-
-    if (e.target.value.length) {
       setLoginForm({
         ...loginForm,
         [e.target.name]: e.target.value
@@ -47,6 +45,8 @@ function LoginForm(props) {
       intiateLoader(true)
       const adminAuthData = await loginAuth(email, password)
       if (!adminAuthData['status']) {
+        intiateLoader(false);
+        console.log(loader, 'loader');
         errorCont.style.color = "red"
         setErrorMessage(adminAuthData['message']);
         return
@@ -56,6 +56,7 @@ function LoginForm(props) {
         const $el = document.querySelector("#modal-login-form")
         setLoginForm(LoginFormData)
         intiateLoader(false)
+        console.log(loader, 'loaderLogged')
         setErrorMessage("You have successfully logged in!")
         Auth.login(adminAuthData["token"], adminAuthData["exToken"])
         setTimeout(() => {
@@ -66,12 +67,16 @@ function LoginForm(props) {
           window.location.reload();
         }, 500)
       } else {
+        intiateLoader(false);
         errorCont.style.color = "red"
         setErrorMessage("Email Address or Password is incorrect!");
       }
     } else {
       document.querySelector<HTMLElement>(".error-text").style.color = "red"
       setErrorMessage("One or more fields are empty. Please try again!")
+      setTimeout(() => {
+        setErrorMessage("");
+      }, 5000);
     }
   }
 
@@ -138,9 +143,10 @@ function LoginForm(props) {
               </div>
               <div className="field">
                 <button 
-                  className="link forgot-password"
+                  className="link forgot-password js-modal-trigger"
                   type="button"
                   title="forgot password"
+                  data-target="modal-forgot-password-form"
                   >
                   Forgot Password?
                 </button>
@@ -181,6 +187,7 @@ function LoginForm(props) {
         </div>
       </form>
       <RegisterForm setRefresh={props.setRefresh}></RegisterForm>
+      <ForgetPassword></ForgetPassword>
     </>
   )
 }
