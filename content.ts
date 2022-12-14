@@ -1,6 +1,8 @@
 import type { PlasmoContentScript } from "plasmo"
-import useLocalStorage from 'use-local-storage';
-import {getIndexArray} from './.plasmo/utils/apiCalls';
+import useLocalStorage from "use-local-storage"
+
+import { getIndexArray } from "./.plasmo/utils/apiCalls"
+
 // import {createIndexArray} from './.plasmo/utils/apiCalls';
 
 export const config: PlasmoContentScript = {
@@ -8,62 +10,69 @@ export const config: PlasmoContentScript = {
 }
 
 // Not using this...
-export const groupLinks = (categoryData, linksData, setfilterdData, name) => {
-  if(!categoryData.length || !linksData.length) return;
+export const groupLinks = (categoryData, linksData) => {
+  if (!categoryData.length || !linksData.length) return
   const groupedData = linksData.reduce((groups, item) => {
-    const group = groups[categoryData.find((c) => c.id === item.category).name] || []
+    const group =
+      groups[categoryData.find((c) => c.id === item.category).name] || []
     group.push(item)
     groups[categoryData.find((c) => c.id === item.category).name] = group
     return groups
   }, {})
 
-  return groupedData;
+  return groupedData
 }
-
 // Group and sort the items
-export const groupAndSort = (categoryData, linksData, indexArr, setIndexArray, createIndexArray, type) => {
-  if(!categoryData.length || !linksData.length) return;
-  const res = [];
-  for(let data of categoryData) {
+export const groupAndSort = (
+  categoryData,
+  linksData,
+  indexArr,
+  setIndexArray,
+  createIndexArray,
+  type
+) => {
+  if (!categoryData.length || !linksData.length) return
+  const res = []
+  for (let data of categoryData) {
     const obj = {
       name: data.name,
-      list: linksData.filter(l => l.category === data.id)
-    };
+      list: linksData.filter((l) => l.category === data.id)
+    }
 
-    if(obj.list.length) {
-      res.push(obj);
+    if (obj.list.length) {
+      res.push(obj)
     }
   }
-  
-  if(indexArr.length) {
-    for(let inde of indexArr) {
-      res.find(el => {
-        if(el.name === inde.name) {
-          el.index = inde.index;
+
+  if (indexArr.length) {
+    for (let inde of indexArr) {
+      res.find((el) => {
+        if (el.name === inde.name) {
+          el.index = inde.index
         }
       })
     }
-    res.sort((a,b) => (a.index - b.index))
+    res.sort((a, b) => a.index - b.index)
   } else {
-    const indArr = [];
-    res.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0))
-    for(let ind in res) {
+    const indArr = []
+    res.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0))
+    for (let ind in res) {
       const obj = {
         name: res[ind].name,
         index: ind
       }
       res[ind].index = ind
-      indArr.push(obj);
+      indArr.push(obj)
     }
 
     const data = {
       indexOrder: indArr,
       name: type
     }
-    setIndexArray(indArr);
-    createIndexArray(data);
+    setIndexArray(indArr)
+    createIndexArray(data)
   }
-  return res;
+  return res
 }
 
 export const checkSite = async () => {
@@ -78,13 +87,15 @@ export const checkSite = async () => {
       func: checkQ4Site
     },
     (result) => {
-      if(result && result.length) {
+      if (result && result.length) {
         for (let r of result) {
-          const q4Logo = document.querySelector<HTMLElement>("#q4-site-verification");
+          const q4Logo = document.querySelector<HTMLElement>(
+            "#q4-site-verification"
+          )
           if (r.result) {
-            q4Logo.style.display = "flex";
+            q4Logo.style.display = "flex"
           } else {
-            q4Logo.style.display = "none";
+            q4Logo.style.display = "none"
             document.querySelector<HTMLElement>(
               ".popup-buttons-container.cms-links"
             ).style.display = "none"
@@ -143,7 +154,7 @@ export const getCurrentTabLink = async (snip, snipDetails) => {
                 ...snip,
                 name: currentTab.title,
                 url: r.result.url,
-                category: 'default'
+                category: "default"
               })
             }
           }
@@ -161,6 +172,11 @@ export const getCurrentTabLink = async (snip, snipDetails) => {
     return o
   }
 }
+
+// This function is used to log into the Q4 site from the popup.html page
+// The function is executed when the login button is clicked
+// The function takes the current tab and executes the loginQ4Site function
+// The loginQ4Site function is defined in the content.js file
 
 export const loginEditButtons = () => {
   let loginButton = document.getElementById("q4-site-login-button")
@@ -185,6 +201,11 @@ export const loginEditButtons = () => {
   })
 }
 
+// this function opens the login page of a q4 site
+// it checks if the user is already on the login page
+// and if so, it alerts the user that they are already on it
+// it then opens the login page
+
 export const loginQ4Site = () => {
   const baseUrl = `https://${location.hostname}`
   if (
@@ -196,6 +217,11 @@ export const loginQ4Site = () => {
     window.open(`${baseUrl}/login.aspx`)
   }
 }
+
+// This code will open the Q4 CMS in a new tab, based on the current page you are on in Q4 Preview.
+// If you are on a press release preview page, then it will open the press release in the CMS
+// If you are on an event preview page, then it will open the event in the CMS
+// If you are on a regular page, then it will open the page in the CMS
 
 export const loadPreviewEditPage = () => {
   const base = `https://${location.hostname}`
@@ -224,52 +250,28 @@ export const loadPreviewEditPage = () => {
   }
 }
 
-// Not using this...
-// export const slideToggle = (e) => {
-//   e.preventDefault()
-//   const el = e.target
-//   const id = el.dataset.toggle
-//     ? el.dataset.toggle
-//     : el.closest("button").dataset.toggle
-//   const t = document.querySelector(`button[data-toggle="${id}"]`)
-//   var container = document.getElementById(id)
-//   const statE = !container.classList.contains("active")
-//   const statT = !t.classList.contains("active")
-//   if (statE && statT) {
-//     container.classList.add("active")
-//     t.classList.add("active")
-//     container.style.height = "auto"
-//     const height = container.clientHeight + "px"
-//     container.style.height = "0px"
-//     setTimeout(function () {
-//       container.style.height = height
-//     }, 0)
-//   } else {
-//     container.style.height = "0px"
-//     t.classList.remove("active")
-//     container.addEventListener(
-//       "transitionend",
-//       function () {
-//         container.classList.remove("active")
-//       },
-//       {
-//         once: true
-//       }
-//     )
-//   }
-// }
-
+/**
+ * Toggles the active class on a link-list-toggle element
+ * and calls the closeAllOptions function to close other options
+ * if any are open.
+ *
+ * @param {Event} e - the event object
+ */
 export const linkToggle = (e) => {
   let _t = e.target
   let match = _t.matches(".link-list-toggle")
   match ? _t : (_t = _t.closest(".link-list-toggle"))
-  if (_t.matches(".link-list-toggle")) {
-    const id = _t.dataset.toggle
-    _t.classList.toggle("active")
-    closeAllOptions()
-    ;(document.getElementById(`${id}`) as HTMLInputElement).slideToggle(300)
-  }
+  if(!match) return;
+  const id = _t.dataset.toggle
+  _t.classList.toggle("active")
+  closeAllOptions()
+  ;(document.getElementById(`${id}`) as HTMLInputElement).slideToggle(300)
 }
+
+// Function to toggle all the items in the header menu
+// @param e - the event object
+// @param parentEl - the parent element
+// @return void
 
 export const toggleAll = (e, parentEl) => {
   e.preventDefault()
@@ -305,54 +307,63 @@ export const toggleAll = (e, parentEl) => {
   }
 }
 
+// this function is used to slide all elements up or down based on the toggleClass and direction arguments
+// toggleClass is the class name of the elements to be toggled, direction is the direction to slide
+// the function is called on a timeout of 100ms to allow for the toggled elements to be in the DOM
+// the function iterates over the toggled elements and slides them up or down based on the direction argument
+// the id of the button is used to find the target element to slide
+
 export const slideAll = (toggleClass, direction) => {
   setTimeout(() => {
-    const buttons = document.querySelectorAll<HTMLElement>(toggleClass);
-    for(let b of buttons) {
-      const id = b.dataset.toggle;
-      if(id) {
-        const linkTarget = document.getElementById(id);
-        direction === 'up' ? 
-          (linkTarget as HTMLInputElement).slideUp(300) :
-          (linkTarget as HTMLInputElement).slideDown(300)
+    const buttons = document.querySelectorAll<HTMLElement>(toggleClass)
+    for (let b of buttons) {
+      const id = b.dataset.toggle
+      if (id) {
+        const linkTarget = document.getElementById(id)
+        direction === "up"
+          ? (linkTarget as HTMLInputElement).slideUp(300)
+          : (linkTarget as HTMLInputElement).slideDown(300)
       }
     }
-  }, 100);
+  }, 100)
 }
 
 export const toggleOptions = (e) => {
   e.preventDefault()
-  let _t = e.target
-  let match = _t.matches(".options-trigger")
-  _t = match ? _t : _t.parentElement
-  match = _t.matches(".options-trigger")
-  if (match) {
-    const toggleCont = _t.parentElement.nextSibling
-    if (!toggleCont.classList.contains("active")) {
-      _t.classList.toggle("active")
-      toggleCont.classList.add("active")
-      ;(toggleCont as HTMLInputElement).slideDown(300)
+  let target = e.target
+  let isTrigger = target.matches(".options-trigger")
+  target = isTrigger ? target : target.parentElement
+  isTrigger = target.matches(".options-trigger")
+  if (isTrigger) {
+    const toggleContainer = target.parentElement.nextSibling
+    if (!toggleContainer.classList.contains("active")) {
+      target.classList.toggle("active")
+      toggleContainer.classList.add("active")
+      ;(toggleContainer as HTMLInputElement).slideDown(300)
     } else {
-      toggleCont.classList.remove("active")
-      _t.classList.toggle("active")
-      ;(toggleCont as HTMLInputElement).slideUp(300)
+      toggleContainer.classList.remove("active")
+      target.classList.toggle("active")
+      ;(toggleContainer as HTMLInputElement).slideUp(300)
     }
   }
 }
 
+// closeAllOptions closes all active button option containers
+// and deactivates the associated button
+
 export const closeAllOptions = () => {
   const openOptions = document.querySelectorAll(
     ".button-options-container.active"
-  )
-  const btnActivs = document.querySelectorAll(".options-trigger.active")
+  );
+  const btnActivs = document.querySelectorAll(".options-trigger.active");
   for (let btn of btnActivs) {
-    btn.classList.remove("active")
+    btn.classList.remove("active");
   }
   for (let opts of openOptions) {
-    opts.classList.remove("active")
-    opts.slideToggle(100)
+    opts.classList.remove("active");
+    opts.slideToggle(100);
   }
-}
+};
 
 export const initDeleteOrModify = (e) => {
   e.preventDefault()
@@ -422,64 +433,62 @@ export const initDeleteOrModify = (e) => {
   }
 }
 
-
+// fetch data from database and group them with their categories
 export const fetchData = async (obj) => {
-  const apiLinksData = await obj.getLists('websites') || [];
-  const apiSnippetData = await obj.getLists('snippets') || [];
-  const apiCategoryData = await obj.getLists('category') || [];
-  const indexData = await getIndexArray() || [];
-  let indexLinks = [];
-  let indexSnippets = [];
-  if(indexData.length) {
-    for(let arr of indexData) {
-      if(arr.name === 'links') {
-        obj.setIndexLinks(arr.indexOrder);
-        indexLinks = arr.indexOrder;
-      } else if(arr.name === 'snippets') {
-        obj.setIndexSnippets(arr.indexOrder);
-        indexSnippets = arr.indexOrder;
+  const apiLinksData = (await obj.getLists("websites")) || []
+  const apiSnippetData = (await obj.getLists("snippets")) || []
+  const apiCategoryData = (await obj.getLists("category")) || []
+  const indexData = (await getIndexArray()) || []
+  let indexLinks = []
+  let indexSnippets = []
+  if (indexData.length) {
+    for (let arr of indexData) {
+      if (arr.name === "links") {
+        obj.setIndexLinks(arr.indexOrder)
+        indexLinks = arr.indexOrder
+      } else if (arr.name === "snippets") {
+        obj.setIndexSnippets(arr.indexOrder)
+        indexSnippets = arr.indexOrder
       }
     }
   }
 
-  let localData = {};
+  let localData = {}
 
-  if(apiLinksData.length && apiCategoryData.length) {
+  if (apiLinksData.length && apiCategoryData.length) {
     const allLinks = groupAndSort(
-        apiCategoryData, 
-        apiLinksData, 
-        indexLinks, 
-        obj.setIndexLinks,
-        obj.createIndexArray,
-        'links'
-      );
-    localData['links'] = allLinks;
-    obj.setfilterdData(allLinks);
-  } else if(!apiLinksData.length && apiCategoryData.length) {
-    localData['links'] = [];
+      apiCategoryData,
+      apiLinksData,
+      indexLinks,
+      obj.setIndexLinks,
+      obj.createIndexArray,
+      "links"
+    )
+    localData["links"] = allLinks
+    obj.setfilterdData(allLinks)
+  } else if (!apiLinksData.length && apiCategoryData.length) {
+    localData["links"] = []
   }
-  if(apiSnippetData.length && apiCategoryData.length) {
+  if (apiSnippetData.length && apiCategoryData.length) {
     const allSnippets = groupAndSort(
-        apiCategoryData, 
-        apiSnippetData, 
-        indexSnippets, 
-        obj.setIndexSnippets,
-        obj.createIndexArray,
-        'snippets'
-      );
-    localData['snippets'] = allSnippets;
-    obj.setfilterdSnippetData(allSnippets);
-  } else if(!apiSnippetData.length && apiCategoryData.length) {
-    localData['snippets'] = [];
+      apiCategoryData,
+      apiSnippetData,
+      indexSnippets,
+      obj.setIndexSnippets,
+      obj.createIndexArray,
+      "snippets"
+    )
+    localData["snippets"] = allSnippets
+    obj.setfilterdSnippetData(allSnippets)
+  } else if (!apiSnippetData.length && apiCategoryData.length) {
+    localData["snippets"] = []
   }
-  if(apiCategoryData.length) {
-    localData['categories'] = apiCategoryData;
-    obj.setCategoryData(apiCategoryData);
-  } 
+  if (apiCategoryData.length) {
+    localData["categories"] = apiCategoryData
+    obj.setCategoryData(apiCategoryData)
+  }
 
-  const sessionData = new Date().toLocaleString();
-  obj.setRefreshSession(sessionData);
-  obj.setLocalStorageData(localData);
+  const sessionData = new Date().toLocaleString()
+  obj.setRefreshSession(sessionData)
+  obj.setLocalStorageData(localData)
 }
-
-
