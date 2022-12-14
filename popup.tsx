@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import useLocalStorage from 'use-local-storage';
-import logoImage from "./.plasmo/gen-assets/clipme_logo.png";
+import logoImage from "./assets/clipme_logo.png";
 
 // CSS 
 import './css/styles.css';
@@ -43,6 +43,12 @@ const HourDiff = (endDate, startDate) => {
   const msInHour = 1000 * 60 * 60;
   return Math.round(Math.abs(endDate - startDate) / msInHour);
 }
+
+// remove all deafult plasmo inline styles
+(() => {
+  document.querySelectorAll('head style')
+    .forEach(el => el.parentNode.removeChild(el));
+})()
 
 
 function IndexPopup() {
@@ -234,7 +240,6 @@ function IndexPopup() {
   }
 
   console.count();
-
 
   return (
     <div className="root-container" data-theme={theme}>

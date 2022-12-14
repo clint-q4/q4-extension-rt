@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react"
 
 import { slideAll } from "../../content"
 
-// import "../utils/slideToggle"
 import "../../content"
 
 export default function Search(props) {

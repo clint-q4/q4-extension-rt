@@ -11,19 +11,16 @@ import {
 import TriggerOptions from "./TriggerOptions"
 import CodeEditor from "./codeEditor/CodeEditor"
 
-// import CodeMirrorEditor from "./CodeMirrorEditor";
-
 function RenderSnippets(props) {
-  console.log('rend-snip', props.filterdData);
   const isNotEmpty = props.filterdData.length
 
   function copySnippet(e) {
     e.preventDefault()
     let _t = e.target
     const match = _t.matches(".copy-icon")
-    match ? _t : (_t = _t.parentNode)
-    const id = _t.dataset.id
-    ;(
+    if(!match) {_t = _t.parentNode;}
+    const id = _t.dataset.id;
+    (
       document.querySelector(
         `.snippet-container[data-id="${id}"] textarea`
       ) as HTMLInputElement

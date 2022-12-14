@@ -13,8 +13,8 @@
     "default_popup": "./static/popup/index.html"
   },
   "version": "0.0.0",
-  "name": "Q4 extension",
-  "description": "A basic Plasmo extension.",
+  "name": "ClipMe Q4 extension",
+  "description": "A simple extension to save links and snippets",
   "author": "clintonsebastian",
   "permissions": [
     "storage",
@@ -32,7 +32,7 @@
         "<all_urls>"
       ],
       "js": [
-        "..\\content.ts"
+        "../content.ts"
       ]
     }
   ],

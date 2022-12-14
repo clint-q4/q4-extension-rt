@@ -1,25 +1,21 @@
 {
-  "name": "q4-extension",
-  "displayName": "Q4 extension",
+  "name": "clipme-q4-extension",
+  "displayName": "ClipMe Q4 extension",
   "version": "0.0.0",
-  "description": "A basic Plasmo extension.",
+  "description": "A simple extension to save links and snippets",
   "author": "clintonsebastian",
   "packageManager": "npm@8.5.5",
   "scripts": {
     "dev": "plasmo dev",
     "build": "plasmo build",
-    "css-build": "node-sass --omit-source-map-url sass/_all.scss css/styles.css",
+    "css-build": "sass sass/_all.scss css/styles.css",
     "css-watch": "npm run css-build -- --watch",
     "start": "npm run css-watch"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.2.0",
     "@plasmohq/storage": "^0.8.1",
-    "@uiw/codemirror-extensions-langs": "^4.12.4",
-    "@uiw/react-codemirror": "^4.12.4",
     "@uiw/react-textarea-code-editor": "^2.0.3",
-    "axios": "^0.27.2",
-    "bcryptjs": "^2.4.3",
     "jquery": "^3.6.1",
     "jsdom": "^20.0.0",
     "jwt-decode": "^3.1.2",
@@ -28,8 +24,6 @@
     "prismjs": "^1.29.0",
     "react": "18.2.0",
     "react-bulma-components": "^4.1.0",
-    "react-dom": "18.2.0",
-    "react-simple-code-editor": "^0.13.1",
     "use-local-storage": "^2.3.6"
   },
   "devDependencies": {
@@ -39,21 +33,11 @@
     "@types/react": "18.0.17",
     "@types/react-dom": "18.0.6",
     "assert": "^2.0.0",
-    "browserify-zlib": "^0.2.0",
     "bulma": "^0.9.4",
-    "console-browserify": "^1.2.0",
-    "crypto-browserify": "^3.12.0",
-    "https-browserify": "^1.0.0",
-    "node-sass": "^7.0.3",
+    "sass": "^1.55.0",
     "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",
-    "prettier": "2.7.1",
-    "querystring-es3": "^0.2.1",
-    "stream-browserify": "^3.0.0",
-    "stream-http": "^3.2.0",
-    "typescript": "4.7.4",
-    "url": "^0.11.0",
-    "util": "^0.12.4"
+    "prettier": "2.7.1"
   },
   "manifest": {
     "host_permissions": [
