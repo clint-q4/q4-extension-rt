@@ -53,7 +53,6 @@ export default function Search(props) {
         clarBtn.classList.add("active")
         searchIcon.classList.add("hide")
         setData(links, snippets)
-        console.log("text")
         slideAll(".popup-buttons-container button.link-list-toggle", "down")
       } else {
         clarBtn.classList.remove("active")

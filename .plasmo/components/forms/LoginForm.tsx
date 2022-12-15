@@ -4,6 +4,7 @@ import { loginAuth, listAuthMethods } from "../../utils/apiCalls"
 import Auth from "../../utils/auth"
 import RegisterForm from "./RegisterForm"
 import ForgetPassword from "./ForgetPasswordForm"
+import ResendLoginVerification from "./ResendLoginVerification"
 import loaderSvg from '../../../assets/loading.svg';
 
 function LoginForm(props) {
@@ -16,6 +17,7 @@ function LoginForm(props) {
   const [loginForm, setLoginForm] = useState(LoginFormData)
   const { email, password } = loginForm
   const [errorMessage, setErrorMessage] = useState("")
+  const [verification, setVerification] = useState(false)
   const [loader, intiateLoader] = useState(false)
 
   function handleChange(e) {
@@ -46,15 +48,13 @@ function LoginForm(props) {
       const adminAuthData = await loginAuth(email, password)
       if (!adminAuthData['status']) {
         intiateLoader(false);
-        console.log(loader, 'loader');
         errorCont.style.color = "red";
         setErrorMessage(adminAuthData['message']);
         if(!adminAuthData['verified']) {
           const buttonCont = document.querySelector<HTMLElement>(
             "#modal-login-form .modal-card-foot .control"
           )
-          const btn = `<button id="resend-verification" class="button resend-verification">Resend Verification</button>`
-          buttonCont.insertAdjacentHTML('afterbegin', btn);
+          setVerification(true)
         }
         return
       }
@@ -63,14 +63,12 @@ function LoginForm(props) {
         const $el = document.querySelector("#modal-login-form")
         setLoginForm(LoginFormData)
         intiateLoader(false)
-        console.log(loader, 'loaderLogged')
         setErrorMessage("You have successfully logged in!")
         Auth.login(adminAuthData["token"], adminAuthData["exToken"])
         setTimeout(() => {
           if ($el.classList.contains("is-active")) {
             $el.classList.remove("is-active")
           }
-          // props.setRefresh(true);
           window.location.reload();
         }, 500)
       } else {
@@ -171,6 +169,12 @@ function LoginForm(props) {
             </div>
             <div className="field is-grouped">
               <div className="control">
+                <ResendLoginVerification
+                verification={verification}
+                setVerification={setVerification}
+                email={email}
+                setErrorMessage={setErrorMessage}
+                ></ResendLoginVerification>
                 <button type="submit" className="button">
                   Login
                 </button>

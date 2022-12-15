@@ -734,6 +734,14 @@ h2 {
   }
 }
 
+.theme-toggle-switch-container {
+  &:hover {
+    .button {
+      border: 1px solid var(--button-border);
+    }
+  }
+}
+
 .button {
   white-space: pre-wrap;
 }

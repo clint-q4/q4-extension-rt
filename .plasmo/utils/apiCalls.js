@@ -65,10 +65,9 @@ const registerAuth = async function (formData) {
     const record = await pb.collection("users").create(data)
     record["status"] = true;
     await pb.collection("users").requestVerification(formData.email)
-    console.log(record);
     return record
   } catch (err) {
-    console.log(err)
+    console.error(err)
     return {
       status: false,
       message: "Email: The email is invalid or already in use."
@@ -266,7 +265,6 @@ const getSingleRecord = async function (collection, id, relations) {
 const listAuthMethods = async function () {
   try {
     const methods = await pb.collection('users').listAuthMethods();
-    console.log(methods);
     return methods
   } catch (err) {
     console.error(err)
@@ -289,8 +287,7 @@ const passwordResetAuth = async function (email) {
 // Send verification email again if not received
 const sendVerificationEmail = async function (email) {
   try {
-    console.log(email);
-    const result = await pb.collection('users').requestPasswordReset(email);
+    const result = await pb.collection('users').requestVerification(email);
     return result;
   }
   catch (err) {
@@ -316,5 +313,6 @@ export {
   createIndexArray,
   getIndexArray,
   listAuthMethods,
-  passwordResetAuth
+  passwordResetAuth,
+  sendVerificationEmail
 }
