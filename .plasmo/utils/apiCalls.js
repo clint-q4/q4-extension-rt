@@ -28,7 +28,9 @@ const loginAuth = async function (email, password) {
     if (!adminAuthData.record.verified) {
       const respose = {
         status: false,
-        message: "Please verify the email address first!"
+        message: "Please verify the email address first!",
+        email: email,
+        verified: false
       }
       return respose
     } else {
@@ -274,6 +276,18 @@ const listAuthMethods = async function () {
 
 // password reset auth
 const passwordResetAuth = async function (email) {
+  try {
+    const result = await pb.collection('users').requestPasswordReset(email);
+    return result;
+  }
+  catch (err) {
+    console.error(err)
+    return {}
+  }
+}
+
+// Send verification email again if not received
+const sendVerificationEmail = async function (email) {
   try {
     console.log(email);
     const result = await pb.collection('users').requestPasswordReset(email);

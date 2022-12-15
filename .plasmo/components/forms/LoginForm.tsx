@@ -47,8 +47,15 @@ function LoginForm(props) {
       if (!adminAuthData['status']) {
         intiateLoader(false);
         console.log(loader, 'loader');
-        errorCont.style.color = "red"
+        errorCont.style.color = "red";
         setErrorMessage(adminAuthData['message']);
+        if(!adminAuthData['verified']) {
+          const buttonCont = document.querySelector<HTMLElement>(
+            "#modal-login-form .modal-card-foot .control"
+          )
+          const btn = `<button id="resend-verification" class="button resend-verification">Resend Verification</button>`
+          buttonCont.insertAdjacentHTML('afterbegin', btn);
+        }
         return
       }
       if (adminAuthData.hasOwnProperty("token")) {

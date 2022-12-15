@@ -433,6 +433,12 @@ export const initDeleteOrModify = (e) => {
   }
 }
 
+// resendverification sends a verification email to the user
+export const resendVerificatioOnClick = async (buttonId, email) => {
+  document.getElementById(buttonId).classList.add("sent");
+  
+}
+
 // fetch data from database and group them with their categories
 export const fetchData = async (obj) => {
   const apiLinksData = (await obj.getLists("websites")) || []
