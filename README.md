@@ -1,6 +1,31 @@
-This is a [Plasmo extension](https://docs.plasmo.com/) project bootstrapped with [`plasmo init`](https://www.npmjs.com/package/plasmo).
+# CLIPME Q4 EXTENSION
 
-## Getting Started
+![badge](https://img.shields.io/badge/-HTML-red) ![badge](https://img.shields.io/badge/-CSS-red) ![badge](https://img.shields.io/badge/-Javascript-red) ![badge](https://img.shields.io/badge/-Node.js-red) ![badge](https://img.shields.io/badge/-React-red) ![badge](https://img.shields.io/badge/-plasmo-red) ![badge](https://img.shields.io/badge/-typescript-red) ![badge](https://img.shields.io/badge/-pockebase-red) 
+
+## 📜 Description 
+
+A simple enxtenstion to save bookmarks and snippets
+
+## 📋 Table Of Contents 
+- [Installation](#%EF%B8%8F-installation)
+- [Usage](#%EF%B8%8F-usage) 
+- [Making Production Build](#%EF%B8%8F-making-production-build)
+- [Extenstion Download (0.9.0 beta)](#-extenstion-download-(0.9.0-beta)) 
+- [License](#-license) 
+- [Contributing](#-contributing) 
+- [Questions](#-questions) 
+
+## ⚙️ Installation 
+
+If you would like to try this application or want to use this as a demo, please clone the repo, and run the following command 
+
+``` 
+npm install
+``` 
+
+## 🖥️ Usage
+
+This is a [Plasmo extension](https://docs.plasmo.com/) project bootstrapped with [`plasmo init`](https://www.npmjs.com/package/plasmo).
 
 First, run the development server:
 
@@ -16,7 +41,7 @@ You can start editing the popup by modifying `popup.tsx`. It should auto-update 
 
 For further guidance, [visit our Documentation](https://docs.plasmo.com/)
 
-## Making production build
+## ⚙️ Making production build
 
 Run the following:
 
@@ -26,8 +51,17 @@ pnpm build
 npm run build
 ```
 
-This should create a production bundle for your extension, ready to be zipped and published to the stores.
+## 🌐 Extenstion Download (0.9.0 beta)
 
-## Submit to the webstores
+[**Click Here**]() to download the latest extension zip file. 
 
-The easiest way to deploy your Plasmo extension is to use the built-in [bpp](https://bpp.browser.market) GitHub action. Prior to using this action however, make sure to build your extension and upload the first version to the store to establish the basic credentials. Then, simply follow [this setup instruction](https://docs.plasmo.com/workflows#submit-your-extension) and you should be on your way for automated submission!
+## 🤝 Contributing 
+
+Contributions, issues and feature requests are welcome. Feel free to check issues page if you want to contribute. 
+
+## ❓ Questions 
+
+If you have any questions regarding this application, please reach out via email or github! 
+
+📧 Email : pravton_dev@outlook.com 
+🤖 GitHub : https://github.com/pravton || https://github.com/clint-q4
