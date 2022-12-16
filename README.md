@@ -53,7 +53,7 @@ npm run build
 
 ## 🌐 Extenstion Download (0.9.0 beta)
 
-[**Click Here**]() to download the latest extension zip file. 
+[**Click Here**](https://github.com/clint-q4/q4-extension-rt/blob/versioning/downloads/clipme-0.9.1.zip) to download the latest extension zip file. 
 
 ## 🤝 Contributing 
 
