@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import useLocalStorage from 'use-local-storage';
-import logoImage from "./assets/clipme_logo.png";
+import logoImage from "./assets/clipmelogo.png";
 
 // CSS 
 import './css/styles.css';

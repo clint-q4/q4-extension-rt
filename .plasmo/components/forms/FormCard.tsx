@@ -3,14 +3,14 @@ import { useState } from "react"
 import { createLinks, updateLinks } from "../../utils/apiCalls"
 import Auth from "../../utils/auth"
 import CategoryForm from "./CategoryForm"
+import loaderSvg from '../../../assets/loading.svg';
 
 function FormCard(props) {
 
   const { name, url, category } = props.formLinkDetails
   const [errorMessage, setErrorMessage] = useState("")
-  const [categoryMessage, setCategoryMessage] = useState(
-    "Please update/delete category using the buttons"
-  )
+  const [loader, intiateLoader] = useState(false)
+  const [categoryMessage, setCategoryMessage] = useState("")
 
   if (!props.categoryData.length) {
     const token = Auth.getToken()
@@ -103,7 +103,8 @@ function FormCard(props) {
       }
     } else if (option === "update") {
       if (name.length && url.length && category.length) {
-        setErrorMessage("Sending...")
+        // setErrorMessage("Sending...")
+        intiateLoader(true)
         // document.getElementById('add-options-modal')[0].reset();
         if (!validateUrl(url)) {
           errorStatus.style.color = "red"
@@ -113,6 +114,7 @@ function FormCard(props) {
         const record = await updateLinks(props.linkID, props.formLinkDetails)
 
         if (record) {
+          intiateLoader(false)
           const temp = `${record.name} has been updated!`
           errorStatus.style.color = "green"
           props.setRefresh(true)
@@ -123,10 +125,12 @@ function FormCard(props) {
             modal.classList.remove("is-active")
           }, 1000)
         } else {
+          intiateLoader(false)
           setErrorMessage("Sorry! Something went wrong!")
           document.querySelector<HTMLElement>(".error-text").style.color = "red"
         }
       } else {
+        intiateLoader(false)
         errorStatus.style.color = "red"
         setErrorMessage("One or more fields are empty. Please try again!")
       }
@@ -209,6 +213,11 @@ function FormCard(props) {
             <div className="control">
               <button type="submit" className="button is-link">
                 Submit
+                {loader ? (
+                    <div className="loader-container">
+                      <img src={loaderSvg} alt="loader" />
+                    </div>
+                ) : <></>}
               </button>
             </div>
             <div className="control">

@@ -46,7 +46,6 @@ function LoginForm(props) {
       const adminAuthData = await loginAuth(email, password)
       if (!adminAuthData['status']) {
         intiateLoader(false);
-        console.log(loader, 'loader');
         errorCont.style.color = "red"
         setErrorMessage(adminAuthData['message']);
         return
@@ -56,7 +55,6 @@ function LoginForm(props) {
         const $el = document.querySelector("#modal-login-form")
         setLoginForm(LoginFormData)
         intiateLoader(false)
-        console.log(loader, 'loaderLogged')
         setErrorMessage("You have successfully logged in!")
         Auth.login(adminAuthData["token"], adminAuthData["exToken"])
         setTimeout(() => {
@@ -109,7 +107,7 @@ function LoginForm(props) {
         <div className="modal-card">
           <header className="modal-card-head">
             <p className="modal-card-title">Login</p>
-            <button className="button modal-close cancel">Cancel</button>
+            <button type="button" className="button modal-close cancel">Cancel</button>
           </header>
           <div className="modal-card-body py-5">
             <div className="login-form" id="loginForm">
@@ -120,7 +118,7 @@ function LoginForm(props) {
                     name="email"
                     type="email"
                     placeholder="Email"
-                    onChange={handleChange}
+                    onInput={handleChange}
                   />
                   <span className="icon is-small is-left">
                     <i className="fas fa-envelope"></i>
@@ -134,7 +132,7 @@ function LoginForm(props) {
                     name="password"
                     type="password"
                     placeholder="Password"
-                    onChange={handleChange}
+                    onInput={handleChange}
                   />
                   <span className="icon is-small is-left">
                     <i className="fas fa-lock"></i>
@@ -154,19 +152,11 @@ function LoginForm(props) {
             </div>
           </div>
           <footer className="modal-card-foot">
-            {loader ? (
-              <div className="loader-container">
-                <img src={loaderSvg} alt="loader" />
-              </div>
-            ) : <></>}
             <div className="error-container">
               <p className="error-text">{errorMessage}</p>
             </div>
             <div className="field is-grouped">
-              <div className="control">
-                <button type="submit" className="button">
-                  Login
-                </button>
+              <div className="control login-buttons">
                 <button
                   type="button"
                   onClick={(e) => {
@@ -178,8 +168,16 @@ function LoginForm(props) {
                     regFrom.classList.toggle("is-active")
                     logFrom.classList.toggle("is-active")
                   }}
-                  className="button">
-                  Register
+                  className="link register-link">
+                  No Account? Register Here
+                </button>
+                <button type="submit" className="button">
+                  Login
+                  {loader ? (
+                    <div className="loader-container">
+                      <img src={loaderSvg} alt="loader" />
+                    </div>
+                  ) : <></>}
                 </button>
               </div>
             </div>

@@ -36,7 +36,7 @@ function ForgetPassword(props) {
         <div className="modal-card">
           <header className="modal-card-head">
             <p className="modal-card-title">Password Reset</p>
-            <button className="button modal-close cancel">Cancel</button>
+            <button type="button" className="button modal-close cancel">Cancel</button>
           </header>
           <div className="modal-card-body py-5">
             <div className="login-form" id="loginForm">

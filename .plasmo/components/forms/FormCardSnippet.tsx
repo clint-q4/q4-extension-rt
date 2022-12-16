@@ -4,13 +4,13 @@ import { createSnippets, updateSnippets } from "../../utils/apiCalls"
 import Auth from "../../utils/auth"
 import CodeEditorForm from "../codeEditor/CodeEditorForm"
 import CategoryForm from "./CategoryForm"
+import loaderSvg from '../../../assets/loading.svg';
 
 function FormCardSnippet(props) {
   const { name, snippet, url, category } = props.formSnippetDetails
   const [errorMessage, setErrorMessage] = useState("")
-  const [categoryMessage, setCategoryMessage] = useState(
-    "Please update/delete category using the buttons"
-  )
+  const [loader, intiateLoader] = useState(false)
+  const [categoryMessage, setCategoryMessage] = useState("")
 
   if (!props.categoryData.length) {
     const token = Auth.getToken()
@@ -93,7 +93,8 @@ function FormCardSnippet(props) {
       }
     } else if (option === "update") {
       if (name.length && url.length && category.length) {
-        setErrorMessage("Sending...")
+        // setErrorMessage("Sending...")
+        intiateLoader(true)
         // document.getElementById('add-options-modal')[0].reset();
         if (!validateUrl(url)) {
           errorStatus.style.color = "red"
@@ -106,6 +107,7 @@ function FormCardSnippet(props) {
         )
 
         if (record) {
+          intiateLoader(false)
           const temp = `${record.name} has been updated!`
           errorStatus.style.color = "green"
           setErrorMessage(temp)
@@ -116,10 +118,12 @@ function FormCardSnippet(props) {
             modal.classList.remove("is-active")
           }, 1000)
         } else {
+          intiateLoader(false)
           setErrorMessage("Sorry! Something went wrong!")
           document.querySelector<HTMLElement>(".error-text").style.color = "red"
         }
       } else {
+        intiateLoader(false)
         errorStatus.style.color = "red"
         setErrorMessage("One or more fields are empty. Please try again!")
       }
@@ -217,6 +221,11 @@ function FormCardSnippet(props) {
             <div className="control">
               <button type="submit" className="button is-link">
                 Submit
+                {loader ? (
+                    <div className="loader-container">
+                      <img src={loaderSvg} alt="loader" />
+                    </div>
+                ) : <></>}
               </button>
             </div>
             <div className="control">
