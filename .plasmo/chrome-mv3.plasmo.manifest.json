@@ -16,16 +16,16 @@
   "name": "ClipMe Q4 extension",
   "description": "A simple extension to save links and snippets",
   "author": "clintonsebastian",
+  "options_ui": {
+    "page": "./static/options/index.html",
+    "open_in_tab": true
+  },
   "permissions": [
     "storage",
     "storage",
     "activeTab",
     "scripting"
   ],
-  "options_ui": {
-    "page": "./static/options/index.html",
-    "open_in_tab": true
-  },
   "content_scripts": [
     {
       "matches": [
