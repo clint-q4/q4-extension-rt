@@ -17,17 +17,24 @@ function RegisterForm(props) {
   const [errorMessage, setErrorMessage] = useState("")
   const [loader, intiateLoader] = useState(false)
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+  // function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+  //   setRegisterForm({
+  //     ...registerForm,
+  //     [e.target.name]: e.target.value
+  //   })
+  // }
+
+  function handleInput(e: React.ChangeEvent<HTMLInputElement>) {
     const errorCont = document.querySelector<HTMLElement>(
       "#modal-register-form .error-text"
     )
-    if (!e.target.value.length) {
+    if (!e.target.value.length && e.target.name !== "username") {
+      errorCont.style.color = "red"
       setErrorMessage(
         `${
           e.target.name.charAt(0).toUpperCase() + e.target.name.slice(1)
         } is required.`
       )
-      errorCont.style.color = "red"
       return;
     } else {
       setErrorMessage("")
@@ -47,7 +54,6 @@ function RegisterForm(props) {
       ...registerForm,
       [e.target.name]: e.target.value
     })
-
   }
 
   function triggerLoginModal(e) {
@@ -112,7 +118,8 @@ function RegisterForm(props) {
                   name="name"
                   type="name"
                   placeholder="Name"
-                  onChange={handleChange}
+                  // onChange={handleChange}
+                  onInput={handleInput}
                 />
                 <span className="icon is-small is-left">
                   <i className="fas fa-user"></i>
@@ -125,8 +132,9 @@ function RegisterForm(props) {
                   className="input"
                   name="username"
                   type="name"
-                  placeholder="User Name"
-                  onChange={handleChange}
+                  placeholder="User Name (optional)"
+                  // onChange={handleChange}
+                  onInput={handleInput}
                 />
                 <span className="icon is-small is-left">
                   <i className="fas fa-user"></i>
@@ -140,7 +148,8 @@ function RegisterForm(props) {
                   name="email"
                   type="email"
                   placeholder="Email"
-                  onChange={handleChange}
+                  // onChange={handleChange}
+                  onInput={handleInput}
                 />
                 <span className="icon is-small is-left">
                   <i className="fas fa-envelope"></i>
@@ -154,7 +163,8 @@ function RegisterForm(props) {
                   name="password"
                   type="password"
                   placeholder="Password"
-                  onChange={handleChange}
+                  // onChange={handleChange}
+                  onInput={handleInput}
                 />
                 <span className="icon is-small is-left">
                   <i className="fas fa-lock"></i>
@@ -168,7 +178,8 @@ function RegisterForm(props) {
                   name="confirmPassword"
                   type="password"
                   placeholder="Re-enter Password"
-                  onChange={handleChange}
+                  // onChange={handleChange}
+                  onInput={handleInput}
                 />
                 <span className="icon is-small is-left">
                   <i className="fas fa-lock"></i>
@@ -178,24 +189,24 @@ function RegisterForm(props) {
           </div>
         </div>
         <footer className="modal-card-foot">
-            {loader ? (
-              <div className="loader-container">
-                <img src={loaderSvg} alt="loader" />
-              </div>
-            ) : <></>}
           <div className="error-container">
             <p className="error-text">{errorMessage}</p>
           </div>
           <div className="field is-grouped">
-            <div className="control">
-              <button type="submit" className="button">
-                Register
-              </button>
+            <div className="control register-buttons">
               <button
                 type="button"
                 onClick={triggerLoginModal}
-                className="button">
-                Login
+                className="link login-link">
+                Back to Login
+              </button>
+              <button type="submit" className="button">
+                Register
+                {loader ? (
+                  <div className="loader-container">
+                    <img src={loaderSvg} alt="loader" />
+                  </div>
+                ) : <></>}
               </button>
             </div>
           </div>

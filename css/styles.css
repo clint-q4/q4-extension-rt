@@ -11083,11 +11083,37 @@ h2 {
   color: var(--text-primary);
   border-radius: 5px;
 }
-#modal-login-form .link.forgot-password {
+#modal-login-form .link.forgot-password,
+#modal-login-form .link.register-link {
   background-color: transparent;
   border: none;
   color: var(--text-secondary);
   cursor: pointer;
+}
+#modal-login-form .field.is-grouped {
+  width: 100%;
+}
+#modal-login-form .login-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+#modal-register-form .link.login-link {
+  background-color: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+#modal-register-form .field.is-grouped {
+  width: 100%;
+}
+#modal-register-form .register-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
 }
 
 #linkRemoveCategoryModal .modal-card .control,
@@ -11114,7 +11140,6 @@ h2 {
   height: 30px;
   color: var(--text-primary);
   background: var(--background);
-  border: none;
   transition: all 0.35s ease-in-out;
   cursor: pointer;
   display: flex;
@@ -11210,6 +11235,15 @@ h2 {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.button {
+  color: var(--text-primary);
+  background: var(--background);
+  box-shadow: var(--box-shadow);
+}
+.button:hover, .button:focus, .button:active {
+  box-shadow: var(--box-shadow-hover);
 }
 
 .button,
@@ -11323,15 +11357,6 @@ input:checked + .slider:before {
   display: none;
 }
 
-.button {
-  color: var(--text-primary);
-  background: var(--background);
-  box-shadow: var(--box-shadow);
-}
-.button:hover, .button:focus, .button:active {
-  box-shadow: var(--box-shadow-hover);
-}
-
 .theme-toggle-switch-container {
   position: relative;
   margin: 0 5px;
@@ -11388,6 +11413,10 @@ input:checked + .slider:before {
   padding: 5px 7px;
   line-height: 1;
   height: 3rem;
+}
+.theme-toggle-switch-container:hover .button {
+  box-shadow: var(--box-shadow-hover);
+  border: 1px solid var(--button-border);
 }
 
 .highlight {
@@ -11531,11 +11560,9 @@ input:checked + .slider:before {
   position: relative;
 }
 .modal-card-foot .loader-container {
-  width: 30px;
-  height: 30px;
-  position: absolute;
-  bottom: 15px;
-  left: 15px;
+  width: 25px;
+  height: 25px;
+  margin-left: 10px;
 }
 
 /*# sourceMappingURL=styles.css.map */
