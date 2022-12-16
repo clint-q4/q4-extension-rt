@@ -10,7 +10,7 @@ A simple enxtenstion to save bookmarks and snippets
 - [Installation](#%EF%B8%8F-installation)
 - [Usage](#%EF%B8%8F-usage) 
 - [Making Production Build](#%EF%B8%8F-making-production-build)
-- [Extenstion Download (0.9.0 beta)](#-extenstion-download-(0.9.0-beta)) 
+- [Extenstion Download](#-extenstion-download) 
 - [License](#-license) 
 - [Contributing](#-contributing) 
 - [Questions](#-questions) 
@@ -51,9 +51,9 @@ pnpm build
 npm run build
 ```
 
-## 🌐 Extenstion Download (0.9.0 beta)
-
-[**Click Here**](https://github.com/clint-q4/q4-extension-rt/blob/versioning/downloads/clipme-0.9.1.zip) to download the latest extension zip file. 
+## 🌐 Extenstion Download
+### Current version: (0.9.1 beta)
+[**Click Here**](https://github.com/clint-q4/q4-extension-rt/blob/versioning/downloads/clipme-0.9.1.zip "download") to download the latest extension zip file. 
 
 ## 🤝 Contributing 
 
