@@ -1,7 +1,7 @@
 {
   "name": "clipme-q4-extension",
   "displayName": "ClipMe Q4 extension",
-  "version": "0.0.0",
+  "version": "0.9.1",
   "description": "A simple extension to save links and snippets",
   "author": "clintonsebastian",
   "packageManager": "npm@8.5.5",
