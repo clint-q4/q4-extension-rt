@@ -75,5 +75,5 @@ Contributions, issues and feature requests are welcome. Feel free to check issue
 
 If you have any questions regarding this application, please reach out via email or github! 
 
-📧 Email : pravton_dev@outlook.com 
-🤖 GitHub : https://github.com/pravton || https://github.com/clint-q4
+[📧 Email](mailto:clinton.sebastian@q4inc.com)
+[🤖 GitHub](https://github.com/clint-q4)
